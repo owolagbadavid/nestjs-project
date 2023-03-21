@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
-@ApiSchema({ name: 'Create Unit' })
+@ApiSchema({ name: 'CreateUnit' })
 export class CreateUnitDto {
   @ApiProperty()
   @IsNotEmpty()

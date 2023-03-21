@@ -35,7 +35,7 @@ export class AuthService {
     const { email, password } = loginUserDetails;
 
     // find user by email address
-    let user: User = await this.usersService.findOneUnfiltered(email);
+    let user: User = await this.usersService.findOneUnfilteredByEmail(email);
     // if not found throw exception
     if (!user) throw new UnauthorizedException('credentials incorrect');
 
@@ -48,9 +48,13 @@ export class AuthService {
 
     // return user and token
     user = (({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       password,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordToken,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordTokenExpiration,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       verificationToken,
       ...rest
     }) => rest)(user);
@@ -82,7 +86,7 @@ export class AuthService {
 
   async verifyEmail(verifyEmailDto: VerifyEmailDto) {
     const { email, verificationToken } = verifyEmailDto;
-    const user = await this.usersService.findOneUnfiltered(email);
+    const user = await this.usersService.findOneUnfilteredByEmail(email);
     if (!user) throw new UnauthorizedException('verification failed');
 
     if (user.isVerified === true)
@@ -103,7 +107,7 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, email } = resetPasswordDto;
     let { password } = resetPasswordDto;
-    const user = await this.usersService.findOneUnfiltered(email);
+    const user = await this.usersService.findOneUnfilteredByEmail(email);
 
     if (user) {
       const currentDate = new Date();
@@ -142,7 +146,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.usersService.findOneUnfiltered(email);
+    const user = await this.usersService.findOneUnfilteredByEmail(email);
     let passwordToken: string;
     if (user) {
       passwordToken = randomBytes(70).toString('hex');

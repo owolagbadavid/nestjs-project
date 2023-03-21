@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
-@ApiSchema({ name: 'Super User Signup' })
+@ApiSchema({ name: 'SuperUserSignup' })
 export class SuperUserDto {
   @ApiProperty()
   @IsEmail()

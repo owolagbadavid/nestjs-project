@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
-@ApiSchema({ name: 'Update Department' })
+@ApiSchema({ name: 'UpdateDepartment' })
 export class UpdateDepartmentDto {
   @ApiPropertyOptional()
   @IsOptional()

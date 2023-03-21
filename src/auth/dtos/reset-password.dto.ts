@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
-@ApiSchema({ name: 'Reset Password' })
+@ApiSchema({ name: 'ResetPassword' })
 export class ResetPasswordDto {
   @ApiProperty()
   @IsNotEmpty()

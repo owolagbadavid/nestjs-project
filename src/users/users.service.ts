@@ -157,9 +157,13 @@ export class UsersService {
 
     return users.map((user) => {
       return (({
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         password,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         passwordToken,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         passwordTokenExpiration,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         verificationToken,
         ...rest
       }) => rest)(user);
@@ -167,33 +171,34 @@ export class UsersService {
   }
 
   //Find One User
-  async findOne(id: number | string) {
-    let user: User;
-    if (typeof id === 'string') {
-      user = await this.userRepository.findOne({ where: { email: id } });
-    } else {
-      user = await this.userRepository.findOne({ where: { id } });
-    }
+  async findOne(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
     return (({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       password,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordToken,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordTokenExpiration,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       verificationToken,
       ...rest
     }) => rest)(user);
   }
 
   //Find One User Unfiltered
-  async findOneUnfiltered(id: number | string): Promise<User> {
-    let user: User;
-    if (typeof id === 'string') {
-      user = await this.userRepository.findOne({ where: { email: id } });
-    } else {
-      user = await this.userRepository.findOne({ where: { id } });
-    }
+  async findOneUnfiltered(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    return user;
+  }
+  //Find One User by email
+  async findOneUnfilteredByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
     return user;
   }
 
@@ -240,9 +245,13 @@ export class UsersService {
     user = await this.userRepository.save({ ...user, ...updateUserDto });
 
     return (({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       password,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordToken,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordTokenExpiration,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       verificationToken,
       ...rest
     }) => rest)(user);

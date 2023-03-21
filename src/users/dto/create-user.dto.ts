@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
-@ApiSchema({ name: 'Create User' })
+@ApiSchema({ name: 'CreateUser' })
 export class CreateUserDto {
   @ApiProperty()
   @IsEmail()
