@@ -15,6 +15,6 @@ export class SupportingDocs {
   )
   retirementForm: RetirementForm;
 
-  @Column({ type: 'longblob', nullable: true })
-  file: Buffer;
+  @Column({ type: 'bytea', nullable: true })
+  file: Uint8Array;
 }

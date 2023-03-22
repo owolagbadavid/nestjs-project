@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
@@ -11,11 +12,13 @@ export class CreateUnitDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   headId?: number;
 
   @ApiProperty()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   @ApiProperty()
   departmentId: number;

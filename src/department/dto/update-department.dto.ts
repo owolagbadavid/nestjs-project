@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
 @ApiSchema({ name: 'UpdateDepartment' })
@@ -11,5 +12,7 @@ export class UpdateDepartmentDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   headId?: number;
 }

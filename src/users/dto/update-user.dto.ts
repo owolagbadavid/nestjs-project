@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
 
@@ -21,11 +22,13 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   departmentId?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   unitId?: number;
 
@@ -36,6 +39,7 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   role?: number;
 }

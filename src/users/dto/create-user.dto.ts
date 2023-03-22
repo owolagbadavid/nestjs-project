@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -24,21 +25,25 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   departmentId?: number;
 
   @ApiProperty()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   unitId?: number;
 
   @ApiProperty()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   supervisorId: number;
 
   @ApiProperty()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   role: number;
 }
