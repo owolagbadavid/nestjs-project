@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Post,
   Query,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto, ResetPasswordDto, VerifyEmailDto } from './dtos';
@@ -36,6 +38,7 @@ export class AuthController {
   @ApiBadRequestResponse({ type: ApiRes })
   @ApiUnauthorizedResponse({ type: ApiRes })
   @ApiCreatedResponse({ type: User })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('login')
   async login(
     @Res({ passthrough: true }) res: Response,

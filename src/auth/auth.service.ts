@@ -15,7 +15,7 @@ import { createHash, randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/entities';
+import { SerializedUser, User } from 'src/entities';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +35,7 @@ export class AuthService {
     const { email, password } = loginUserDetails;
 
     // find user by email address
-    let user: User = await this.usersService.findOneUnfilteredByEmail(email);
+    let user: User = await this.usersService.findOneByEmail(email);
     // if not found throw exception
     if (!user) throw new UnauthorizedException('credentials incorrect');
 
@@ -47,18 +47,7 @@ export class AuthService {
     const token = await this.signToken(user.id, user.email);
 
     // return user and token
-    user = (({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      password,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      passwordToken,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      passwordTokenExpiration,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      verificationToken,
-      ...rest
-    }) => rest)(user);
-
+    user = new SerializedUser(user);
     return { user, token };
   }
 
@@ -86,7 +75,7 @@ export class AuthService {
 
   async verifyEmail(verifyEmailDto: VerifyEmailDto) {
     const { email, verificationToken } = verifyEmailDto;
-    const user = await this.usersService.findOneUnfilteredByEmail(email);
+    const user = await this.usersService.findOneByEmail(email);
     if (!user) throw new UnauthorizedException('verification failed');
 
     if (user.isVerified === true)
@@ -107,7 +96,7 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, email } = resetPasswordDto;
     let { password } = resetPasswordDto;
-    const user = await this.usersService.findOneUnfilteredByEmail(email);
+    const user = await this.usersService.findOneByEmail(email);
 
     if (user) {
       const currentDate = new Date();
@@ -146,7 +135,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.usersService.findOneUnfilteredByEmail(email);
+    const user = await this.usersService.findOneByEmail(email);
     let passwordToken: string;
     if (user) {
       passwordToken = randomBytes(70).toString('hex');

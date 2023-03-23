@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -22,6 +23,7 @@ export class SuperUserDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   role: number;
 
@@ -37,16 +39,19 @@ export class SuperUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   supervisorId: number;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   departmentId: number;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   unitId: number;
 }

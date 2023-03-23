@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Department, Unit, User } from 'src/entities';
+import { Department, SerializedUser, Unit, User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -156,54 +156,45 @@ export class UsersService {
     const users = await this.userRepository.find();
 
     return users.map((user) => {
-      return (({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        password,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordToken,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordTokenExpiration,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        verificationToken,
-        ...rest
-      }) => rest)(user);
+      return new SerializedUser(user);
+      //  (({
+      //   password,
+      //   passwordToken,
+      //   passwordTokenExpiration,
+      //   verificationToken,
+      //   ...rest
+      // }) => rest)(user);
     });
   }
 
   //Find One User
-  async findOne(id: number) {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
-    return (({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      password,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      passwordToken,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      passwordTokenExpiration,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      verificationToken,
-      ...rest
-    }) => rest)(user);
+    return new SerializedUser(user);
+    // (({
+    //   password,
+    //   passwordToken,
+    //   passwordTokenExpiration,
+    //   verificationToken,
+    //   ...rest
+    // }) => rest)(user);
   }
 
-  //Find One User Unfiltered
-  async findOneUnfiltered(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-
-    return user;
-  }
   //Find One User by email
-  async findOneUnfilteredByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { email } });
 
     return user;
   }
 
   //Update User
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<SerializedUser> {
     let user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
@@ -244,17 +235,7 @@ export class UsersService {
 
     user = await this.userRepository.save({ ...user, ...updateUserDto });
 
-    return (({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      password,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      passwordToken,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      passwordTokenExpiration,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      verificationToken,
-      ...rest
-    }) => rest)(user);
+    return new SerializedUser(user);
   }
 
   //Delete User

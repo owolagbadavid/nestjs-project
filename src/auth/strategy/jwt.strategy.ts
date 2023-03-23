@@ -25,14 +25,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: { sub: number; email: string }) {
-    const user = await this.usersService.findOneUnfiltered(payload.sub);
+    const user = await this.usersService.findOne(payload.sub);
 
     if (!user) throw new UnauthorizedException('Invalid user');
 
     return (({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       password,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordToken,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       passwordTokenExpiration,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       verificationToken,
       ...rest
     }) => rest)(user);

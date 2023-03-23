@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,11 +27,11 @@ import {
 import { User } from 'src/entities';
 import { ApiRes } from 'src/types/api-response';
 import { JwtGuard, RolesGuard } from 'src/auth/guards';
-import { GetUser } from 'src/decorators';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/entities/roles.enum';
 import { RolesOrIdGuard } from 'src/auth/guards/roles-or-id.guard';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Users')
 @ApiCookieAuth('cookie')
 @ApiUnauthorizedResponse({ type: ApiRes })
@@ -44,12 +46,7 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @ApiCreatedResponse({ type: ApiRes })
   @Post()
-  create(
-    @Body() createUserDto: CreateUserDto,
-    @GetUser() user: User,
-  ): Promise<ApiRes> {
-    console.log(user);
-
+  create(@Body() createUserDto: CreateUserDto): Promise<ApiRes> {
     return this.usersService.create(createUserDto);
   }
 
@@ -57,9 +54,7 @@ export class UsersController {
   @ApiOkResponse({ type: User, isArray: true })
   @UseGuards(RolesGuard)
   @Get()
-  findAll(@GetUser() user: User): Promise<User[]> {
-    console.log(user);
-
+  findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
@@ -69,12 +64,7 @@ export class UsersController {
   @ApiOkResponse({ type: User })
   @UseGuards(RolesOrIdGuard)
   @Get(':id')
-  findOne(
-    @Param('id', ParseIntPipe) id: string,
-    @GetUser() user: User,
-  ): Promise<User> {
-    console.log(user);
-
+  findOne(@Param('id', ParseIntPipe) id: string): Promise<User> {
     return this.usersService.findOne(+id);
   }
 

@@ -11,6 +11,7 @@ import { AdvanceForm } from './advance-form.entity';
 import { Unit } from './unit.entity';
 import { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -31,14 +32,14 @@ export class User {
   lastName: string;
 
   @Column({ nullable: true })
-  password?: string;
+  password: string;
 
   @ApiProperty()
   @Column({ default: false, type: 'boolean' })
   isVerified: boolean;
 
   @Column({ nullable: true })
-  verificationToken?: string;
+  verificationToken: string;
 
   @ApiProperty()
   @Column({ nullable: true })
@@ -85,8 +86,58 @@ export class User {
   retirementForms: RetirementForm[];
 
   @Column({ nullable: true })
-  passwordToken?: string;
+  passwordToken: string;
 
   @Column({ nullable: true })
-  passwordTokenExpiration?: Date;
+  passwordTokenExpiration: Date;
+}
+
+export class SerializedUser {
+  id: number;
+
+  email: string;
+
+  firstName: string;
+
+  lastName: string;
+
+  @Exclude()
+  password: string;
+
+  isVerified: boolean;
+
+  @Exclude()
+  verificationToken: string;
+
+  verified: Date;
+
+  department: Department;
+
+  unit: Unit;
+
+  supervisor: User;
+
+  supervisorId: number;
+
+  unitId: number;
+
+  departmentId: number;
+
+  directReports: User[];
+
+  role: number;
+
+  advanceForms: AdvanceForm[];
+
+  retirementForms: RetirementForm[];
+
+  @Exclude()
+  passwordToken: string;
+
+  @Exclude()
+  passwordTokenExpiration: Date;
+
+  constructor(partial: Partial<SerializedUser>) {
+    Object.assign(this, partial);
+  }
 }
