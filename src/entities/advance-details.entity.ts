@@ -7,6 +7,9 @@ export class AdvanceDetails {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  advanceFormId: number;
+
   @ManyToOne(() => AdvanceForm, (advanceForm) => advanceForm.details)
   advanceForm: AdvanceForm;
 
@@ -14,7 +17,7 @@ export class AdvanceDetails {
     type: 'enum',
     enum: Products,
   })
-  product: string;
+  product: Products;
 
   @Column()
   rate: number;

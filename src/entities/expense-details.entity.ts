@@ -8,6 +8,9 @@ export class ExpenseDetails {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  retirementFormId: number;
+
   @ManyToOne(() => RetirementForm, (retirementForm) => retirementForm.details)
   retirementForm: RetirementForm;
 

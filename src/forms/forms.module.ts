@@ -1,9 +1,28 @@
 import { Module } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import { FormsController } from './forms.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  AdvanceDetails,
+  AdvanceForm,
+  ExpenseDetails,
+  RetirementForm,
+  SupportingDocs,
+} from 'src/entities';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   controllers: [FormsController],
-  providers: [FormsService]
+  providers: [FormsService],
+  imports: [
+    TypeOrmModule.forFeature([
+      AdvanceDetails,
+      AdvanceForm,
+      ExpenseDetails,
+      RetirementForm,
+      SupportingDocs,
+    ]),
+    UsersModule,
+  ],
 })
 export class FormsModule {}

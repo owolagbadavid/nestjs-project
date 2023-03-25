@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -16,14 +17,25 @@ import {
   UpdateAdvanceFormDto,
   UpdateRetirementFormDto,
 } from './dto';
+import { ApiTags } from '@nestjs/swagger';
+import { GetUser } from 'src/decorators';
+import { User } from 'src/entities';
+import { JwtGuard } from 'src/auth/guards';
 
+@UseGuards(JwtGuard)
+@ApiTags('Forms')
 @Controller('forms')
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
   @Post('advance')
-  createAdvanceForm(@Body() createAdvanceFormDto: CreateAdvanceFormDto) {
-    return this.formsService.createAdvanceForm(createAdvanceFormDto);
+  createAdvanceForm(
+    @Body() createAdvanceFormDto: CreateAdvanceFormDto,
+    @GetUser() user: User,
+  ) {
+    console.log(user);
+
+    return this.formsService.createAdvanceForm(createAdvanceFormDto, user);
   }
 
   @Post('retirement')

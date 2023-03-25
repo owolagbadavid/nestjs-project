@@ -89,4 +89,7 @@ export class RetirementForm {
 
   @Column()
   balanceToOrganization: number;
+
+  @Column({ nullable: true })
+  supervisorToken: string;
 }

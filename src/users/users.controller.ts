@@ -64,7 +64,7 @@ export class UsersController {
   @ApiOkResponse({ type: User })
   @UseGuards(RolesOrIdGuard)
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string): Promise<User> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.findOne(+id);
   }
 
@@ -75,7 +75,7 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Patch(':id')
   update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersService.update(+id, updateUserDto);
@@ -87,7 +87,7 @@ export class UsersController {
   @ApiOkResponse({ type: User })
   @UseGuards(RolesGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string): Promise<User> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.remove(+id);
   }
 }

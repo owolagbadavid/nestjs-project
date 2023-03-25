@@ -57,7 +57,7 @@ export class AdvanceForm {
   @Column({ default: false })
   rejected: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   remarkByFin: string;
 
   @OneToMany(
@@ -69,10 +69,16 @@ export class AdvanceForm {
   @OneToMany(() => Approvals, (approvals) => approvals.advanceApproved)
   approvals: Approvals[];
 
+  @Column({ nullable: true })
+  retirementFormId: number;
+
   @Column()
   totalAmount: number;
 
   @OneToOne(() => RetirementForm, (retirementForm) => retirementForm.advance)
   @JoinColumn()
   retirement: RetirementForm;
+
+  @Column({ nullable: true })
+  supervisorToken: string;
 }

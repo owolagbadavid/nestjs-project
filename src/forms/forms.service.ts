@@ -6,11 +6,56 @@ import {
   UpdateAdvanceFormDto,
   UpdateRetirementFormDto,
 } from './dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AdvanceDetails, AdvanceForm, User } from 'src/entities';
+import { DataSource, Repository } from 'typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class FormsService {
-  createAdvanceForm(createAdvanceFormDto: CreateAdvanceFormDto) {
-    return 'This action adds a new form';
+  constructor(
+    @InjectRepository(AdvanceForm)
+    private advanceFormRepo: Repository<AdvanceForm>,
+    @InjectRepository(AdvanceDetails)
+    private advanceDetailsRepo: Repository<AdvanceDetails>,
+    private usersService: UsersService,
+    private dataSource: DataSource,
+  ) {}
+  async createAdvanceForm(
+    createAdvanceFormDto: CreateAdvanceFormDto,
+    user: User,
+  ) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const supervisor = await this.usersService.findOne(user.supervisorId);
+    createAdvanceFormDto.approvalLevel = 0;
+    createAdvanceFormDto.nextApprovalLevel = supervisor.role;
+    createAdvanceFormDto.details = createAdvanceFormDto.details.map((item) =>
+      this.advanceDetailsRepo.create(item),
+    );
+
+    try {
+      for (const item of createAdvanceFormDto.details) {
+        await queryRunner.manager.save(item);
+      }
+
+      const advanceForm = this.advanceFormRepo.create(createAdvanceFormDto);
+
+      await queryRunner.manager.save(advanceForm);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      console.log(error);
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
+    return 'Form created successfully';
   }
 
   createRetirementForm(createRetirementFormDto: CreateRetirementFormDto) {
@@ -18,7 +63,7 @@ export class FormsService {
   }
 
   findAllAdvanceForms() {
-    return `This action returns all forms`;
+    return this.advanceDetailsRepo.find();
   }
 
   findAllRetirementForms() {
