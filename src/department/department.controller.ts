@@ -59,7 +59,7 @@ export class DepartmentController {
   @ApiBadRequestResponse({ type: ApiRes })
   @ApiNotFoundResponse({ type: ApiRes })
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string): Promise<Department> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Department> {
     return this.departmentService.findOne(+id);
   }
 
@@ -69,7 +69,7 @@ export class DepartmentController {
   @UseGuards(RolesGuard)
   @Patch(':id')
   update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ): Promise<Department> {
     return this.departmentService.update(+id, updateDepartmentDto);
@@ -80,7 +80,7 @@ export class DepartmentController {
   @ApiNotFoundResponse({ type: ApiRes })
   @UseGuards(RolesGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string): Promise<Department> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<Department> {
     return this.departmentService.remove(+id);
   }
 }

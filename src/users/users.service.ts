@@ -77,7 +77,7 @@ export class UsersService {
     await this.userRepository.save(user);
 
     // send email to the user
-    await this.mailService.sendUserConfirmation(user, verificationToken);
+    // await this.mailService.sendUserConfirmation(user, verificationToken);
 
     return {
       statusCode: HttpStatus.CREATED,

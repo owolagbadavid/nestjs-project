@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DepartmentModule } from './department/department.module';
 import { UnitModule } from './unit/unit.module';
 import { MailModule } from './mail/mail.module';
+import { FormsModule } from './forms/forms.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MailModule } from './mail/mail.module';
     DepartmentModule,
     UnitModule,
     MailModule,
+    FormsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

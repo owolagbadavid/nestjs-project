@@ -56,7 +56,7 @@ export class UnitController {
   @ApiBadRequestResponse({ type: ApiRes })
   @ApiNotFoundResponse({ type: ApiRes })
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string): Promise<Unit> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Unit> {
     return this.unitService.findOne(+id);
   }
 
@@ -66,7 +66,7 @@ export class UnitController {
   @UseGuards(RolesGuard)
   @Patch(':id')
   update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUnitDto: UpdateUnitDto,
   ): Promise<Unit> {
     return this.unitService.update(+id, updateUnitDto);
@@ -77,7 +77,7 @@ export class UnitController {
   @ApiNotFoundResponse({ type: ApiRes })
   @UseGuards(RolesGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string): Promise<Unit> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<Unit> {
     return this.unitService.remove(+id);
   }
 }
