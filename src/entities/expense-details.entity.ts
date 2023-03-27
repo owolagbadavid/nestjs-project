@@ -8,7 +8,7 @@ export class ExpenseDetails {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   retirementFormId: number;
 
   @ManyToOne(() => RetirementForm, (retirementForm) => retirementForm.details)
@@ -18,7 +18,7 @@ export class ExpenseDetails {
     type: 'enum',
     enum: Products,
   })
-  product: string;
+  product: Products;
 
   @Column()
   rate: number;

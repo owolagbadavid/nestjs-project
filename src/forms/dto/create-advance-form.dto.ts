@@ -10,7 +10,6 @@ import {
 } from 'class-validator';
 import { AdvanceDetailsDto } from './';
 import { Type } from 'class-transformer';
-import { Role } from 'src/entities';
 
 export class CreateAdvanceFormDto {
   @IsNotEmpty()
@@ -35,6 +34,7 @@ export class CreateAdvanceFormDto {
   @IsString()
   destination: string;
 
+  @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
@@ -46,8 +46,4 @@ export class CreateAdvanceFormDto {
   @IsNumber()
   @IsPositive()
   totalAmount: number;
-
-  approvalLevel?: Role;
-
-  nextApprovalLevel?: Role;
 }

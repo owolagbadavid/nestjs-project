@@ -8,6 +8,10 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  StreamableFile,
+  Res,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -21,6 +25,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/decorators';
 import { User } from 'src/entities';
 import { JwtGuard } from 'src/auth/guards';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { BodyInterceptor } from 'src/utils/body-interceptor';
+import { Readable } from 'stream';
 
 @UseGuards(JwtGuard)
 @ApiTags('Forms')
@@ -38,11 +45,18 @@ export class FormsController {
     return this.formsService.createAdvanceForm(createAdvanceFormDto, user);
   }
 
+  @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('retirement')
   createRetirementForm(
     @Body() createRetirementFormDto: CreateRetirementFormDto,
+    @GetUser() user: User,
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.formsService.createRetirementForm(createRetirementFormDto);
+    return this.formsService.createRetirementForm(
+      createRetirementFormDto,
+      user,
+      files,
+    );
   }
 
   @Get('advance')
@@ -61,8 +75,21 @@ export class FormsController {
   }
 
   @Get('retirement/:id')
-  findOneRetirementForm(@Param('id') id: string) {
+  async findOneRetirementForm(
+    // @Res({ passthrough: true }) response,
+    @Param('id') id: string,
+  ) {
     return this.formsService.findOneRetirementForm(+id);
+    // console.log(file);
+
+    // const stream = Readable.from(file);
+    // response.set({
+    //   'Content-Disposition': 'attachment; filename="image.png"',
+    //   'Content-Type': 'image',
+    // });
+    // console.log('mike');
+
+    // return new StreamableFile(stream);
   }
 
   @Patch('advance/:id')

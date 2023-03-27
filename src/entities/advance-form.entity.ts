@@ -21,6 +21,9 @@ export class AdvanceForm {
   @ManyToOne(() => User, (user) => user.advanceForms)
   user: User;
 
+  @Column({ nullable: true })
+  userId: number;
+
   @Column()
   purpose: string;
 
@@ -70,7 +73,7 @@ export class AdvanceForm {
   approvals: Approvals[];
 
   @Column({ nullable: true })
-  retirementFormId: number;
+  retirementId: number;
 
   @Column()
   totalAmount: number;

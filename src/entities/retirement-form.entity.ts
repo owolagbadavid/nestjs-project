@@ -14,7 +14,7 @@ import { Approvals } from './approval.entity';
 import { SupportingDocs } from './supporting-docs.entity';
 // import { ExpenseDetails } from './advance-details.entity';
 
-enum RetirementType {
+export enum RetirementType {
   CASH = 'cash',
   ADVANCE = 'advance',
 }
@@ -26,6 +26,9 @@ export class RetirementForm {
 
   @ManyToOne(() => User, (user) => user.retirementForms)
   user: User;
+
+  @Column({ nullable: true })
+  userId: number;
 
   @Column()
   purpose: string;
@@ -66,7 +69,7 @@ export class RetirementForm {
   @Column({ default: false })
   rejected: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   remarkByFin: string;
 
   @OneToMany(
