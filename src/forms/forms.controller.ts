@@ -12,6 +12,7 @@ import {
   UploadedFiles,
   StreamableFile,
   Res,
+  Put,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -36,27 +37,34 @@ export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
   @Post('advance')
-  createAdvanceForm(
+  async createAdvanceForm(
     @Body() createAdvanceFormDto: CreateAdvanceFormDto,
     @GetUser() user: User,
   ) {
-    console.log(user);
+    await this.formsService.createAdvanceForm(createAdvanceFormDto, user);
 
-    return this.formsService.createAdvanceForm(createAdvanceFormDto, user);
+    return {
+      statusCode: 201,
+      message: 'Form created successfully',
+    };
   }
 
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('retirement')
-  createRetirementForm(
+  async createRetirementForm(
     @Body() createRetirementFormDto: CreateRetirementFormDto,
     @GetUser() user: User,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.formsService.createRetirementForm(
+    await this.formsService.createRetirementForm(
       createRetirementFormDto,
       user,
       files,
     );
+    return {
+      statusCode: 201,
+      message: 'Form created successfully',
+    };
   }
 
   @Get('advance')
@@ -92,20 +100,37 @@ export class FormsController {
     // return new StreamableFile(stream);
   }
 
-  @Patch('advance/:id')
-  editAdvanceForm(
+  @Put('advance/:id')
+  async editAdvanceForm(
     @Param('id') id: string,
     @Body() updateAdvanceFormDto: UpdateAdvanceFormDto,
+    @GetUser() user: User,
   ) {
-    return this.formsService.updateAdvanceForm(+id, updateAdvanceFormDto);
+    await this.formsService.updateAdvanceForm(+id, updateAdvanceFormDto, user);
+    return {
+      statusCode: 200,
+      message: 'Form updated successfully',
+    };
   }
 
-  @Patch('retirement/:id')
-  editRetirementForm(
+  @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
+  @Put('retirement/:id')
+  async editRetirementForm(
     @Param('id') id: string,
     @Body() updateRetirementFormDto: UpdateRetirementFormDto,
+    @UploadedFiles() files: Express.Multer.File[],
+    @GetUser() user: User,
   ) {
-    return this.formsService.updateRetirementForm(+id, updateRetirementFormDto);
+    await this.formsService.updateRetirementForm(
+      +id,
+      updateRetirementFormDto,
+      files,
+      user,
+    );
+    return {
+      statusCode: 200,
+      message: 'Form updated successfully',
+    };
   }
 
   @Delete('advance/:id')
@@ -118,11 +143,19 @@ export class FormsController {
     return this.formsService.removeRetirementForm(+id);
   }
 
+  @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('advance/:id/retire')
   retireAdvanceForm(
     @Param('id', ParseIntPipe) id: number,
     @Body() createRetirementFormDto: CreateRetirementFormDto,
+    @GetUser() user: User,
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.formsService.retireAdvancedForm(id, createRetirementFormDto);
+    return this.formsService.retireAdvancedForm(
+      id,
+      createRetirementFormDto,
+      user,
+      files,
+    );
   }
 }

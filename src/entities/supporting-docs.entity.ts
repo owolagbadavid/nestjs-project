@@ -12,6 +12,7 @@ export class SupportingDocs {
   @ManyToOne(
     () => RetirementForm,
     (retirementForm) => retirementForm.supportingDocs,
+    { onUpdate: 'CASCADE', onDelete: 'CASCADE', orphanedRowAction: 'delete' },
   )
   retirementForm: RetirementForm;
 

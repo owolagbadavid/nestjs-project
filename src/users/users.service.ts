@@ -245,4 +245,15 @@ export class UsersService {
 
     return this.userRepository.remove(user);
   }
+
+  async findUserAndSupervisor(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['supervisor'],
+    });
+
+    if (!user) throw new NotFoundException(`User ${id} not found`);
+
+    return user;
+  }
 }

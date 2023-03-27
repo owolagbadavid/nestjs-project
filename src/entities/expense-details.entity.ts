@@ -11,7 +11,11 @@ export class ExpenseDetails {
   @Column({ nullable: true })
   retirementFormId: number;
 
-  @ManyToOne(() => RetirementForm, (retirementForm) => retirementForm.details)
+  @ManyToOne(() => RetirementForm, (retirementForm) => retirementForm.details, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   retirementForm: RetirementForm;
 
   @Column({

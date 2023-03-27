@@ -10,7 +10,11 @@ export class AdvanceDetails {
   @Column({ nullable: true })
   advanceFormId: number;
 
-  @ManyToOne(() => AdvanceForm, (advanceForm) => advanceForm.details)
+  @ManyToOne(() => AdvanceForm, (advanceForm) => advanceForm.details, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   advanceForm: AdvanceForm;
 
   @Column({

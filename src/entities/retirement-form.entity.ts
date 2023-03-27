@@ -1,4 +1,6 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   ManyToOne,
@@ -12,7 +14,6 @@ import { AdvanceForm } from './advance-form.entity';
 import { ExpenseDetails } from './expense-details.entity';
 import { Approvals } from './approval.entity';
 import { SupportingDocs } from './supporting-docs.entity';
-// import { ExpenseDetails } from './advance-details.entity';
 
 export enum RetirementType {
   CASH = 'cash',
@@ -21,6 +22,19 @@ export enum RetirementType {
 
 @Entity()
 export class RetirementForm {
+  @BeforeInsert()
+  @BeforeUpdate()
+  setDefaults() {
+    this.approvalLevel = 0;
+    this.nextApprovalLevel = this.user.supervisor.role;
+    this.approvals = [];
+    this.preApprovalRemarkByFinance = null;
+    this.delegatedByPD = false;
+    this.pushedToFinance = false;
+    this.approvedByFin = false;
+    this.rejected = false;
+    this.remarkByFin = null;
+  }
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -75,12 +89,14 @@ export class RetirementForm {
   @OneToMany(
     () => ExpenseDetails,
     (expenseDetails) => expenseDetails.retirementForm,
+    { cascade: true },
   )
   details: ExpenseDetails[];
 
   @OneToMany(
     () => SupportingDocs,
     (supportingDocs) => supportingDocs.retirementForm,
+    { cascade: true },
   )
   supportingDocs: SupportingDocs[];
 
