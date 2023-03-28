@@ -25,12 +25,19 @@ import {
   UpdateRetirementFormDto,
 } from './dto';
 import { ApiTags } from '@nestjs/swagger';
-import { GetUser } from 'src/decorators';
-import { User } from 'src/entities';
-import { JwtGuard } from 'src/auth/guards';
+import { GetUser, Roles } from 'src/decorators';
+import { Role, User } from 'src/entities';
+import {
+  JwtGuard,
+  OwnerGuard,
+  RolesGuard,
+  RolesMaxGuard,
+} from 'src/auth/guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BodyInterceptor } from 'src/utils/body-interceptor';
 import { ApiRes } from 'src/types/api-response';
+import { Forms } from 'src/decorators/form.decorator';
+import { FormType } from './entities/form.entity';
 // import { Readable } from 'stream';
 
 @UseGuards(JwtGuard)
@@ -40,6 +47,8 @@ export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
   // $create advance form
+  @Roles(Role.PD)
+  @UseGuards(RolesMaxGuard)
   @Post('advance')
   async createAdvanceForm(
     @Body() createAdvanceFormDto: CreateAdvanceFormDto,
@@ -54,6 +63,8 @@ export class FormsController {
   }
 
   // $create retirement form
+  @Roles(Role.PD)
+  @UseGuards(RolesMaxGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('retirement')
   async createRetirementForm(
@@ -73,22 +84,28 @@ export class FormsController {
   }
 
   // $get all advance forms
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
   @Get('advance')
   findAllAdvanceForms() {
     return this.formsService.findAllAdvanceForms();
   }
   // $get all retirement forms
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
   @Get('retirement')
   findAllRetirementForms() {
     return this.formsService.findAllRetirementForms();
   }
 
   // $get single advance form by id
+  @Roles(Role.Admin)
   @Get('advance/:id')
   findOneAdvanceForm(@Param('id') id: string) {
     return this.formsService.findOneAdvanceForm(+id);
   }
   // $get single retirement form by id
+  @Roles(Role.Admin)
   @Get('retirement/:id')
   async findOneRetirementForm(
     // @Res({ passthrough: true }) response,
@@ -107,6 +124,8 @@ export class FormsController {
     // return new StreamableFile(stream);
   }
   // $edit advance form (PUT)
+  @Forms(FormType.ADVANCE)
+  @UseGuards(OwnerGuard)
   @Put('advance/:id')
   async editAdvanceForm(
     @Param('id') id: string,
@@ -120,6 +139,8 @@ export class FormsController {
     };
   }
   // $ edit retirement form (PUT)
+  @Forms(FormType.RETIREMENT)
+  @UseGuards(OwnerGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Put('retirement/:id')
   async editRetirementForm(
@@ -140,16 +161,22 @@ export class FormsController {
     };
   }
   // $delete advance form (Hard)
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
   @Delete('advance/:id')
   removeAdvanceForm(@Param('id', ParseIntPipe) id: number) {
     return this.formsService.removeAdvanceForm(+id);
   }
   // $delete retirement form (Hard)
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
   @Delete('retirement/:id')
   removeRetirementForm(@Param('id', ParseIntPipe) id: number) {
     return this.formsService.removeRetirementForm(+id);
   }
   // $create an advance retirement form (retire an advance)
+  @Roles(Role.PD)
+  @UseGuards(RolesMaxGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('advance/:id/retire')
   retireAdvanceForm(
@@ -174,18 +201,45 @@ export class FormsController {
     @Body() approvalDto: ApprovalOrRejectionDto,
   ): Promise<ApiRes> {
     await this.formsService.approveAdvance(id, user, approvalDto);
+
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Advance Form Approved',
     };
   }
+
   // $approve a retirement form
   @Post('retirement/:id/approve')
-  approveRetirement(
+  async approveRetirement(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() approvalDto: ApprovalOrRejectionDto,
   ) {
-    return this.formsService.approveRetirement(id, user, approvalDto);
+    await this.formsService.approveRetirement(id, user, approvalDto);
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Retirement Form Approved',
+    };
+  }
+
+  // $reject a advance form
+  @Post('advance/:id/reject')
+  rejectAdvance(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+    @Body() rejectionDto: ApprovalOrRejectionDto,
+  ) {
+    return this.formsService.rejectAdvance(id, user, rejectionDto);
+  }
+
+  // $reject a retirement form
+  @Post('retirement/:id/reject')
+  rejectRetirement(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+    @Body() rejectionDto: ApprovalOrRejectionDto,
+  ) {
+    return this.formsService.rejectRetirement(id, user, rejectionDto);
   }
 }

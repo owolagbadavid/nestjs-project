@@ -21,7 +21,6 @@ import {
   SupportingDocs,
   User,
   Approvals,
-  Role,
   ApprovalsFor,
 } from 'src/entities';
 import { DataSource, Repository } from 'typeorm';
@@ -29,6 +28,7 @@ import { UsersService } from 'src/users/users.service';
 import { randomBytes } from 'crypto';
 import { setDefaults } from 'src/utils/set-defaults';
 import { approve } from 'src/utils/approvals';
+import { reject } from 'src/utils/rejection';
 
 @Injectable()
 export class FormsService {
@@ -330,6 +330,7 @@ export class FormsService {
       where: { id },
       relations: { user: true },
     });
+
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
@@ -381,5 +382,39 @@ export class FormsService {
     // !console.log
     console.log(retirement);
     return 'approve Retirement form';
+  }
+
+  // $reject advance form
+  async rejectAdvance(
+    id: number,
+    user: User,
+    rejectionDto: ApprovalOrRejectionDto,
+  ) {
+    let advance = await this.advanceFormRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
+
+    // @handles reject for all levels
+    advance = await reject(advance, user, rejectionDto);
+
+    return this.advanceFormRepo.save(advance);
+  }
+
+  // $reject retirement form
+  async rejectRetirement(
+    id: number,
+    user: User,
+    rejectionDto: ApprovalOrRejectionDto,
+  ) {
+    let retirement = await this.retirementFormRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
+
+    // @handles reject for all levels
+    retirement = await reject(retirement, user, rejectionDto);
+
+    return this.retirementFormRepo.save(retirement);
   }
 }

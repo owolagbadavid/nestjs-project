@@ -1,4 +1,7 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import {
   AdvanceForm,
   Approvals,
@@ -20,6 +23,8 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
     form.nextApprovalLevel === user.role &&
     form.user.supervisorId === user.id
   ) {
+    console.log('supervisor approval');
+
     try {
       form.approvalLevel = user.role;
       form.nextApprovalLevel =
@@ -40,9 +45,16 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
   }
   // @If this is PD approval
   else if (
-    form.nextApprovalLevel === Role.PD ||
-    (form.nextApprovalLevel === Role.PD && form.delegatedByPD)
+    (user.role === Role.PD &&
+      form.nextApprovalLevel === Role.PD &&
+      form.approvalLevel > 0) ||
+    (form.nextApprovalLevel === Role.PD &&
+      form.delegatedByPD &&
+      user.role === Role.DeputyPD &&
+      form.approvalLevel > 0)
   ) {
+    console.log('pd approval');
+
     try {
       form.approvalLevel = user.role;
       form.nextApprovalLevel = Role.Finance;
@@ -61,10 +73,17 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
     }
   }
   // @If this is finance approval
-  else if (form.pushedToFinance && form.nextApprovalLevel === Role.Finance) {
+  else if (
+    form.pushedToFinance &&
+    form.nextApprovalLevel === Role.Finance &&
+    user.role === Role.Finance
+  ) {
+    console.log('finance approval');
+
     try {
       form.approvalLevel = user.role;
       form.nextApprovalLevel = null;
+      form.remarkByFin = approval.remark;
 
       await queryRunner.manager.save(form);
       await queryRunner.manager.save(approval);
@@ -78,5 +97,7 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
     } finally {
       await queryRunner.release();
     }
+  } else {
+    throw new ForbiddenException();
   }
 }

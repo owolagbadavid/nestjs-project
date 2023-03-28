@@ -5,6 +5,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { User } from './user.entity';
@@ -53,7 +54,7 @@ export class RetirementForm {
   @Column()
   approvalLevel: number;
 
-  @Column()
+  @Column({ nullable: true })
   nextApprovalLevel: number;
 
   @Column({ default: false })
@@ -67,6 +68,12 @@ export class RetirementForm {
 
   @Column({ default: false })
   rejected: boolean;
+
+  @Column({ nullable: true })
+  rejectionReason: string;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column({ nullable: true })
   remarkByFin: string;

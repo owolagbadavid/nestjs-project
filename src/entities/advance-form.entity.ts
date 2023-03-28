@@ -6,6 +6,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { User } from './user.entity';
@@ -45,7 +46,7 @@ export class AdvanceForm {
   @Column()
   approvalLevel: number;
 
-  @Column()
+  @Column({ nullable: true })
   nextApprovalLevel: number;
 
   @Column({ type: 'bool', default: false })
@@ -59,6 +60,12 @@ export class AdvanceForm {
 
   @Column({ default: false })
   rejected: boolean;
+
+  @Column({ nullable: true })
+  rejectionReason: string;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column({ nullable: true })
   remarkByFin: string;
