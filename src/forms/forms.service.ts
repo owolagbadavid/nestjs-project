@@ -28,6 +28,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { randomBytes } from 'crypto';
 import { setDefaults } from 'src/utils/set-defaults';
+import { approve } from 'src/utils/approvals';
 
 @Injectable()
 export class FormsService {
@@ -54,6 +55,7 @@ export class FormsService {
   ) {
     user = await this.usersService.findUserAndSupervisor(user.id);
 
+    // @Make the details instance of advance details
     createAdvanceFormDto.details = createAdvanceFormDto.details.map((item) =>
       this.advanceDetailsRepo.create(item),
     );
@@ -79,11 +81,11 @@ export class FormsService {
       await queryRunner.commitTransaction();
     } catch (error) {
       console.log(error);
-      // since we have errors lets rollback the changes we made
+      // @since we have errors lets rollback the changes we made
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException('Something went wrong');
     } finally {
-      // you need to release a queryRunner which was manually instantiated
+      // @you need to release a queryRunner which was manually instantiated
       await queryRunner.release();
     }
     return 'Form created successfully';
@@ -93,11 +95,12 @@ export class FormsService {
   async createRetirementForm(
     createRetirementFormDto: CreateRetirementFormDto,
     user: User,
-    files,
+    files: Express.Multer.File[],
   ) {
     const supportingDocs: SupportingDocs[] = [];
     user = await this.usersService.findUserAndSupervisor(user.id);
 
+    // @Make the details instance of advance details
     createRetirementFormDto.details = createRetirementFormDto.details.map(
       (item) => this.expenseDetailsRepo.create(item),
     );
@@ -108,6 +111,7 @@ export class FormsService {
     await queryRunner.startTransaction();
 
     try {
+      // @make the files instance of supportingDocs
       for (let i = 0; i <= files.length - 1; i++) {
         supportingDocs.push(
           this.supportingDocsRepo.create({
@@ -116,13 +120,14 @@ export class FormsService {
           }),
         );
       }
-      const retirementForm = this.retirementFormRepo.create({
+      let retirementForm = this.retirementFormRepo.create({
         ...createRetirementFormDto,
         user,
         supportingDocs,
       });
       retirementForm.type = RetirementType.CASH;
       retirementForm.supervisorToken = randomBytes(10).toString('hex');
+      retirementForm = setDefaults(retirementForm);
       // TODO: send token to supervisor
 
       await queryRunner.manager.save(retirementForm);
@@ -132,11 +137,11 @@ export class FormsService {
       await queryRunner.commitTransaction();
     } catch (error) {
       console.log(error);
-      // since we have errors lets rollback the changes we made
+      // @since we have errors lets rollback the changes we made
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException('Something went wrong');
     } finally {
-      // you need to release a queryRunner which was manually instantiated
+      // @you need to release a queryRunner which was manually instantiated
       await queryRunner.release();
     }
     return 'Form created successfully';
@@ -209,7 +214,7 @@ export class FormsService {
   async updateRetirementForm(
     id: number,
     updateRetirementFormDto: UpdateRetirementFormDto,
-    files,
+    files: Express.Multer.File[],
     user: User,
   ) {
     user = await this.usersService.findUserAndSupervisor(user.id);
@@ -222,6 +227,7 @@ export class FormsService {
     if (!retirementForm)
       throw new NotFoundException(`Retirement form ${id} found`);
 
+    // @make files instances of supportingDocs
     for (let i = 0; i <= files.length - 1; i++) {
       supportingDocs.push(
         this.supportingDocsRepo.create({
@@ -238,8 +244,8 @@ export class FormsService {
       supportingDocs,
     });
     retirementForm.supervisorToken = randomBytes(10).toString('hex');
+    retirementForm = setDefaults(retirementForm);
     // TODO: send token to supervisor
-    console.log(retirementForm);
 
     return this.retirementFormRepo.save(retirementForm);
 
@@ -264,7 +270,7 @@ export class FormsService {
     id: number,
     createRetirementFormDto: CreateRetirementFormDto,
     user: User,
-    files,
+    files: Express.Multer.File[],
   ) {
     const supportingDocs: SupportingDocs[] = [];
     user = await this.usersService.findUserAndSupervisor(user.id);
@@ -328,7 +334,6 @@ export class FormsService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    console.log(approvalDto);
 
     const approval = this.approvalsRepo.create({
       ...approvalDto,
@@ -338,71 +343,42 @@ export class FormsService {
       type: ApprovalsFor.ADVANCE,
     });
 
-    // If this is supervisor approval
-    if (
-      advance.approvalLevel === 0 &&
-      advance.nextApprovalLevel === user.role &&
-      advance.user.supervisorId === user.id
-    ) {
-      try {
-        advance.approvalLevel = user.role;
-        advance.nextApprovalLevel =
-          advance.approvalLevel >= Role.PD ? Role.Finance : Role.PD;
-        advance.pushedToFinance = advance.nextApprovalLevel === Role.Finance;
-        await queryRunner.manager.save(advance);
-        await queryRunner.manager.save(approval);
+    // @handles all types of approval(supervisor, pd, finance)
+    await approve(advance, approval, user, queryRunner);
 
-        await queryRunner.commitTransaction();
-      } catch (error) {
-        console.log(error);
-        // since we have errors lets rollback the changes we made
-        await queryRunner.rollbackTransaction();
-        throw new InternalServerErrorException('Something went wrong');
-      } finally {
-        await queryRunner.release();
-      }
-    }
-    // If this is PD approval
-    else if (
-      advance.nextApprovalLevel === Role.PD ||
-      (advance.nextApprovalLevel === Role.PD && advance.delegatedByPD)
-    ) {
-    }
-    // If this is finance approval
-    else if (
-      advance.pushedToFinance &&
-      advance.nextApprovalLevel === Role.Finance
-    ) {
-    }
+    //! console.log
     console.log(advance);
 
     return 'approve advance form';
   }
   // $approve retirement form
-  async approveRetirement(id: number, user: User) {
+  async approveRetirement(
+    id: number,
+    user: User,
+    approvalDto: ApprovalOrRejectionDto,
+  ) {
     const retirement = await this.retirementFormRepo.findOne({
       where: { id },
       relations: { user: true },
     });
-    // If this is supervisor approval
-    if (
-      retirement.approvalLevel === 0 &&
-      retirement.nextApprovalLevel === user.role &&
-      retirement.user.supervisorId === user.id
-    ) {
-    }
-    // If this is PD approval
-    else if (
-      retirement.nextApprovalLevel === Role.PD ||
-      (retirement.nextApprovalLevel === Role.PD && retirement.delegatedByPD)
-    ) {
-    }
-    // If this is finance approval
-    else if (
-      retirement.pushedToFinance &&
-      retirement.nextApprovalLevel === Role.Finance
-    ) {
-    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const approval = this.approvalsRepo.create({
+      ...approvalDto,
+      approvedBy: user,
+      advanceApproved: retirement,
+      level: user.role,
+      type: ApprovalsFor.RETIREMENT,
+    });
+
+    // @handles all types of approval(supervisor, pd, finance)
+    await approve(retirement, approval, user, queryRunner);
+
+    // !console.log
     console.log(retirement);
     return 'approve Retirement form';
   }

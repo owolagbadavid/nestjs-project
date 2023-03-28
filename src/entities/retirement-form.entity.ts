@@ -1,6 +1,4 @@
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
   ManyToOne,
@@ -22,19 +20,6 @@ export enum RetirementType {
 
 @Entity()
 export class RetirementForm {
-  @BeforeInsert()
-  @BeforeUpdate()
-  setDefaults() {
-    this.approvalLevel = 0;
-    this.nextApprovalLevel = this.user.supervisor.role;
-    this.approvals = [];
-    this.preApprovalRemarkByFinance = null;
-    this.delegatedByPD = false;
-    this.pushedToFinance = false;
-    this.approvedByFin = false;
-    this.rejected = false;
-    this.remarkByFin = null;
-  }
   @PrimaryGeneratedColumn()
   id: number;
 

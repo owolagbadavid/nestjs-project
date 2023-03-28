@@ -1,8 +1,9 @@
+import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ApiRes {
   @ApiProperty()
-  statusCode: number;
+  statusCode: HttpStatus;
 
   @ApiProperty()
   message: string | string[];

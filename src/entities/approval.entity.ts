@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -18,7 +17,7 @@ export enum ApprovalsFor {
 @Entity()
 export class Approvals {
   @PrimaryGeneratedColumn()
-  id: '';
+  id: number;
 
   @ManyToOne(() => User, (user) => user.approvals)
   approvedBy: User;
