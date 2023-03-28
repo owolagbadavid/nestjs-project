@@ -31,8 +31,8 @@ export class MeORSuperiorGuard implements CanActivate {
       form = await this.formsService.findOneRetirementForm(request.params.id);
     }
 
-    // @if admin
-    if (user.role === Role.Admin) return true;
+    // @if admin or finance
+    if (user.role === Role.Admin || Role.Finance) return true;
     // @if user owns the form
     if (Number(request.user.id) === form.userId) return true;
     // @if pd or DPd

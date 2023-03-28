@@ -33,6 +33,7 @@ import {
   OwnerGuard,
   RolesGuard,
   RolesMaxGuard,
+  RolesMinGuard,
 } from 'src/auth/guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BodyInterceptor } from 'src/utils/body-interceptor';
@@ -85,25 +86,61 @@ export class FormsController {
   }
 
   // $get all advance forms
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
+  @Roles(Role.DeputyPD)
+  @UseGuards(RolesMinGuard)
   @Get('advance')
   findAllAdvanceForms() {
     return this.formsService.findAllAdvanceForms();
   }
   // $get all retirement forms
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
+  @Roles(Role.DeputyPD)
+  @UseGuards(RolesMinGuard)
   @Get('retirement')
   findAllRetirementForms() {
     return this.formsService.findAllRetirementForms();
+  }
+
+  // $get my directReports advance form
+  @Get('advance/myDirectReports')
+  getMyDirectReportsAdvanceForms(@GetUser() user: User) {
+    return this.formsService.getMyDirectReportsAdvanceForms(user);
+  }
+
+  // $get my directReports retirement form
+  @Get('retirement/myDirectReports')
+  getMyDirectReportsRetirementForms(@GetUser() user: User) {
+    return this.formsService.getMyDirectReportsRetirementForms(user);
+  }
+
+  // $get my finance retirement form
+  @Get('retirement/finance')
+  getFinanceRetirementForms() {
+    return this.formsService.getFinanceRetirementForms();
+  }
+
+  // $get my finance retirement form
+  @Get('advance/finance')
+  getFinanceAdvanceForms() {
+    return this.formsService.getFinanceAdvanceForms();
+  }
+
+  // $get pd advance forms
+  @Get('advance/pd')
+  getPdAdvanceForms(@GetUser() user: User) {
+    return this.formsService.getPdAdvanceForms(user);
+  }
+
+  // $get pd retirement forms
+  @Get('retirement/pd')
+  getPdRetirementForms(@GetUser() user: User) {
+    return this.formsService.getPdRetirementForms(user);
   }
 
   // $get single advance form by id
   @Forms(FormType.ADVANCE)
   @UseGuards(MeORSuperiorGuard)
   @Get('advance/:id')
-  findOneAdvanceForm(@Param('id') id: string) {
+  findOneAdvanceForm(@Param('id', ParseIntPipe) id: number) {
     return this.formsService.findOneAdvanceForm(+id);
   }
   // $get single retirement form by id
@@ -112,7 +149,7 @@ export class FormsController {
   @Get('retirement/:id')
   async findOneRetirementForm(
     // @Res({ passthrough: true }) response,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return this.formsService.findOneRetirementForm(+id);
     // console.log(file);
@@ -126,12 +163,13 @@ export class FormsController {
 
     // return new StreamableFile(stream);
   }
+
   // $edit advance form (PUT)
   @Forms(FormType.ADVANCE)
   @UseGuards(OwnerGuard)
   @Put('advance/:id')
   async editAdvanceForm(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateAdvanceFormDto: UpdateAdvanceFormDto,
     @GetUser() user: User,
   ) {
@@ -141,13 +179,14 @@ export class FormsController {
       message: 'Form updated successfully',
     };
   }
+
   // $ edit retirement form (PUT)
   @Forms(FormType.RETIREMENT)
   @UseGuards(OwnerGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Put('retirement/:id')
   async editRetirementForm(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateRetirementFormDto: UpdateRetirementFormDto,
     @UploadedFiles() files: Express.Multer.File[],
     @GetUser() user: User,
@@ -163,6 +202,7 @@ export class FormsController {
       message: 'Form updated successfully',
     };
   }
+
   // $delete advance form (Hard)
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
@@ -170,6 +210,7 @@ export class FormsController {
   removeAdvanceForm(@Param('id', ParseIntPipe) id: number) {
     return this.formsService.removeAdvanceForm(+id);
   }
+
   // $delete retirement form (Hard)
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
@@ -177,6 +218,7 @@ export class FormsController {
   removeRetirementForm(@Param('id', ParseIntPipe) id: number) {
     return this.formsService.removeRetirementForm(+id);
   }
+
   // $create an advance retirement form (retire an advance)
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)

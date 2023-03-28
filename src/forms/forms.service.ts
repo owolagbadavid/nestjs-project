@@ -22,6 +22,7 @@ import {
   User,
   Approvals,
   ApprovalsFor,
+  Role,
 } from 'src/entities';
 import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
@@ -416,5 +417,49 @@ export class FormsService {
     retirement = await reject(retirement, user, rejectionDto);
 
     return this.retirementFormRepo.save(retirement);
+  }
+
+  async getMyDirectReportsAdvanceForms(user: User) {
+    return this.advanceFormRepo.find({
+      where: { user: { supervisorId: user.id } },
+    });
+  }
+
+  async getMyDirectReportsRetirementForms(user: User) {
+    return this.retirementFormRepo.find({
+      where: { user: { supervisorId: user.id } },
+    });
+  }
+
+  async getFinanceRetirementForms() {
+    return this.retirementFormRepo.find({
+      where: { nextApprovalLevel: Role.Finance },
+    });
+  }
+
+  async getFinanceAdvanceForms() {
+    return this.advanceFormRepo.find({
+      where: { nextApprovalLevel: Role.Finance },
+    });
+  }
+
+  async getPdAdvanceForms(user: User) {
+    if (user.role === Role.DeputyPD) {
+      return this.advanceFormRepo.find({
+        where: { delegatedByPD: true, nextApprovalLevel: Role.DeputyPD },
+      });
+    }
+    return this.advanceFormRepo.find({ where: { nextApprovalLevel: Role.PD } });
+  }
+
+  async getPdRetirementForms(user: User) {
+    if (user.role === Role.DeputyPD) {
+      return this.retirementFormRepo.find({
+        where: { delegatedByPD: true, nextApprovalLevel: Role.DeputyPD },
+      });
+    }
+    return this.retirementFormRepo.find({
+      where: { nextApprovalLevel: Role.PD },
+    });
   }
 }
