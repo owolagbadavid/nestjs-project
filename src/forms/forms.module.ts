@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   AdvanceDetails,
   AdvanceForm,
+  Approvals,
   ExpenseDetails,
   RetirementForm,
   SupportingDocs,
@@ -21,6 +22,7 @@ import { UsersModule } from 'src/users/users.module';
       ExpenseDetails,
       RetirementForm,
       SupportingDocs,
+      Approvals,
     ]),
     UsersModule,
   ],

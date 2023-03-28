@@ -3,20 +3,21 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  // Patch,
   Param,
   Delete,
   ParseIntPipe,
   UseGuards,
   UseInterceptors,
   UploadedFiles,
-  StreamableFile,
-  Res,
+  // StreamableFile,
+  // Res,
   Put,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
 import {
+  ApprovalOrRejectionDto,
   CreateAdvanceFormDto,
   CreateRetirementFormDto,
   UpdateAdvanceFormDto,
@@ -28,7 +29,7 @@ import { User } from 'src/entities';
 import { JwtGuard } from 'src/auth/guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BodyInterceptor } from 'src/utils/body-interceptor';
-import { Readable } from 'stream';
+// import { Readable } from 'stream';
 
 @UseGuards(JwtGuard)
 @ApiTags('Forms')
@@ -157,5 +158,22 @@ export class FormsController {
       user,
       files,
     );
+  }
+
+  @Post('advance/:id/approve')
+  approveAdvance(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+    @Body() approvalDto: ApprovalOrRejectionDto,
+  ) {
+    this.formsService.approveAdvance(id, user, approvalDto);
+  }
+
+  @Post('retirement/:id/approve')
+  approveRetirement(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ) {
+    return this.formsService.approveRetirement(id, user);
   }
 }

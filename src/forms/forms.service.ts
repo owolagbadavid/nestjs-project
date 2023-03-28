@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApprovalOrRejectionDto,
   CreateAdvanceFormDto,
   CreateRetirementFormDto,
   UpdateAdvanceFormDto,
@@ -19,10 +20,14 @@ import {
   RetirementType,
   SupportingDocs,
   User,
+  Approvals,
+  Role,
+  ApprovalsFor,
 } from 'src/entities';
 import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { randomBytes } from 'crypto';
+import { setDefaults } from 'src/utils/set-defaults';
 
 @Injectable()
 export class FormsService {
@@ -37,6 +42,7 @@ export class FormsService {
     private retirementFormRepo: Repository<RetirementForm>,
     @InjectRepository(SupportingDocs)
     private supportingDocsRepo: Repository<SupportingDocs>,
+    @InjectRepository(Approvals) private approvalsRepo: Repository<Approvals>,
     private usersService: UsersService,
     private dataSource: DataSource,
   ) {}
@@ -58,11 +64,12 @@ export class FormsService {
     await queryRunner.startTransaction();
 
     try {
-      const advanceForm = this.advanceFormRepo.create({
+      let advanceForm = this.advanceFormRepo.create({
         ...createAdvanceFormDto,
         user,
       });
       advanceForm.supervisorToken = randomBytes(10).toString('hex');
+      advanceForm = setDefaults(advanceForm);
       // TODO: send token to supervisor
 
       await queryRunner.manager.save(advanceForm);
@@ -191,8 +198,8 @@ export class FormsService {
       user,
     });
     advanceForm.supervisorToken = randomBytes(10).toString('hex');
+    advanceForm = setDefaults(advanceForm);
     // TODO: send token to supervisor
-    console.log(advanceForm);
 
     return this.advanceFormRepo.save(advanceForm);
 
@@ -238,13 +245,19 @@ export class FormsService {
 
     //TODO: Send email notification to supervisor
   }
+  // $delete advance from
+  async removeAdvanceForm(id: number) {
+    const form = await this.advanceFormRepo.findOne({ where: { id } });
+    if (!form) throw new NotFoundException(`Advance form ${id} not found`);
 
-  removeAdvanceForm(id: number) {
-    return `This action removes a #${id} form`;
+    return this.advanceFormRepo.remove(form);
   }
+  // $delete retirement from
+  async removeRetirementForm(id: number) {
+    const form = await this.retirementFormRepo.findOne({ where: { id } });
+    if (!form) throw new NotFoundException(`Retirement form ${id} not found`);
 
-  removeRetirementForm(id: number) {
-    return `This action removes a #${id} form`;
+    return this.retirementFormRepo.remove(form);
   }
   // $retire an advance (create an advance retirement form)
   async retireAdvancedForm(
@@ -300,5 +313,97 @@ export class FormsService {
       await queryRunner.release();
     }
     return 'Form created successfully';
+  }
+  // $approve advance form
+  async approveAdvance(
+    id: number,
+    user: User,
+    approvalDto: ApprovalOrRejectionDto,
+  ) {
+    const advance = await this.advanceFormRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    console.log(approvalDto);
+
+    const approval = this.approvalsRepo.create({
+      ...approvalDto,
+      approvedBy: user,
+      advanceApproved: advance,
+      level: user.role,
+      type: ApprovalsFor.ADVANCE,
+    });
+
+    // If this is supervisor approval
+    if (
+      advance.approvalLevel === 0 &&
+      advance.nextApprovalLevel === user.role &&
+      advance.user.supervisorId === user.id
+    ) {
+      try {
+        advance.approvalLevel = user.role;
+        advance.nextApprovalLevel =
+          advance.approvalLevel >= Role.PD ? Role.Finance : Role.PD;
+        advance.pushedToFinance = advance.nextApprovalLevel === Role.Finance;
+        await queryRunner.manager.save(advance);
+        await queryRunner.manager.save(approval);
+
+        await queryRunner.commitTransaction();
+      } catch (error) {
+        console.log(error);
+        // since we have errors lets rollback the changes we made
+        await queryRunner.rollbackTransaction();
+        throw new InternalServerErrorException('Something went wrong');
+      } finally {
+        await queryRunner.release();
+      }
+    }
+    // If this is PD approval
+    else if (
+      advance.nextApprovalLevel === Role.PD ||
+      (advance.nextApprovalLevel === Role.PD && advance.delegatedByPD)
+    ) {
+    }
+    // If this is finance approval
+    else if (
+      advance.pushedToFinance &&
+      advance.nextApprovalLevel === Role.Finance
+    ) {
+    }
+    console.log(advance);
+
+    return 'approve advance form';
+  }
+  // $approve retirement form
+  async approveRetirement(id: number, user: User) {
+    const retirement = await this.retirementFormRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
+    // If this is supervisor approval
+    if (
+      retirement.approvalLevel === 0 &&
+      retirement.nextApprovalLevel === user.role &&
+      retirement.user.supervisorId === user.id
+    ) {
+    }
+    // If this is PD approval
+    else if (
+      retirement.nextApprovalLevel === Role.PD ||
+      (retirement.nextApprovalLevel === Role.PD && retirement.delegatedByPD)
+    ) {
+    }
+    // If this is finance approval
+    else if (
+      retirement.pushedToFinance &&
+      retirement.nextApprovalLevel === Role.Finance
+    ) {
+    }
+    console.log(retirement);
+    return 'approve Retirement form';
   }
 }

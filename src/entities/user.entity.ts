@@ -12,6 +12,7 @@ import { Unit } from './unit.entity';
 import { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Approvals } from './approval.entity';
 
 @Entity()
 export class User {
@@ -90,6 +91,9 @@ export class User {
 
   @Column({ nullable: true })
   passwordTokenExpiration: Date;
+
+  @OneToMany(() => Approvals, (approval) => approval.approvedBy)
+  approvals: Approvals[];
 }
 
 export class SerializedUser {
@@ -126,6 +130,8 @@ export class SerializedUser {
   directReports: User[];
 
   role: number;
+
+  approvals: Approvals[];
 
   advanceForms: AdvanceForm[];
 

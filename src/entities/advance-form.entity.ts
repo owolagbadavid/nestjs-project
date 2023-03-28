@@ -1,6 +1,4 @@
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -17,20 +15,6 @@ import { Approvals } from './approval.entity';
 
 @Entity()
 export class AdvanceForm {
-  @BeforeInsert()
-  @BeforeUpdate()
-  setDefaults() {
-    this.approvalLevel = 0;
-    this.nextApprovalLevel = this.user.supervisor.role;
-    this.approvals = [];
-    this.preApprovalRemarkByFinance = null;
-    this.delegatedByPD = false;
-    this.pushedToFinance = false;
-    this.approvedByFin = false;
-    this.rejected = false;
-    this.remarkByFin = null;
-  }
-
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -4,14 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { AdvanceForm } from './advance-form.entity';
 import { RetirementForm } from './retirement-form.entity';
 
-enum ApprovalsFor {
+export enum ApprovalsFor {
   ADVANCE = 'advance',
   RETIREMENT = 'retirement',
 }
@@ -21,8 +20,7 @@ export class Approvals {
   @PrimaryGeneratedColumn()
   id: '';
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.approvals)
   approvedBy: User;
 
   @CreateDateColumn()
@@ -35,7 +33,9 @@ export class Approvals {
   type: string;
 
   @ManyToOne(() => AdvanceForm, (advanceForm) => advanceForm.approvals, {
+    onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
   })
   advanceApproved: AdvanceForm;
 
@@ -43,7 +43,9 @@ export class Approvals {
     () => RetirementForm,
     (retirementForm) => retirementForm.approvals,
     {
+      onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
+      orphanedRowAction: 'delete',
     },
   )
   retirementApproved: RetirementForm;
