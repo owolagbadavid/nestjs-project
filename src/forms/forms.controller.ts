@@ -29,6 +29,7 @@ import { GetUser, Roles } from 'src/decorators';
 import { Role, User } from 'src/entities';
 import {
   JwtGuard,
+  MeORSuperiorGuard,
   OwnerGuard,
   RolesGuard,
   RolesMaxGuard,
@@ -37,7 +38,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { BodyInterceptor } from 'src/utils/body-interceptor';
 import { ApiRes } from 'src/types/api-response';
 import { Forms } from 'src/decorators/form.decorator';
-import { FormType } from './entities/form.entity';
+import { FormType } from '../entities/form.entity';
 // import { Readable } from 'stream';
 
 @UseGuards(JwtGuard)
@@ -99,13 +100,15 @@ export class FormsController {
   }
 
   // $get single advance form by id
-  @Roles(Role.Admin)
+  @Forms(FormType.ADVANCE)
+  @UseGuards(MeORSuperiorGuard)
   @Get('advance/:id')
   findOneAdvanceForm(@Param('id') id: string) {
     return this.formsService.findOneAdvanceForm(+id);
   }
   // $get single retirement form by id
-  @Roles(Role.Admin)
+  @Forms(FormType.RETIREMENT)
+  @UseGuards(MeORSuperiorGuard)
   @Get('retirement/:id')
   async findOneRetirementForm(
     // @Res({ passthrough: true }) response,
