@@ -8,6 +8,7 @@ import {
   ApprovalOrRejectionDto,
   CreateAdvanceFormDto,
   CreateRetirementFormDto,
+  FilterDto,
   UpdateAdvanceFormDto,
   UpdateRetirementFormDto,
 } from './dto';
@@ -22,7 +23,6 @@ import {
   User,
   Approvals,
   ApprovalsFor,
-  Role,
 } from 'src/entities';
 import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
@@ -54,7 +54,7 @@ export class FormsService {
     createAdvanceFormDto: CreateAdvanceFormDto,
     user: User,
   ) {
-    user = await this.usersService.findUserAndSupervisor(user.id);
+    // user = await this.usersService.findUserAndSupervisor(user.id);
 
     // @Make the details instance of advance details
     createAdvanceFormDto.details = createAdvanceFormDto.details.map((item) =>
@@ -66,15 +66,14 @@ export class FormsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    let advanceForm = this.advanceFormRepo.create({
+      ...createAdvanceFormDto,
+      user,
+    });
+    advanceForm.supervisorToken = randomBytes(10).toString('hex');
+    // TODO: send token to supervisor
+    advanceForm = setDefaults(advanceForm);
     try {
-      let advanceForm = this.advanceFormRepo.create({
-        ...createAdvanceFormDto,
-        user,
-      });
-      advanceForm.supervisorToken = randomBytes(10).toString('hex');
-      advanceForm = setDefaults(advanceForm);
-      // TODO: send token to supervisor
-
       await queryRunner.manager.save(advanceForm);
 
       //TODO: Send email notification to supervisor
@@ -99,7 +98,7 @@ export class FormsService {
     files: Express.Multer.File[],
   ) {
     const supportingDocs: SupportingDocs[] = [];
-    user = await this.usersService.findUserAndSupervisor(user.id);
+    // user = await this.usersService.findUserAndSupervisor(user.id);
 
     // @Make the details instance of advance details
     createRetirementFormDto.details = createRetirementFormDto.details.map(
@@ -108,29 +107,29 @@ export class FormsService {
 
     const queryRunner = this.dataSource.createQueryRunner();
 
+    // @make the files instance of supportingDocs
+    for (let i = 0; i <= files.length - 1; i++) {
+      supportingDocs.push(
+        this.supportingDocsRepo.create({
+          file: files[i].buffer,
+          documentDescription: createRetirementFormDto.filesDescription[i],
+        }),
+      );
+    }
+    let retirementForm = this.retirementFormRepo.create({
+      ...createRetirementFormDto,
+      user,
+      supportingDocs,
+    });
+    retirementForm.type = RetirementType.CASH;
+    retirementForm.supervisorToken = randomBytes(10).toString('hex');
+    // TODO: send token to supervisor
+    retirementForm = setDefaults(retirementForm);
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      // @make the files instance of supportingDocs
-      for (let i = 0; i <= files.length - 1; i++) {
-        supportingDocs.push(
-          this.supportingDocsRepo.create({
-            file: files[i].buffer,
-            documentDescription: createRetirementFormDto.filesDescription[i],
-          }),
-        );
-      }
-      let retirementForm = this.retirementFormRepo.create({
-        ...createRetirementFormDto,
-        user,
-        supportingDocs,
-      });
-      retirementForm.type = RetirementType.CASH;
-      retirementForm.supervisorToken = randomBytes(10).toString('hex');
-      retirementForm = setDefaults(retirementForm);
-      // TODO: send token to supervisor
-
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
@@ -148,12 +147,12 @@ export class FormsService {
     return 'Form created successfully';
   }
   // $find all advance forms
-  findAllAdvanceForms() {
-    return this.advanceFormRepo.find();
+  findAllAdvanceForms(filterDto: FilterDto) {
+    return this.advanceFormRepo.find({ where: { ...filterDto } });
   }
   // $find all retirement forms
-  findAllRetirementForms() {
-    return this.retirementFormRepo.find();
+  findAllRetirementForms(filterDto: FilterDto) {
+    return this.retirementFormRepo.find({ where: { ...filterDto } });
   }
   // $find one advance form with its details
   async findOneAdvanceForm(id: number) {
@@ -190,7 +189,7 @@ export class FormsService {
     updateAdvanceFormDto: UpdateAdvanceFormDto,
     user: User,
   ) {
-    user = await this.usersService.findUserAndSupervisor(user.id);
+    // user = await this.usersService.findUserAndSupervisor(user.id);
 
     let advanceForm = await this.advanceFormRepo.findOne({
       where: { id },
@@ -218,7 +217,7 @@ export class FormsService {
     files: Express.Multer.File[],
     user: User,
   ) {
-    user = await this.usersService.findUserAndSupervisor(user.id);
+    // user = await this.usersService.findUserAndSupervisor(user.id);
     const supportingDocs: SupportingDocs[] = [];
 
     let retirementForm = await this.retirementFormRepo.findOne({
@@ -274,7 +273,7 @@ export class FormsService {
     files: Express.Multer.File[],
   ) {
     const supportingDocs: SupportingDocs[] = [];
-    user = await this.usersService.findUserAndSupervisor(user.id);
+    // user = await this.usersService.findUserAndSupervisor(user.id);
     const advance = await this.findOneAdvanceForm(id);
 
     createRetirementFormDto.details = createRetirementFormDto.details.map(
@@ -283,28 +282,28 @@ export class FormsService {
 
     const queryRunner = this.dataSource.createQueryRunner();
 
+    for (let i = 0; i <= files.length - 1; i++) {
+      supportingDocs.push(
+        this.supportingDocsRepo.create({
+          file: files[i].buffer,
+          documentDescription: createRetirementFormDto.filesDescription[i],
+        }),
+      );
+    }
+    const retirementForm = this.retirementFormRepo.create({
+      ...createRetirementFormDto,
+      user,
+      supportingDocs,
+    });
+    retirementForm.advance = advance;
+    retirementForm.type = RetirementType.ADVANCE;
+    retirementForm.supervisorToken = randomBytes(10).toString('hex');
+    // TODO: send token to supervisor
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      for (let i = 0; i <= files.length - 1; i++) {
-        supportingDocs.push(
-          this.supportingDocsRepo.create({
-            file: files[i].buffer,
-            documentDescription: createRetirementFormDto.filesDescription[i],
-          }),
-        );
-      }
-      const retirementForm = this.retirementFormRepo.create({
-        ...createRetirementFormDto,
-        user,
-        supportingDocs,
-      });
-      retirementForm.advance = advance;
-      retirementForm.type = RetirementType.ADVANCE;
-      retirementForm.supervisorToken = randomBytes(10).toString('hex');
-      // TODO: send token to supervisor
-
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
@@ -419,47 +418,15 @@ export class FormsService {
     return this.retirementFormRepo.save(retirement);
   }
 
-  async getMyDirectReportsAdvanceForms(user: User) {
+  async getMyDirectReportsAdvanceForms(user: User, filterDto: FilterDto) {
     return this.advanceFormRepo.find({
-      where: { user: { supervisorId: user.id } },
+      where: { user: { supervisorId: user.id }, ...filterDto },
     });
   }
 
-  async getMyDirectReportsRetirementForms(user: User) {
+  async getMyDirectReportsRetirementForms(user: User, filterDto: FilterDto) {
     return this.retirementFormRepo.find({
-      where: { user: { supervisorId: user.id } },
-    });
-  }
-
-  async getFinanceRetirementForms() {
-    return this.retirementFormRepo.find({
-      where: { nextApprovalLevel: Role.Finance },
-    });
-  }
-
-  async getFinanceAdvanceForms() {
-    return this.advanceFormRepo.find({
-      where: { nextApprovalLevel: Role.Finance },
-    });
-  }
-
-  async getPdAdvanceForms(user: User) {
-    if (user.role === Role.DeputyPD) {
-      return this.advanceFormRepo.find({
-        where: { delegatedByPD: true, nextApprovalLevel: Role.DeputyPD },
-      });
-    }
-    return this.advanceFormRepo.find({ where: { nextApprovalLevel: Role.PD } });
-  }
-
-  async getPdRetirementForms(user: User) {
-    if (user.role === Role.DeputyPD) {
-      return this.retirementFormRepo.find({
-        where: { delegatedByPD: true, nextApprovalLevel: Role.DeputyPD },
-      });
-    }
-    return this.retirementFormRepo.find({
-      where: { nextApprovalLevel: Role.PD },
+      where: { user: { supervisorId: user.id }, ...filterDto },
     });
   }
 }

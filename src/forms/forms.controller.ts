@@ -14,6 +14,7 @@ import {
   // Res,
   Put,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -21,6 +22,7 @@ import {
   ApprovalOrRejectionDto,
   CreateAdvanceFormDto,
   CreateRetirementFormDto,
+  FilterDto,
   UpdateAdvanceFormDto,
   UpdateRetirementFormDto,
 } from './dto';
@@ -89,51 +91,33 @@ export class FormsController {
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('advance')
-  findAllAdvanceForms() {
-    return this.formsService.findAllAdvanceForms();
+  findAllAdvanceForms(@Query() filterDto: FilterDto) {
+    return this.formsService.findAllAdvanceForms(filterDto);
   }
   // $get all retirement forms
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('retirement')
-  findAllRetirementForms() {
-    return this.formsService.findAllRetirementForms();
+  findAllRetirementForms(@Query() filterDto: FilterDto) {
+    return this.formsService.findAllRetirementForms(filterDto);
   }
 
   // $get my directReports advance form
   @Get('advance/myDirectReports')
-  getMyDirectReportsAdvanceForms(@GetUser() user: User) {
-    return this.formsService.getMyDirectReportsAdvanceForms(user);
+  getMyDirectReportsAdvanceForms(
+    @GetUser() user: User,
+    @Query() filterDto: FilterDto,
+  ) {
+    return this.formsService.getMyDirectReportsAdvanceForms(user, filterDto);
   }
 
   // $get my directReports retirement form
   @Get('retirement/myDirectReports')
-  getMyDirectReportsRetirementForms(@GetUser() user: User) {
-    return this.formsService.getMyDirectReportsRetirementForms(user);
-  }
-
-  // $get my finance retirement form
-  @Get('retirement/finance')
-  getFinanceRetirementForms() {
-    return this.formsService.getFinanceRetirementForms();
-  }
-
-  // $get my finance retirement form
-  @Get('advance/finance')
-  getFinanceAdvanceForms() {
-    return this.formsService.getFinanceAdvanceForms();
-  }
-
-  // $get pd advance forms
-  @Get('advance/pd')
-  getPdAdvanceForms(@GetUser() user: User) {
-    return this.formsService.getPdAdvanceForms(user);
-  }
-
-  // $get pd retirement forms
-  @Get('retirement/pd')
-  getPdRetirementForms(@GetUser() user: User) {
-    return this.formsService.getPdRetirementForms(user);
+  getMyDirectReportsRetirementForms(
+    @GetUser() user: User,
+    @Query() filterDto: FilterDto,
+  ) {
+    return this.formsService.getMyDirectReportsRetirementForms(user, filterDto);
   }
 
   // $get single advance form by id
