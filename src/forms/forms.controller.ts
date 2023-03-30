@@ -396,8 +396,13 @@ export class FormsController {
   @Roles(Role.PD)
   @UseGuards(RolesGuard)
   @Get('advance/:id/delegate')
-  delegateAdvanceApproval(@Param('id') id: number) {
-    return this.formsService.delegateAdvanceApproval(id);
+  async delegateAdvanceApproval(@Param('id') id: number) {
+    await this.formsService.delegateAdvanceApproval(id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Delegated',
+    };
   }
 
   // $pd delegates to Deputy
@@ -405,8 +410,13 @@ export class FormsController {
   @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.PD)
   @UseGuards(RolesGuard)
-  @Get('retirement/:id/delegate')
-  delegateRetirementApproval(@Param('id') id: number) {
-    return this.formsService.delegateRetirementApproval(id);
+  @Get('retirement/:id/delegated')
+  async delegateRetirementApproval(@Param('id') id: number) {
+    await this.formsService.delegateRetirementApproval(id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Delegated',
+    };
   }
 }

@@ -52,7 +52,7 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
     (user.role === Role.PD &&
       form.nextApprovalLevel === Role.PD &&
       form.approvalLevel > 0) ||
-    (form.nextApprovalLevel === Role.PD &&
+    (form.nextApprovalLevel === Role.DeputyPD &&
       form.delegatedByPD &&
       user.role === Role.DeputyPD &&
       form.approvalLevel > 0)
