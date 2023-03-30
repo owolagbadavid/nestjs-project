@@ -20,13 +20,17 @@ import { FormsService } from './forms.service';
 
 import {
   ApprovalOrRejectionDto,
-  CreateAdvanceFormDto,
-  CreateRetirementFormDto,
+  AdvanceFormDto,
+  RetirementFormDto,
   FilterDto,
-  UpdateAdvanceFormDto,
-  UpdateRetirementFormDto,
 } from './dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiCookieAuth,
+  ApiForbiddenResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { GetUser, Roles } from 'src/decorators';
 import { Role, User } from 'src/entities';
 import {
@@ -44,6 +48,9 @@ import { Forms } from 'src/decorators/form.decorator';
 import { FormType } from '../entities/form.entity';
 // import { Readable } from 'stream';
 
+@ApiCookieAuth('cookie')
+@ApiUnauthorizedResponse({ type: ApiRes })
+@ApiForbiddenResponse({ type: ApiRes })
 @UseGuards(JwtGuard)
 @ApiTags('Forms')
 @Controller('forms')
@@ -55,7 +62,7 @@ export class FormsController {
   @UseGuards(RolesMaxGuard)
   @Post('advance')
   async createAdvanceForm(
-    @Body() createAdvanceFormDto: CreateAdvanceFormDto,
+    @Body() createAdvanceFormDto: AdvanceFormDto,
     @GetUser() user: User,
   ): Promise<ApiRes> {
     await this.formsService.createAdvanceForm(createAdvanceFormDto, user);
@@ -67,12 +74,13 @@ export class FormsController {
   }
 
   // $create retirement form
+  @ApiConsumes('multipart/form-data')
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('retirement')
   async createRetirementForm(
-    @Body() createRetirementFormDto: CreateRetirementFormDto,
+    @Body() createRetirementFormDto: RetirementFormDto,
     @GetUser() user: User,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<ApiRes> {
@@ -154,7 +162,7 @@ export class FormsController {
   @Put('advance/:id')
   async editAdvanceForm(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateAdvanceFormDto: UpdateAdvanceFormDto,
+    @Body() updateAdvanceFormDto: AdvanceFormDto,
     @GetUser() user: User,
   ) {
     await this.formsService.updateAdvanceForm(+id, updateAdvanceFormDto, user);
@@ -171,7 +179,7 @@ export class FormsController {
   @Put('retirement/:id')
   async editRetirementForm(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateRetirementFormDto: UpdateRetirementFormDto,
+    @Body() updateRetirementFormDto: RetirementFormDto,
     @UploadedFiles() files: Express.Multer.File[],
     @GetUser() user: User,
   ) {
@@ -204,13 +212,14 @@ export class FormsController {
   }
 
   // $create an advance retirement form (retire an advance)
+  @ApiConsumes('multipart/form-data')
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('advance/:id/retire')
   retireAdvanceForm(
     @Param('id', ParseIntPipe) id: number,
-    @Body() createRetirementFormDto: CreateRetirementFormDto,
+    @Body() createRetirementFormDto: RetirementFormDto,
     @GetUser() user: User,
     @UploadedFiles() files: Express.Multer.File[],
   ) {

@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -9,31 +8,41 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { AdvanceDetailsDto } from './advance-details.dto';
+import { AdvanceDetailsDto } from '.';
+import { Type } from 'class-transformer';
+import { ApiSchema } from 'src/decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateAdvanceFormDto {
+@ApiSchema({ name: 'AdvanceForm' })
+export class AdvanceFormDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   purpose: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @Type(() => Date)
   @IsDate()
   depatureDate: Date;
 
+  @ApiProperty()
   @IsNotEmpty()
   @Type(() => Date)
   @IsDate()
   returnDate: Date;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   origination: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   destination: string;
 
+  @ApiProperty({ isArray: true, type: () => AdvanceDetailsDto })
   @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
@@ -41,6 +50,7 @@ export class UpdateAdvanceFormDto {
   @Type(() => AdvanceDetailsDto)
   details: AdvanceDetailsDto[];
 
+  @ApiProperty()
   @IsNotEmpty()
   @Type(() => Number)
   @IsNumber()

@@ -6,11 +6,9 @@ import {
 
 import {
   ApprovalOrRejectionDto,
-  CreateAdvanceFormDto,
-  CreateRetirementFormDto,
+  AdvanceFormDto,
+  RetirementFormDto,
   FilterDto,
-  UpdateAdvanceFormDto,
-  UpdateRetirementFormDto,
 } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -50,10 +48,7 @@ export class FormsService {
   ) {}
 
   // $create advance form
-  async createAdvanceForm(
-    createAdvanceFormDto: CreateAdvanceFormDto,
-    user: User,
-  ) {
+  async createAdvanceForm(createAdvanceFormDto: AdvanceFormDto, user: User) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
     // @Make the details instance of advance details
@@ -93,7 +88,7 @@ export class FormsService {
 
   // $create retirement form
   async createRetirementForm(
-    createRetirementFormDto: CreateRetirementFormDto,
+    createRetirementFormDto: RetirementFormDto,
     user: User,
     files: Express.Multer.File[],
   ) {
@@ -186,7 +181,7 @@ export class FormsService {
   // $update advance form
   async updateAdvanceForm(
     id: number,
-    updateAdvanceFormDto: UpdateAdvanceFormDto,
+    updateAdvanceFormDto: AdvanceFormDto,
     user: User,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
@@ -213,7 +208,7 @@ export class FormsService {
   // $update retirement form
   async updateRetirementForm(
     id: number,
-    updateRetirementFormDto: UpdateRetirementFormDto,
+    updateRetirementFormDto: RetirementFormDto,
     files: Express.Multer.File[],
     user: User,
   ) {
@@ -268,7 +263,7 @@ export class FormsService {
   // $retire an advance (create an advance retirement form)
   async retireAdvancedForm(
     id: number,
-    createRetirementFormDto: CreateRetirementFormDto,
+    createRetirementFormDto: RetirementFormDto,
     user: User,
     files: Express.Multer.File[],
   ) {
