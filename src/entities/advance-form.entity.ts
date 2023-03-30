@@ -54,6 +54,10 @@ export class AdvanceForm {
   preApprovalRemarkByFinance: string;
 
   @ApiProperty()
+  @Column({ nullable: true })
+  financeGoAhead: boolean;
+
+  @ApiProperty()
   @Column()
   approvalLevel: number;
 
@@ -136,6 +140,8 @@ export class SerializedAdvanceForm {
   destination: string;
 
   preApprovalRemarkByFinance: string;
+
+  financeGoAhead: boolean;
 
   approvalLevel: number;
 

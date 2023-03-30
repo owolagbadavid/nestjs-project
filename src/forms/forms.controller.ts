@@ -257,18 +257,23 @@ export class FormsController {
   @UseGuards(OwnerGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('advance/:id/retire')
-  retireAdvanceForm(
+  async retireAdvanceForm(
     @Param('id', ParseIntPipe) id: number,
     @Body() createRetirementFormDto: RetirementFormDto,
     @GetUser() user: User,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.formsService.retireAdvancedForm(
+    await this.formsService.retireAdvancedForm(
       id,
       createRetirementFormDto,
       user,
       files,
     );
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Advance retirement form created',
+    };
   }
 
   // $approve an advance form
@@ -309,23 +314,34 @@ export class FormsController {
   @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
   @Post('advance/:id/reject')
-  rejectAdvance(
+  async rejectAdvance(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() rejectionDto: ApprovalOrRejectionDto,
   ) {
-    return this.formsService.rejectAdvance(id, user, rejectionDto);
+    await this.formsService.rejectAdvance(id, user, rejectionDto);
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Form rejected',
+    };
   }
 
   // $reject a retirement form
+  @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
   @Post('retirement/:id/reject')
-  rejectRetirement(
+  async rejectRetirement(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() rejectionDto: ApprovalOrRejectionDto,
   ) {
-    return this.formsService.rejectRetirement(id, user, rejectionDto);
+    await this.formsService.rejectRetirement(id, user, rejectionDto);
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Form rejected',
+    };
   }
 
   // $finance preApproval remark

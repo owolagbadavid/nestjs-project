@@ -16,12 +16,15 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
   approval: Approvals,
   user: User,
   queryRunner: QueryRunner,
+  token?: string,
 ) {
   // @If this is supervisor approval
   if (
     form.approvalLevel === 0 &&
     form.nextApprovalLevel === user.role &&
-    form.user.supervisorId === user.id
+    form.user.supervisorId === user.id &&
+    // $check if supervisor token is valid
+    form.supervisorToken === token
   ) {
     console.log('supervisor approval');
 
@@ -30,6 +33,7 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
       form.nextApprovalLevel =
         form.approvalLevel >= Role.PD ? Role.Finance : Role.PD;
       form.pushedToFinance = form.nextApprovalLevel === Role.Finance;
+      form.supervisorToken = null;
       await queryRunner.manager.save(form);
       await queryRunner.manager.save(approval);
 

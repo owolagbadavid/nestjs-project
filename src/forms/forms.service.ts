@@ -440,6 +440,7 @@ export class FormsService {
       where: { id },
       relations: { user: true },
     });
+    if (!advance) throw new NotFoundException('Form not found');
 
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -455,7 +456,7 @@ export class FormsService {
     });
 
     // @handles all types of approval(supervisor, pd, finance)
-    await approve(advance, approval, user, queryRunner);
+    await approve(advance, approval, user, queryRunner, approvalDto.token);
 
     //! console.log
     console.log(advance);
@@ -473,6 +474,8 @@ export class FormsService {
       relations: { user: true },
     });
 
+    if (!retirement) throw new NotFoundException('Form not found');
+
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
@@ -481,13 +484,13 @@ export class FormsService {
     const approval = this.approvalsRepo.create({
       ...approvalDto,
       approvedBy: user,
-      advanceApproved: retirement,
+      retirementApproved: retirement,
       level: user.role,
       type: ApprovalsFor.RETIREMENT,
     });
 
     // @handles all types of approval(supervisor, pd, finance)
-    await approve(retirement, approval, user, queryRunner);
+    await approve(retirement, approval, user, queryRunner, approvalDto.token);
 
     // !console.log
     console.log(retirement);
@@ -505,10 +508,12 @@ export class FormsService {
       relations: { user: true },
     });
 
+    if (!advance) throw new NotFoundException('Form not found');
+
     // @handles reject for all levels
     advance = await reject(advance, user, rejectionDto);
-
-    return this.advanceFormRepo.save(advance);
+    await this.advanceFormRepo.save(advance);
+    return;
   }
 
   // $reject retirement form
@@ -522,10 +527,13 @@ export class FormsService {
       relations: { user: true },
     });
 
+    if (!retirement) throw new NotFoundException('Form not found');
+
     // @handles reject for all levels
     retirement = await reject(retirement, user, rejectionDto);
 
-    return this.retirementFormRepo.save(retirement);
+    await this.retirementFormRepo.save(retirement);
+    return;
   }
 
   // $get all directReports advance forms(can take a filter query)
