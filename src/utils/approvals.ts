@@ -87,6 +87,7 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
     try {
       form.approvalLevel = user.role;
       form.nextApprovalLevel = null;
+      form.approvedByFin = true;
       form.remarkByFin = approval.remark;
 
       await queryRunner.manager.save(form);

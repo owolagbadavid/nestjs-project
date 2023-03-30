@@ -250,6 +250,9 @@ export class FormsService {
 
     if (!advanceForm) throw new NotFoundException(`Advance form ${id} found`);
 
+    if (advanceForm.approvedByFin)
+      throw new ForbiddenException('Form has already been approved');
+
     advanceForm = this.advanceFormRepo.create({
       ...advanceForm,
       ...updateAdvanceFormDto,
@@ -287,6 +290,11 @@ export class FormsService {
       where: { id },
     });
 
+    if (!retirementForm) throw new NotFoundException('Form not found');
+
+    if (retirementForm.approvedByFin)
+      throw new ForbiddenException('Form has already been approved');
+
     if (retirementForm.advance) {
       const balance = compareAdvanceNRetirement(
         retirementForm.advance,
@@ -307,9 +315,6 @@ export class FormsService {
       );
       updateRetirementFormDto.balanceToOrganization = 0;
     }
-
-    if (!retirementForm)
-      throw new NotFoundException(`Retirement form ${id} found`);
 
     // @make files instances of supportingDocs
     for (let i = 0; i <= files.length - 1; i++) {
