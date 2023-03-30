@@ -15,7 +15,7 @@ import { ExpenseDetailsDto } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiSchema } from 'src/decorators';
 
-@ApiSchema({ name: 'RetirementForm' })
+@ApiSchema({ name: 'FillRetirementForm' })
 export class RetirementFormDto {
   @ApiProperty()
   @IsNotEmpty()

@@ -15,6 +15,8 @@ import {
   Put,
   HttpStatus,
   Query,
+  ClassSerializerInterceptor,
+  ParseFilePipe,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -23,16 +25,20 @@ import {
   AdvanceFormDto,
   RetirementFormDto,
   FilterDto,
+  RelationDto,
 } from './dto';
 import {
+  ApiBadRequestResponse,
   ApiConsumes,
   ApiCookieAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { GetUser, Roles } from 'src/decorators';
-import { Role, User } from 'src/entities';
+import { AdvanceForm, RetirementForm, Role, User } from 'src/entities';
 import {
   JwtGuard,
   MeORSuperiorGuard,
@@ -46,11 +52,13 @@ import { BodyInterceptor } from 'src/utils/body-interceptor';
 import { ApiRes } from 'src/types/api-response';
 import { Forms } from 'src/decorators/form.decorator';
 import { FormType } from '../entities/form.entity';
+import { MaxFileSizeValidator } from 'src/utils';
 // import { Readable } from 'stream';
 
 @ApiCookieAuth('cookie')
 @ApiUnauthorizedResponse({ type: ApiRes })
 @ApiForbiddenResponse({ type: ApiRes })
+@UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtGuard)
 @ApiTags('Forms')
 @Controller('forms')
@@ -58,6 +66,8 @@ export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
   // $create advance form
+  @ApiCreatedResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
   @Post('advance')
@@ -74,6 +84,8 @@ export class FormsController {
   }
 
   // $create retirement form
+  @ApiCreatedResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @ApiConsumes('multipart/form-data')
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
@@ -82,7 +94,12 @@ export class FormsController {
   async createRetirementForm(
     @Body() createRetirementFormDto: RetirementFormDto,
     @GetUser() user: User,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 1000000 })],
+      }),
+    )
+    files: Express.Multer.File[],
   ): Promise<ApiRes> {
     await this.formsService.createRetirementForm(
       createRetirementFormDto,
@@ -96,13 +113,16 @@ export class FormsController {
   }
 
   // $get all advance forms
+  @ApiOkResponse({ isArray: true, type: AdvanceForm })
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('advance')
   findAllAdvanceForms(@Query() filterDto: FilterDto) {
     return this.formsService.findAllAdvanceForms(filterDto);
   }
+
   // $get all retirement forms
+  @ApiOkResponse({ isArray: true, type: RetirementForm })
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('retirement')
@@ -111,6 +131,7 @@ export class FormsController {
   }
 
   // $get my directReports advance form
+  @ApiOkResponse({ isArray: true, type: AdvanceForm })
   @Get('advance/myDirectReports')
   getMyDirectReportsAdvanceForms(
     @GetUser() user: User,
@@ -120,6 +141,7 @@ export class FormsController {
   }
 
   // $get my directReports retirement form
+  @ApiOkResponse({ isArray: true, type: RetirementForm })
   @Get('retirement/myDirectReports')
   getMyDirectReportsRetirementForms(
     @GetUser() user: User,
@@ -129,21 +151,28 @@ export class FormsController {
   }
 
   // $get single advance form by id
+  @ApiOkResponse({ type: AdvanceForm })
   @Forms(FormType.ADVANCE)
   @UseGuards(MeORSuperiorGuard)
   @Get('advance/:id')
-  findOneAdvanceForm(@Param('id', ParseIntPipe) id: number) {
-    return this.formsService.findOneAdvanceForm(+id);
+  findOneAdvanceForm(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() relationDto: RelationDto,
+  ) {
+    return this.formsService.findOneAdvanceForm(+id, relationDto);
   }
+
   // $get single retirement form by id
+  @ApiOkResponse({ type: RetirementForm })
   @Forms(FormType.RETIREMENT)
   @UseGuards(MeORSuperiorGuard)
   @Get('retirement/:id')
   async findOneRetirementForm(
     // @Res({ passthrough: true }) response,
     @Param('id', ParseIntPipe) id: number,
+    @Query() relationDto: RelationDto,
   ) {
-    return this.formsService.findOneRetirementForm(+id);
+    return this.formsService.findOneRetirementForm(+id, relationDto);
     // console.log(file);
 
     // const stream = Readable.from(file);
@@ -157,6 +186,8 @@ export class FormsController {
   }
 
   // $edit advance form (PUT)
+  @ApiBadRequestResponse({ type: ApiRes })
+  @ApiOkResponse({ type: ApiRes })
   @Forms(FormType.ADVANCE)
   @UseGuards(OwnerGuard)
   @Put('advance/:id')
@@ -173,6 +204,9 @@ export class FormsController {
   }
 
   // $ edit retirement form (PUT)
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
+  @ApiConsumes('multipart/form-data')
   @Forms(FormType.RETIREMENT)
   @UseGuards(OwnerGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
@@ -196,6 +230,7 @@ export class FormsController {
   }
 
   // $delete advance form (Hard)
+  @ApiOkResponse({ type: AdvanceForm })
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Delete('advance/:id')
@@ -204,6 +239,7 @@ export class FormsController {
   }
 
   // $delete retirement form (Hard)
+  @ApiOkResponse({ type: RetirementForm })
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Delete('retirement/:id')
@@ -212,9 +248,13 @@ export class FormsController {
   }
 
   // $create an advance retirement form (retire an advance)
+  @ApiCreatedResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @ApiConsumes('multipart/form-data')
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
+  @Forms(FormType.RETIREMENT)
+  @UseGuards(OwnerGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('advance/:id/retire')
   retireAdvanceForm(
@@ -232,6 +272,8 @@ export class FormsController {
   }
 
   // $approve an advance form
+  @ApiCreatedResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Post('advance/:id/approve')
   async approveAdvance(
     @Param('id', ParseIntPipe) id: number,
@@ -247,6 +289,8 @@ export class FormsController {
   }
 
   // $approve a retirement form
+  @ApiCreatedResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Post('retirement/:id/approve')
   async approveRetirement(
     @Param('id', ParseIntPipe) id: number,
@@ -262,6 +306,8 @@ export class FormsController {
   }
 
   // $reject a advance form
+  @ApiCreatedResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Post('advance/:id/reject')
   rejectAdvance(
     @Param('id', ParseIntPipe) id: number,
@@ -272,6 +318,7 @@ export class FormsController {
   }
 
   // $reject a retirement form
+  @ApiBadRequestResponse({ type: ApiRes })
   @Post('retirement/:id/reject')
   rejectRetirement(
     @Param('id', ParseIntPipe) id: number,
@@ -279,5 +326,37 @@ export class FormsController {
     @Body() rejectionDto: ApprovalOrRejectionDto,
   ) {
     return this.formsService.rejectRetirement(id, user, rejectionDto);
+  }
+
+  // $finance preApproval remark
+  @Roles(Role.Finance)
+  @UseGuards(RolesGuard)
+  @Post('retirement/:id/remark')
+  retirementRemark(@Body('remark') remark: string, @Param('id') id: number) {
+    return this.formsService.retirementRemark(id, remark);
+  }
+
+  // $finance preApproval remark
+  @Roles(Role.Finance)
+  @UseGuards(RolesGuard)
+  @Post('advance/:id/remark')
+  advanceRemark(@Body('remark') remark: string, @Param('id') id: number) {
+    return this.formsService.advanceRemark(id, remark);
+  }
+
+  // $pd delegates to Deputy
+  @Roles(Role.PD)
+  @UseGuards(RolesGuard)
+  @Get('advance/:id/delegate')
+  delegateAdvanceApproval(@Param('id') id: number) {
+    return this.formsService.delegateAdvanceApproval(id);
+  }
+
+  // $pd delegates to Deputy
+  @Roles(Role.PD)
+  @UseGuards(RolesGuard)
+  @Get('retirement/:id/delegate')
+  delegateRetirementApproval(@Param('id') id: number) {
+    return this.formsService.delegateRetirementApproval(id);
   }
 }

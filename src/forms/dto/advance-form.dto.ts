@@ -13,7 +13,7 @@ import { Type } from 'class-transformer';
 import { ApiSchema } from 'src/decorators';
 import { ApiProperty } from '@nestjs/swagger';
 
-@ApiSchema({ name: 'AdvanceForm' })
+@ApiSchema({ name: 'FillAdvanceForm' })
 export class AdvanceFormDto {
   @ApiProperty()
   @IsNotEmpty()

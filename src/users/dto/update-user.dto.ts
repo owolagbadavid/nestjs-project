@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
+import { Role } from 'src/entities';
 
 @ApiSchema({ name: 'UpdateUser' })
 export class UpdateUserDto {
@@ -37,9 +38,9 @@ export class UpdateUserDto {
   @IsNumber()
   supervisorId?: number;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ enum: Role, enumName: 'Role' })
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  role?: number;
+  role?: Role;
 }

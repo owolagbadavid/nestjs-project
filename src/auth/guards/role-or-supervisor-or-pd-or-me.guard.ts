@@ -26,9 +26,12 @@ export class MeORSuperiorGuard implements CanActivate {
     if (!user) return false;
 
     if (requiredForm === FormType.ADVANCE) {
-      form = await this.formsService.findOneAdvanceForm(request.params.id);
+      form = await this.formsService.findOneAdvanceForm(request.params.id, {});
     } else if (requiredForm === FormType.RETIREMENT) {
-      form = await this.formsService.findOneRetirementForm(request.params.id);
+      form = await this.formsService.findOneRetirementForm(
+        request.params.id,
+        {},
+      );
     }
 
     // @if admin or finance

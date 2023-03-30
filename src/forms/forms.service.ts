@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -9,6 +10,7 @@ import {
   AdvanceFormDto,
   RetirementFormDto,
   FilterDto,
+  RelationDto,
 } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -21,13 +23,20 @@ import {
   User,
   Approvals,
   ApprovalsFor,
+  SerializedAdvanceForm,
+  SerializedRetirementForm,
+  Role,
 } from 'src/entities';
 import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { randomBytes } from 'crypto';
-import { setDefaults } from 'src/utils/set-defaults';
-import { approve } from 'src/utils/approvals';
-import { reject } from 'src/utils/rejection';
+import { reject, approve, setDefaults } from 'src/utils';
+import {
+  checkBalance,
+  compareAdvanceNRetirement,
+  compareDetailsAmount,
+  compareDetailsNTotalAmount,
+} from 'src/utils/form-checker';
 
 @Injectable()
 export class FormsService {
@@ -50,6 +59,15 @@ export class FormsService {
   // $create advance form
   async createAdvanceForm(createAdvanceFormDto: AdvanceFormDto, user: User) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
+
+    // @checks if details and total amount are correct
+    if (
+      !(
+        compareDetailsAmount(createAdvanceFormDto.details) &&
+        compareDetailsNTotalAmount(createAdvanceFormDto)
+      )
+    )
+      throw new BadRequestException('Details do not add up');
 
     // @Make the details instance of advance details
     createAdvanceFormDto.details = createAdvanceFormDto.details.map((item) =>
@@ -92,6 +110,21 @@ export class FormsService {
     user: User,
     files: Express.Multer.File[],
   ) {
+    // @checks if details and total amount are correct
+    if (
+      !(
+        compareDetailsAmount(createRetirementFormDto.details) &&
+        compareDetailsNTotalAmount(createRetirementFormDto)
+      )
+    )
+      throw new BadRequestException('Details do not add up');
+
+    checkBalance(
+      createRetirementFormDto.totalAmount,
+      createRetirementFormDto.balanceToStaff,
+    );
+    createRetirementFormDto.balanceToOrganization = 0;
+
     const supportingDocs: SupportingDocs[] = [];
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
@@ -108,6 +141,9 @@ export class FormsService {
         this.supportingDocsRepo.create({
           file: files[i].buffer,
           documentDescription: createRetirementFormDto.filesDescription[i],
+          fileName: files[i].originalname,
+          encoding: files[i].encoding,
+          mimeType: files[i].mimetype,
         }),
       );
     }
@@ -142,31 +178,42 @@ export class FormsService {
     return 'Form created successfully';
   }
   // $find all advance forms
-  findAllAdvanceForms(filterDto: FilterDto) {
-    return this.advanceFormRepo.find({ where: { ...filterDto } });
+  async findAllAdvanceForms(filterDto: FilterDto) {
+    const advanceForms = await this.advanceFormRepo.find({
+      where: { ...filterDto },
+    });
+
+    return advanceForms.map((form) => new SerializedAdvanceForm(form));
   }
   // $find all retirement forms
-  findAllRetirementForms(filterDto: FilterDto) {
-    return this.retirementFormRepo.find({ where: { ...filterDto } });
+  async findAllRetirementForms(filterDto: FilterDto) {
+    const retirementForms = await this.retirementFormRepo.find({
+      where: { ...filterDto },
+    });
+
+    return retirementForms.map((form) => new SerializedRetirementForm(form));
   }
   // $find one advance form with its details
-  async findOneAdvanceForm(id: number) {
+  async findOneAdvanceForm(id: number, relationDto: RelationDto) {
     const advanceForm = await this.advanceFormRepo.findOne({
       where: { id },
       relations: {
         details: true,
+        ...relationDto,
       },
     });
     if (!advanceForm) throw new NotFoundException('No advance form found');
-    return advanceForm;
+    return new SerializedAdvanceForm(advanceForm);
   }
   // $find one retirement form with its details and supporting documents
-  async findOneRetirementForm(id: number) {
+  async findOneRetirementForm(id: number, relationDto: RelationDto) {
     const retirementForm = await this.retirementFormRepo.findOne({
       where: { id },
       relations: {
         details: true,
         supportingDocs: true,
+        advance: true,
+        ...relationDto,
       },
       select: {
         supportingDocs: {
@@ -176,7 +223,8 @@ export class FormsService {
     });
     if (!retirementForm)
       throw new NotFoundException('No retirement form found');
-    return retirementForm;
+
+    return new SerializedRetirementForm(retirementForm);
   }
   // $update advance form
   async updateAdvanceForm(
@@ -185,6 +233,15 @@ export class FormsService {
     user: User,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
+
+    // @checks if details and total amount are correct
+    if (
+      !(
+        compareDetailsAmount(updateAdvanceFormDto.details) &&
+        compareDetailsNTotalAmount(updateAdvanceFormDto)
+      )
+    )
+      throw new BadRequestException('Details do not add up');
 
     let advanceForm = await this.advanceFormRepo.findOne({
       where: { id },
@@ -213,11 +270,42 @@ export class FormsService {
     user: User,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
+
+    // @checks if details and total amount are correct
+    if (
+      !(
+        compareDetailsAmount(updateRetirementFormDto.details) &&
+        compareDetailsNTotalAmount(updateRetirementFormDto)
+      )
+    )
+      throw new BadRequestException('Details do not add up');
+
     const supportingDocs: SupportingDocs[] = [];
 
     let retirementForm = await this.retirementFormRepo.findOne({
       where: { id },
     });
+
+    if (retirementForm.advance) {
+      const balance = compareAdvanceNRetirement(
+        retirementForm.advance,
+        updateRetirementFormDto,
+      );
+
+      if (balance < 0) {
+        checkBalance(Math.abs(balance), updateRetirementFormDto.balanceToStaff);
+        updateRetirementFormDto.balanceToOrganization = 0;
+      } else {
+        checkBalance(balance, updateRetirementFormDto.balanceToOrganization);
+        updateRetirementFormDto.balanceToStaff = 0;
+      }
+    } else {
+      checkBalance(
+        updateRetirementFormDto.totalAmount,
+        updateRetirementFormDto.balanceToStaff,
+      );
+      updateRetirementFormDto.balanceToOrganization = 0;
+    }
 
     if (!retirementForm)
       throw new NotFoundException(`Retirement form ${id} found`);
@@ -228,6 +316,9 @@ export class FormsService {
         this.supportingDocsRepo.create({
           file: files[i].buffer,
           documentDescription: updateRetirementFormDto.filesDescription[i],
+          fileName: files[i].originalname,
+          encoding: files[i].encoding,
+          mimeType: files[i].mimetype,
         }),
       );
     }
@@ -255,7 +346,9 @@ export class FormsService {
   }
   // $delete retirement from
   async removeRetirementForm(id: number) {
-    const form = await this.retirementFormRepo.findOne({ where: { id } });
+    const form = await this.retirementFormRepo.findOne({
+      where: { id },
+    });
     if (!form) throw new NotFoundException(`Retirement form ${id} not found`);
 
     return this.retirementFormRepo.remove(form);
@@ -269,7 +362,26 @@ export class FormsService {
   ) {
     const supportingDocs: SupportingDocs[] = [];
     // user = await this.usersService.findUserAndSupervisor(user.id);
-    const advance = await this.findOneAdvanceForm(id);
+
+    const advance = await this.findOneAdvanceForm(id, {});
+
+    // @checks if details and total amount are correct
+    if (
+      !(
+        compareDetailsAmount(createRetirementFormDto.details) &&
+        compareDetailsNTotalAmount(createRetirementFormDto)
+      )
+    )
+      throw new BadRequestException('Details do not add up');
+    const balance = compareAdvanceNRetirement(advance, createRetirementFormDto);
+
+    if (balance < 0) {
+      checkBalance(Math.abs(balance), createRetirementFormDto.balanceToStaff);
+      createRetirementFormDto.balanceToOrganization = 0;
+    } else {
+      checkBalance(balance, createRetirementFormDto.balanceToOrganization);
+      createRetirementFormDto.balanceToStaff = 0;
+    }
 
     createRetirementFormDto.details = createRetirementFormDto.details.map(
       (item) => this.expenseDetailsRepo.create(item),
@@ -282,6 +394,9 @@ export class FormsService {
         this.supportingDocsRepo.create({
           file: files[i].buffer,
           documentDescription: createRetirementFormDto.filesDescription[i],
+          fileName: files[i].originalname,
+          encoding: files[i].encoding,
+          mimeType: files[i].mimetype,
         }),
       );
     }
@@ -413,15 +528,73 @@ export class FormsService {
     return this.retirementFormRepo.save(retirement);
   }
 
+  // $get all directReports advance forms(can take a filter query)
   async getMyDirectReportsAdvanceForms(user: User, filterDto: FilterDto) {
-    return this.advanceFormRepo.find({
+    const advanceForms = await this.advanceFormRepo.find({
       where: { user: { supervisorId: user.id }, ...filterDto },
     });
+
+    return advanceForms.map((form) => new SerializedAdvanceForm(form));
   }
 
+  // $get all directReports retirement forms(can take a filter query)
   async getMyDirectReportsRetirementForms(user: User, filterDto: FilterDto) {
-    return this.retirementFormRepo.find({
+    const retirementForms = await this.retirementFormRepo.find({
       where: { user: { supervisorId: user.id }, ...filterDto },
     });
+
+    return retirementForms.map((form) => new SerializedRetirementForm(form));
+  }
+
+  // $finance preApproval remark
+  async advanceRemark(id: number, remark: string) {
+    const advance = await this.findOneAdvanceForm(id, { user: true });
+
+    advance.preApprovalRemarkByFinance = remark;
+
+    await this.advanceFormRepo.save(advance);
+    // TODO: send notification to user
+
+    return;
+  }
+
+  // $finance preApproval remark
+  async retirementRemark(id: number, remark: string) {
+    const retirement = await this.findOneRetirementForm(id, { user: true });
+
+    retirement.preApprovalRemarkByFinance = remark;
+
+    await this.retirementFormRepo.save(retirement);
+    // TODO: send notification to user
+
+    return;
+  }
+
+  // $pd delegates to Deputy
+  async delegateAdvanceApproval(id: number) {
+    const advance = await this.findOneAdvanceForm(id, {
+      user: true,
+      nextApproalLevel: Role.PD,
+    });
+    advance.delegatedByPD = true;
+    advance.nextApprovalLevel = Role.DeputyPD;
+
+    await this.advanceFormRepo.save(advance);
+
+    return;
+  }
+
+  // $pd delegates to Deputy
+  async delegateRetirementApproval(id: number) {
+    const retirement = await this.findOneRetirementForm(id, {
+      user: true,
+      nextApproalLevel: Role.PD,
+    });
+    retirement.delegatedByPD = true;
+    retirement.nextApprovalLevel = Role.DeputyPD;
+
+    await this.retirementFormRepo.save(retirement);
+
+    return;
   }
 }

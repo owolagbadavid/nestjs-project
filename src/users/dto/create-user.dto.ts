@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
+import { Role } from 'src/entities';
 
 @ApiSchema({ name: 'CreateUser' })
 export class CreateUserDto {
@@ -41,9 +42,9 @@ export class CreateUserDto {
   @IsNumber()
   supervisorId: number;
 
-  @ApiProperty()
+  @ApiProperty({ enum: Role, enumName: 'Role' })
   @IsNotEmpty()
   @Type(() => Number)
   @IsNumber()
-  role: number;
+  role: Role;
 }
