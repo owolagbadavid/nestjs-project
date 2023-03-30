@@ -15,6 +15,7 @@ import { Approvals } from './approval.entity';
 import { SupportingDocs } from './supporting-docs.entity';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from './';
 
 export enum RetirementType {
   CASH = 'cash',
@@ -70,7 +71,7 @@ export class RetirementForm {
 
   @ApiProperty()
   @Column({ nullable: true })
-  nextApprovalLevel: number;
+  nextApprovalLevel: Role;
 
   @ApiProperty()
   @Column({ default: false })
@@ -158,7 +159,7 @@ export class SerializedRetirementForm {
 
   approvalLevel: number;
 
-  nextApprovalLevel: number;
+  nextApprovalLevel: Role;
 
   delegatedByPD: boolean;
 

@@ -15,6 +15,7 @@ import { RetirementForm } from './retirement-form.entity';
 import { Approvals } from './approval.entity';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '.';
 
 @Entity()
 export class AdvanceForm {
@@ -63,7 +64,7 @@ export class AdvanceForm {
 
   @ApiProperty()
   @Column({ nullable: true })
-  nextApprovalLevel: number;
+  nextApprovalLevel: Role;
 
   @ApiProperty()
   @Column({ type: 'bool', default: false })
@@ -145,7 +146,7 @@ export class SerializedAdvanceForm {
 
   approvalLevel: number;
 
-  nextApprovalLevel: number;
+  nextApprovalLevel: Role;
 
   delegatedByPD: boolean;
 

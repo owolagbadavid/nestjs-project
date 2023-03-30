@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsPositive } from 'class-validator';
 import { ApiSchema } from 'src/decorators';
+import { Role } from 'src/entities';
 
 @ApiSchema({ name: 'Filters' })
 export class FilterDto {
@@ -9,7 +10,7 @@ export class FilterDto {
   @IsOptional()
   @Type(() => Number)
   @IsPositive()
-  nextApprovalLevel?: number;
+  nextApprovalLevel?: Role;
 
   @ApiPropertyOptional()
   @IsOptional()

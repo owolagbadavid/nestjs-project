@@ -17,6 +17,8 @@ import {
   Query,
   ClassSerializerInterceptor,
   ParseFilePipe,
+  HttpCode,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -152,6 +154,7 @@ export class FormsController {
 
   // $get single advance form by id
   @ApiOkResponse({ type: AdvanceForm })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Forms(FormType.ADVANCE)
   @UseGuards(MeORSuperiorGuard)
   @Get('advance/:id')
@@ -164,6 +167,7 @@ export class FormsController {
 
   // $get single retirement form by id
   @ApiOkResponse({ type: RetirementForm })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Forms(FormType.RETIREMENT)
   @UseGuards(MeORSuperiorGuard)
   @Get('retirement/:id')
@@ -231,6 +235,7 @@ export class FormsController {
 
   // $delete advance form (Hard)
   @ApiOkResponse({ type: AdvanceForm })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Delete('advance/:id')
@@ -240,6 +245,7 @@ export class FormsController {
 
   // $delete retirement form (Hard)
   @ApiOkResponse({ type: RetirementForm })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Delete('retirement/:id')
@@ -345,22 +351,48 @@ export class FormsController {
   }
 
   // $finance preApproval remark
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.Finance)
   @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('retirement/:id/remark')
-  retirementRemark(@Body('remark') remark: string, @Param('id') id: number) {
-    return this.formsService.retirementRemark(id, remark);
+  async retirementRemark(
+    @Body('remark') remark: string,
+    @Body('financeGoAhead', ParseBoolPipe) financeGoAhead: boolean,
+    @Param('id') id: number,
+  ) {
+    await this.formsService.retirementRemark(id, remark, financeGoAhead);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Remark made',
+    };
   }
 
   // $finance preApproval remark
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.Finance)
   @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('advance/:id/remark')
-  advanceRemark(@Body('remark') remark: string, @Param('id') id: number) {
-    return this.formsService.advanceRemark(id, remark);
+  async advanceRemark(
+    @Body('remark') remark: string,
+    @Body('financeGoAhead', ParseBoolPipe) financeGoAhead: boolean,
+    @Param('id') id: number,
+  ) {
+    await this.formsService.advanceRemark(id, remark, financeGoAhead);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Remark made',
+    };
   }
 
   // $pd delegates to Deputy
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.PD)
   @UseGuards(RolesGuard)
   @Get('advance/:id/delegate')
@@ -369,6 +401,8 @@ export class FormsController {
   }
 
   // $pd delegates to Deputy
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
   @Roles(Role.PD)
   @UseGuards(RolesGuard)
   @Get('retirement/:id/delegate')

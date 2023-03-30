@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -555,10 +556,11 @@ export class FormsService {
   }
 
   // $finance preApproval remark
-  async advanceRemark(id: number, remark: string) {
+  async advanceRemark(id: number, remark: string, financeGoAhead: boolean) {
     const advance = await this.findOneAdvanceForm(id, { user: true });
 
     advance.preApprovalRemarkByFinance = remark;
+    advance.financeGoAhead = financeGoAhead;
 
     await this.advanceFormRepo.save(advance);
     // TODO: send notification to user
@@ -567,10 +569,11 @@ export class FormsService {
   }
 
   // $finance preApproval remark
-  async retirementRemark(id: number, remark: string) {
+  async retirementRemark(id: number, remark: string, financeGoAhead: boolean) {
     const retirement = await this.findOneRetirementForm(id, { user: true });
 
     retirement.preApprovalRemarkByFinance = remark;
+    retirement.financeGoAhead = financeGoAhead;
 
     await this.retirementFormRepo.save(retirement);
     // TODO: send notification to user
@@ -580,10 +583,17 @@ export class FormsService {
 
   // $pd delegates to Deputy
   async delegateAdvanceApproval(id: number) {
-    const advance = await this.findOneAdvanceForm(id, {
+    let advance = await this.findOneAdvanceForm(id, {
       user: true,
-      nextApproalLevel: Role.PD,
     });
+
+    advance =
+      advance.nextApprovalLevel === Role.PD && advance.approvalLevel !== 0
+        ? advance
+        : null;
+
+    if (!advance) throw new ForbiddenException('Cant delegate approval');
+
     advance.delegatedByPD = true;
     advance.nextApprovalLevel = Role.DeputyPD;
 
@@ -594,10 +604,17 @@ export class FormsService {
 
   // $pd delegates to Deputy
   async delegateRetirementApproval(id: number) {
-    const retirement = await this.findOneRetirementForm(id, {
+    let retirement = await this.findOneRetirementForm(id, {
       user: true,
-      nextApproalLevel: Role.PD,
     });
+
+    retirement =
+      retirement.nextApprovalLevel === Role.PD && retirement.approvalLevel !== 0
+        ? retirement
+        : null;
+
+    if (!retirement) throw new ForbiddenException('Cant delegate approval');
+
     retirement.delegatedByPD = true;
     retirement.nextApprovalLevel = Role.DeputyPD;
 
