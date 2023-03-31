@@ -10,10 +10,32 @@ import { DepartmentModule } from './department/department.module';
 import { UnitModule } from './unit/unit.module';
 import { MailModule } from './mail/mail.module';
 import { FormsModule } from './forms/forms.module';
+import {
+  User,
+  Department,
+  Unit,
+  AdvanceForm,
+  AdvanceDetails,
+  RetirementForm,
+  ExpenseDetails,
+  Approvals,
+  SupportingDocs,
+} from './entities';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSourceOptions),
+    TypeOrmModule.forFeature([
+      User,
+      Department,
+      Unit,
+      AdvanceForm,
+      AdvanceDetails,
+      RetirementForm,
+      ExpenseDetails,
+      Approvals,
+      SupportingDocs,
+    ]),
     AuthModule,
     UsersModule,
     ConfigModule.forRoot({
