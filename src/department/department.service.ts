@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import { CreateDepartmentDto, UpdateDepartmentDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Department } from 'src/entities';
+import { Department } from '../entities';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class DepartmentService {

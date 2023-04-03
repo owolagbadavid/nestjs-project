@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { Form, FormType } from 'src/entities/form.entity';
-import { FormsService } from 'src/forms/forms.service';
+import { Form, FormType } from '../../entities/form.entity';
+import { FormsService } from '../../forms/forms.service';
 
 @Injectable()
 export class OwnerGuard implements CanActivate {

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { Department, Unit, User } from 'src/entities';
+import { Department, Unit, User } from '../entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   controllers: [UsersController],

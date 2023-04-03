@@ -8,7 +8,7 @@ import {
   RetirementForm,
   Role,
   User,
-} from 'src/entities';
+} from '../entities';
 import { QueryRunner } from 'typeorm';
 
 export async function approve<Form extends AdvanceForm | RetirementForm>(

@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import { AdvanceForm, RetirementForm } from 'src/entities';
+import { AdvanceForm, RetirementForm } from '../entities';
 
 export function setDefaults<Form extends AdvanceForm | RetirementForm>(
   form: Form,

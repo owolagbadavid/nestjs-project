@@ -4,3 +4,4 @@ export * from './owner.guard';
 export * from './roles-max.guard';
 export * from './role-or-supervisor-or-pd-or-me.guard';
 export * from './roles-min.guard';
+export * from './roles-or-id.guard';

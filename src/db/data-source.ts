@@ -8,7 +8,7 @@ import {
   SupportingDocs,
   Unit,
   User,
-} from 'src/entities';
+} from '../entities';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
 

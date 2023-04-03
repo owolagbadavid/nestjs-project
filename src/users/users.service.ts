@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Department, SerializedUser, Unit, User } from 'src/entities';
+import { Department, SerializedUser, Unit, User } from '../entities';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { CreateUserDto, UpdateUserDto } from './dto';
-import { SuperUserDto } from 'src/auth/dtos';
-import { ApiRes } from 'src/types/api-response';
-import { MailService } from 'src/mail/mail.service';
+import { SuperUserDto } from '../auth/dtos';
+import { ApiRes } from '../types/api-response';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UsersService {

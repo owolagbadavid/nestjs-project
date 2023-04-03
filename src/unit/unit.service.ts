@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { CreateUnitDto, UpdateUnitDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Unit } from 'src/entities';
+import { Unit } from '../entities';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/users.service';
-import { DepartmentService } from 'src/department/department.service';
+import { UsersService } from '../users/users.service';
+import { DepartmentService } from '../department/department.service';
 
 @Injectable()
 export class UnitService {

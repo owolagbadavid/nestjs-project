@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '../../entities/roles.enum';
-import { Form, FormType } from 'src/entities/form.entity';
-import { FormsService } from 'src/forms/forms.service';
+import { Form, FormType, Role } from '../../entities';
+import { FormsService } from '../../forms/forms.service';
 
 @Injectable()
 export class MeORSuperiorGuard implements CanActivate {

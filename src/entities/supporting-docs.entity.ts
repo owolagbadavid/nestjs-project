@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { RetirementForm } from './retirement-form.entity';
+import { RetirementForm } from './';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()

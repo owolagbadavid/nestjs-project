@@ -1,7 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Products } from 'src/entities/products.enum';
-import { RetirementForm } from './retirement-form.entity';
+import { RetirementForm, Products } from './';
 
 @Entity()
 export class ExpenseDetails {
@@ -21,6 +20,7 @@ export class ExpenseDetails {
   @Column({
     type: 'enum',
     enum: Products,
+    enumName: 'Product',
   })
   product: Products;
 

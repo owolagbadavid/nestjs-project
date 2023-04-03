@@ -10,12 +10,12 @@ import {
   SuperUserDto,
   VerifyEmailDto,
 } from './dtos';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { createHash, randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { SerializedUser, User } from 'src/entities';
+import { SerializedUser, User } from '../entities';
 
 @Injectable()
 export class AuthService {

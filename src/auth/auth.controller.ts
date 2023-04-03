@@ -12,7 +12,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto, ResetPasswordDto, VerifyEmailDto } from './dtos';
+import {
+  LoginUserDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
+  SuperUserDto,
+  ForogotPasswordDto,
+} from './dtos';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -21,10 +27,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ApiRes } from 'src/types/api-response';
-import { User } from 'src/entities';
-import { SuperUserDto } from './dtos/super-user.dto';
-import { ForogotPasswordDto } from './dtos/forgot-password.dto';
+import { ApiRes } from '../types/api-response';
+import { User } from '../entities';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 @ApiTags('Auth')

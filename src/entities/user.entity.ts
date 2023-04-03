@@ -1,4 +1,12 @@
-import { Role } from 'src/entities/roles.enum';
+import {
+  Role,
+  Department,
+  AdvanceForm,
+  Unit,
+  RetirementForm,
+  Approvals,
+} from './';
+
 import {
   BeforeInsert,
   Column,
@@ -7,13 +15,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Department } from './department.entity';
-import { AdvanceForm } from './advance-form.entity';
-import { Unit } from './unit.entity';
-import { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { Approvals } from './approval.entity';
 import * as bcrypt from 'bcrypt';
 
 @Entity()
@@ -86,7 +89,8 @@ export class User {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.Staff,
+    enumName: 'Role',
+    default: 0 /*Role.Staff*/,
   })
   role: number;
 

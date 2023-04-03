@@ -39,8 +39,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { GetUser, Roles } from 'src/decorators';
-import { AdvanceForm, RetirementForm, Role, User } from 'src/entities';
+import { GetUser, Roles } from '../decorators';
+import { AdvanceForm, RetirementForm, Role, User } from '../entities';
 import {
   JwtGuard,
   MeORSuperiorGuard,
@@ -48,13 +48,13 @@ import {
   RolesGuard,
   RolesMaxGuard,
   RolesMinGuard,
-} from 'src/auth/guards';
+} from '../auth/guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { BodyInterceptor } from 'src/utils/body-interceptor';
-import { ApiRes } from 'src/types/api-response';
-import { Forms } from 'src/decorators/form.decorator';
+import { BodyInterceptor } from '../utils/body-interceptor';
+import { ApiRes } from '../types/api-response';
+import { Forms } from '../decorators/form.decorator';
 import { FormType } from '../entities/form.entity';
-import { MaxFileSizeValidator } from 'src/utils';
+import { MaxFileSizeValidator } from '../utils';
 // import { Readable } from 'stream';
 
 @ApiCookieAuth('cookie')

@@ -8,14 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-import { User } from './user.entity';
-import { AdvanceDetails } from './advance-details.entity';
-import { RetirementForm } from './retirement-form.entity';
-import { Approvals } from './approval.entity';
+import { RetirementForm, Approvals, User, AdvanceDetails, Role } from './';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '.';
 
 @Entity()
 export class AdvanceForm {

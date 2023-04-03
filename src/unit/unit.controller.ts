@@ -10,10 +10,9 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { UnitService } from './unit.service';
-import { CreateUnitDto } from './dto/create-unit.dto';
-import { UpdateUnitDto } from './dto/update-unit.dto';
-import { JwtGuard, RolesGuard } from 'src/auth/guards';
-import { ApiRes } from 'src/types/api-response';
+import { UpdateUnitDto, CreateUnitDto } from './dto';
+import { JwtGuard, RolesGuard } from '../auth/guards';
+import { ApiRes } from '../types/api-response';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
@@ -24,8 +23,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Role, Unit } from 'src/entities';
-import { Roles } from 'src/decorators';
+import { Role, Unit } from '../entities';
+import { Roles } from '../decorators';
 
 @ApiTags('Unit')
 @ApiCookieAuth('cookie')

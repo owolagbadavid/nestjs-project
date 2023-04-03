@@ -47,7 +47,7 @@ export class AppService {
 
   async seed() {
     let department: any = await fs.readFile(
-      'src/mock-data/Department.json',
+      './mock-data/Department.json',
       'utf-8',
     );
 
@@ -56,13 +56,13 @@ export class AppService {
     (department = this.departmentRepository.create(department)),
       await this.departmentRepository.save(department);
 
-    let unit: any = await fs.readFile('src/mock-data/Unit.json', 'utf-8');
+    let unit: any = await fs.readFile('./mock-data/Unit.json', 'utf-8');
 
     unit = JSON.parse(unit);
     unit = this.unitRepository.create(unit);
     await this.unitRepository.save(unit);
 
-    let user: any = await fs.readFile('src/mock-data/User.json', 'utf-8');
+    let user: any = await fs.readFile('./mock-data/User.json', 'utf-8');
 
     user = JSON.parse(user);
 

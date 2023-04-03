@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { AdvanceForm } from './advance-form.entity';
-import { Products } from 'src/entities/products.enum';
+import { Products, AdvanceForm } from './';
 
 @Entity()
 export class AdvanceDetails {
@@ -20,6 +19,7 @@ export class AdvanceDetails {
   @Column({
     type: 'enum',
     enum: Products,
+    enumName: 'Product',
   })
   product: Products;
 

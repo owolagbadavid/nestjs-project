@@ -5,9 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { AdvanceForm } from './advance-form.entity';
-import { RetirementForm } from './retirement-form.entity';
+import { User, AdvanceForm, RetirementForm } from './';
 
 export enum ApprovalsFor {
   ADVANCE = 'advance',

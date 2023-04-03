@@ -7,8 +7,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { Department } from './department.entity';
+import { User, Department } from './';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()

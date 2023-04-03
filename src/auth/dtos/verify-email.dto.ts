@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { ApiSchema } from 'src/decorators';
+import { ApiSchema } from '../../decorators';
 
 @ApiSchema({ name: 'VerifyEmail' })
 export class VerifyEmailDto {

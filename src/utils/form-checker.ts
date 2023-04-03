@@ -1,11 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
-import { AdvanceForm } from 'src/entities';
+import { AdvanceForm } from '../entities';
 import {
   AdvanceDetailsDto,
   AdvanceFormDto,
   ExpenseDetailsDto,
   RetirementFormDto,
-} from 'src/forms/dto';
+} from '../forms/dto';
 
 export function compareDetailsNTotalAmount(
   form: AdvanceFormDto | RetirementFormDto,

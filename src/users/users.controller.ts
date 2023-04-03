@@ -12,8 +12,7 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
@@ -24,12 +23,10 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { User } from 'src/entities';
-import { ApiRes } from 'src/types/api-response';
-import { JwtGuard, RolesGuard } from 'src/auth/guards';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/entities/roles.enum';
-import { RolesOrIdGuard } from 'src/auth/guards/roles-or-id.guard';
+import { User, Role } from '../entities';
+import { ApiRes } from '../types/api-response';
+import { JwtGuard, RolesGuard, RolesOrIdGuard } from '../auth/guards';
+import { Roles } from '../decorators';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Users')

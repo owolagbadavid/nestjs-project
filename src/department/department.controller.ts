@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
-import { CreateDepartmentDto } from './dto/create-department.dto';
-import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { CreateDepartmentDto, UpdateDepartmentDto } from './dto';
+
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
@@ -22,11 +22,10 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ApiRes } from 'src/types/api-response';
-import { Department } from 'src/entities';
-import { Roles } from 'src/decorators';
-import { Role } from 'src/entities';
-import { JwtGuard, RolesGuard } from 'src/auth/guards';
+import { ApiRes } from '../types/api-response';
+import { Department, Role } from '../entities';
+import { Roles } from '../decorators';
+import { JwtGuard, RolesGuard } from '../auth/guards';
 
 @ApiTags('Department')
 @ApiCookieAuth('cookie')

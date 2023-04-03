@@ -8,14 +8,17 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { User } from './user.entity';
-import { AdvanceForm } from './advance-form.entity';
-import { ExpenseDetails } from './expense-details.entity';
-import { Approvals } from './approval.entity';
-import { SupportingDocs } from './supporting-docs.entity';
+import {
+  User,
+  AdvanceForm,
+  ExpenseDetails,
+  Approvals,
+  SupportingDocs,
+  Role,
+} from './';
+
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from './';
 
 export enum RetirementType {
   CASH = 'cash',

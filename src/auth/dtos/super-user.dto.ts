@@ -7,8 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ApiSchema } from 'src/decorators';
-import { Role } from 'src/entities';
+import { ApiSchema } from '../../decorators';
+import { Role } from '../../entities';
 
 @ApiSchema({ name: 'SuperUserSignup' })
 export class SuperUserDto {
