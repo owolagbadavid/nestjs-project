@@ -9,8 +9,8 @@ import {
   ExpenseDetails,
   RetirementForm,
   SupportingDocs,
-} from 'src/entities';
-import { UsersModule } from 'src/users/users.module';
+} from '../entities';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [FormsController],
