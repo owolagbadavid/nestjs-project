@@ -26,8 +26,6 @@ export class AuthService {
   ) {}
 
   async superUserSignup(superUserDto: SuperUserDto) {
-    const salt = bcrypt.genSaltSync(10);
-    superUserDto.password = bcrypt.hashSync(superUserDto.password, salt);
     return this.usersService.createSuperUser(superUserDto);
   }
 

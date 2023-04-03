@@ -1,5 +1,6 @@
 import { Role } from 'src/entities/roles.enum';
 import {
+  BeforeInsert,
   Column,
   Entity,
   ManyToOne,
@@ -13,9 +14,18 @@ import { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Approvals } from './approval.entity';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
+  @BeforeInsert()
+  hasPassword?() {
+    if (this.password) {
+      const salt = bcrypt.genSaltSync(10);
+      this.password = bcrypt.hashSync(this.password, salt);
+    }
+  }
+
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;

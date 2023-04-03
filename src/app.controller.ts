@@ -41,8 +41,8 @@ export class AppController {
     return this.appService.fileUpload();
   }
 
-  @Post('create')
+  @Get('seed')
   create() {
-    return this.appService.create();
+    return this.appService.seed();
   }
 }

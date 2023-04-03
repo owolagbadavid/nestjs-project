@@ -24,7 +24,7 @@ export class UsersService {
     private mailService: MailService,
   ) {}
 
-  // Create New User
+  // $Create New User
   async create(createUserDto: CreateUserDto) /*: Promise<ApiRes>*/ {
     const emailAlreadyExists = await this.userRepository.findOne({
       where: { email: createUserDto.email },
@@ -86,7 +86,7 @@ export class UsersService {
     };
   }
 
-  // Create Super User e.g Administrator
+  // $Create Super User e.g Administrator
   async createSuperUser(superUserDto: SuperUserDto): Promise<ApiRes> {
     const emailAlreadyExists = await this.userRepository.findOne({
       where: { email: superUserDto.email },
