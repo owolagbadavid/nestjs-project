@@ -1,6 +1,7 @@
 import { ForbiddenException } from '@nestjs/common';
-import { AdvanceForm, RetirementForm, Role, User } from '../entities';
+import { AdvanceForm, RetirementForm, User } from '../entities';
 import { ApprovalOrRejectionDto } from '../forms/dto';
+import { Role } from '../types';
 
 export async function reject<Form extends AdvanceForm | RetirementForm>(
   form: Form,

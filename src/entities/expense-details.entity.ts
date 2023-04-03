@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { RetirementForm, Products } from './';
-
+import { RetirementForm } from './';
+import { Products } from '../types';
 @Entity()
 export class ExpenseDetails {
   @PrimaryGeneratedColumn()

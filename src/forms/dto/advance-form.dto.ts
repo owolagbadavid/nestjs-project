@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { AdvanceDetailsDto } from '.';
 import { Type } from 'class-transformer';
-import { ApiSchema } from 'src/decorators';
+import { ApiSchema } from '../../decorators';
 import { ApiProperty } from '@nestjs/swagger';
 
 @ApiSchema({ name: 'FillAdvanceForm' })

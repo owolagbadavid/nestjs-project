@@ -8,7 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiSchema } from '../../decorators';
-import { Role } from '../../entities';
+import { Role } from '../../types';
 
 @ApiSchema({ name: 'SuperUserSignup' })
 export class SuperUserDto {

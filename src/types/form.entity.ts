@@ -1,4 +1,4 @@
-import { AdvanceForm, RetirementForm } from './';
+import { AdvanceForm, RetirementForm } from '../entities';
 
 export type Form = AdvanceForm | RetirementForm;
 

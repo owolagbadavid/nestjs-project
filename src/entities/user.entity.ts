@@ -1,12 +1,5 @@
-import {
-  Role,
-  Department,
-  AdvanceForm,
-  Unit,
-  RetirementForm,
-  Approvals,
-} from './';
-
+import { Department, AdvanceForm, Unit, RetirementForm, Approvals } from './';
+import { Role } from '../types';
 import {
   BeforeInsert,
   Column,
@@ -90,7 +83,7 @@ export class User {
     type: 'enum',
     enum: Role,
     enumName: 'Role',
-    default: 0 /*Role.Staff*/,
+    default: Role.Staff,
   })
   role: number;
 

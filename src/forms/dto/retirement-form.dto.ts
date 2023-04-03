@@ -13,7 +13,7 @@ import {
 import { Type } from 'class-transformer';
 import { ExpenseDetailsDto } from '.';
 import { ApiProperty } from '@nestjs/swagger';
-import { ApiSchema } from 'src/decorators';
+import { ApiSchema } from '../../decorators';
 
 @ApiSchema({ name: 'FillRetirementForm' })
 export class RetirementFormDto {

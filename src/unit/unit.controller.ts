@@ -12,7 +12,7 @@ import {
 import { UnitService } from './unit.service';
 import { UpdateUnitDto, CreateUnitDto } from './dto';
 import { JwtGuard, RolesGuard } from '../auth/guards';
-import { ApiRes } from '../types/api-response';
+import { ApiRes, Role } from '../types';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
@@ -23,7 +23,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Role, Unit } from '../entities';
+import { Unit } from '../entities';
 import { Roles } from '../decorators';
 
 @ApiTags('Unit')

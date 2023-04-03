@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsPositive } from 'class-validator';
-import { ApiSchema } from 'src/decorators';
-import { Role } from 'src/entities';
+import { ApiSchema } from '../../decorators';
+import { Role } from '../../types';
 
 @ApiSchema({ name: 'Filters' })
 export class FilterDto {

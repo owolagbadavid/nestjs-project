@@ -40,7 +40,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { GetUser, Roles } from '../decorators';
-import { AdvanceForm, RetirementForm, Role, User } from '../entities';
+import { AdvanceForm, RetirementForm, User } from '../entities';
+import { Role } from '../types';
 import {
   JwtGuard,
   MeORSuperiorGuard,
@@ -53,7 +54,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { BodyInterceptor } from '../utils/body-interceptor';
 import { ApiRes } from '../types/api-response';
 import { Forms } from '../decorators/form.decorator';
-import { FormType } from '../entities/form.entity';
+import { FormType } from '../types/form.entity';
 import { MaxFileSizeValidator } from '../utils';
 // import { Readable } from 'stream';
 

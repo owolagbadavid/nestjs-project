@@ -22,8 +22,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ApiRes } from '../types/api-response';
-import { Department, Role } from '../entities';
+import { ApiRes, Role } from '../types';
+import { Department } from '../entities';
 import { Roles } from '../decorators';
 import { JwtGuard, RolesGuard } from '../auth/guards';
 

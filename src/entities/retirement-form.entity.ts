@@ -14,9 +14,8 @@ import {
   ExpenseDetails,
   Approvals,
   SupportingDocs,
-  Role,
 } from './';
-
+import { Role } from '../types';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 

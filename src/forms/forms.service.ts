@@ -26,10 +26,9 @@ import {
   ApprovalsFor,
   SerializedAdvanceForm,
   SerializedRetirementForm,
-  Role,
-} from 'src/entities';
+} from '../entities';
 import { DataSource, Repository } from 'typeorm';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { randomBytes } from 'crypto';
 import { reject, approve, setDefaults } from 'src/utils';
 import {
@@ -37,7 +36,8 @@ import {
   compareAdvanceNRetirement,
   compareDetailsAmount,
   compareDetailsNTotalAmount,
-} from 'src/utils/form-checker';
+} from '../utils';
+import { Role } from '../types';
 
 @Injectable()
 export class FormsService {

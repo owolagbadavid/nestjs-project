@@ -8,9 +8,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { RetirementForm, Approvals, User, AdvanceDetails, Role } from './';
+import { RetirementForm, Approvals, User, AdvanceDetails } from './';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '../types';
 
 @Entity()
 export class AdvanceForm {
@@ -55,7 +56,7 @@ export class AdvanceForm {
 
   @ApiProperty()
   @Column()
-  approvalLevel: number;
+  approvalLevel: Role;
 
   @ApiProperty()
   @Column({ nullable: true })

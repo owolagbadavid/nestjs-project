@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ApiSchema } from 'src/decorators';
+import { ApiSchema } from '../../decorators';
 
 @ApiSchema({ name: 'ApprovalOrRejection' })
 export class ApprovalOrRejectionDto {

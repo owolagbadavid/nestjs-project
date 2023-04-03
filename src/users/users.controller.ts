@@ -23,8 +23,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { User, Role } from '../entities';
-import { ApiRes } from '../types/api-response';
+import { User } from '../entities';
+import { ApiRes, Role } from '../types';
 import { JwtGuard, RolesGuard, RolesOrIdGuard } from '../auth/guards';
 import { Roles } from '../decorators';
 

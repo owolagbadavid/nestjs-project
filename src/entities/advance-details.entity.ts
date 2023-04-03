@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Products, AdvanceForm } from './';
-
+import { AdvanceForm } from './';
+import { Products } from '../types';
 @Entity()
 export class AdvanceDetails {
   @PrimaryGeneratedColumn()

@@ -2,13 +2,9 @@ import {
   ForbiddenException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import {
-  AdvanceForm,
-  Approvals,
-  RetirementForm,
-  Role,
-  User,
-} from '../entities';
+import { AdvanceForm, Approvals, RetirementForm, User } from '../entities';
+import { Role } from '../types';
+
 import { QueryRunner } from 'typeorm';
 
 export async function approve<Form extends AdvanceForm | RetirementForm>(

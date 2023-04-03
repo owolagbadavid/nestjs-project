@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { Form, FormType } from '../../entities/form.entity';
+import { Form, FormType } from '../../types/form.entity';
 import { FormsService } from '../../forms/forms.service';
 
 @Injectable()
