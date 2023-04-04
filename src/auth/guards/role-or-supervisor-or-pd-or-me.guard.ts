@@ -26,23 +26,23 @@ export class MeORSuperiorGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
+    let formId: number;
     try {
-      const id = Number(request.params.id);
-      if (!id) throw new Error();
+      formId = parseInt(request.params.id);
+      if (formId != request.params.id) throw new Error();
     } catch (error) {
-      throw new BadRequestException(['id must be a number']);
+      throw new BadRequestException(
+        'Validation failed (numeric string is expected)',
+      );
     }
 
     const { user } = request;
     if (!user) return false;
 
     if (requiredForm === FormType.ADVANCE) {
-      form = await this.formsService.findOneAdvanceForm(request.params.id, {});
+      form = await this.formsService.findOneAdvanceForm(formId, {});
     } else if (requiredForm === FormType.RETIREMENT) {
-      form = await this.formsService.findOneRetirementForm(
-        request.params.id,
-        {},
-      );
+      form = await this.formsService.findOneRetirementForm(formId, {});
     }
 
     request.form = form;

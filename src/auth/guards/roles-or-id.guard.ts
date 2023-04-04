@@ -27,17 +27,20 @@ export class RolesOrIdGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
+    let userId: number;
     try {
-      const id = Number(request.params.id);
-      if (!id) throw new Error();
+      userId = parseInt(request.params.id);
+      if (userId != request.params.id) throw new Error();
     } catch (error) {
-      throw new BadRequestException(['id must be a number']);
+      throw new BadRequestException(
+        'Validation failed (numeric string is expected)',
+      );
     }
 
     const { user } = request;
     if (!user) return false;
 
-    if (Number(request.params.id) === request.user.id) return true;
+    if (userId === request.user.id) return true;
 
     //does the user have the required role
 
