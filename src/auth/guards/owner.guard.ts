@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { Form, FormType } from '../../types/form.entity';
@@ -21,6 +26,13 @@ export class OwnerGuard implements CanActivate {
     let form: Form;
     const request = context.switchToHttp().getRequest();
 
+    try {
+      const id = Number(request.params.id);
+      if (!id) throw new Error();
+    } catch (error) {
+      throw new BadRequestException(['id must be a number']);
+    }
+
     const { user } = request;
     if (!user) return false;
 
@@ -36,6 +48,7 @@ export class OwnerGuard implements CanActivate {
     if (!(Number(request.user.id) === form.userId)) return false;
 
     // const form = this.formsService
+    request.form = form;
     return true;
   }
 }

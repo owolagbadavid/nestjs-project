@@ -197,7 +197,13 @@ export class FormsService {
     return retirementForms.map((form) => new SerializedRetirementForm(form));
   }
   // $find one advance form with its details
-  async findOneAdvanceForm(id: number, relationDto: RelationDto) {
+  async findOneAdvanceForm(
+    id: number,
+    relationDto: RelationDto,
+    form?: AdvanceForm,
+  ) {
+    if (form) return new SerializedAdvanceForm(form);
+
     const advanceForm = await this.advanceFormRepo.findOne({
       where: { id },
       relations: {
@@ -205,11 +211,29 @@ export class FormsService {
         ...relationDto,
       },
     });
+
+    const agg = await this.advanceFormRepo.query(
+      `
+      SELECT date_part('month', "updatedAt") AS month, COUNT(*) AS count
+      FROM advance_form
+      GROUP BY month;
+
+      `,
+    );
+    console.log(agg);
+    console.log('mike');
+
     if (!advanceForm) throw new NotFoundException('No advance form found');
     return new SerializedAdvanceForm(advanceForm);
   }
   // $find one retirement form with its details and supporting documents
-  async findOneRetirementForm(id: number, relationDto: RelationDto) {
+  async findOneRetirementForm(
+    id: number,
+    relationDto: RelationDto,
+    form?: RetirementForm,
+  ) {
+    if (form) return new SerializedRetirementForm(form);
+
     const retirementForm = await this.retirementFormRepo.findOne({
       where: { id },
       relations: {
@@ -221,6 +245,9 @@ export class FormsService {
       select: {
         supportingDocs: {
           id: true,
+          fileName: true,
+          documentDescription: true,
+          mimeType: true,
         },
       },
     });
@@ -234,6 +261,7 @@ export class FormsService {
     id: number,
     updateAdvanceFormDto: AdvanceFormDto,
     user: User,
+    form?: AdvanceForm,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
@@ -246,9 +274,8 @@ export class FormsService {
     )
       throw new BadRequestException('Details do not add up');
 
-    let advanceForm = await this.advanceFormRepo.findOne({
-      where: { id },
-    });
+    // @Already Fetched from Guard
+    let advanceForm = form;
 
     if (!advanceForm) throw new NotFoundException(`Advance form ${id} found`);
 
@@ -274,6 +301,7 @@ export class FormsService {
     updateRetirementFormDto: RetirementFormDto,
     files: Express.Multer.File[],
     user: User,
+    form?: RetirementForm,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
@@ -287,10 +315,8 @@ export class FormsService {
       throw new BadRequestException('Details do not add up');
 
     const supportingDocs: SupportingDocs[] = [];
-
-    let retirementForm = await this.retirementFormRepo.findOne({
-      where: { id },
-    });
+    // @Already Fetched from Guard
+    let retirementForm = form;
 
     if (!retirementForm) throw new NotFoundException('Form not found');
 
@@ -367,12 +393,12 @@ export class FormsService {
     createRetirementFormDto: RetirementFormDto,
     user: User,
     files: Express.Multer.File[],
+    form: AdvanceForm,
   ) {
     const supportingDocs: SupportingDocs[] = [];
     // user = await this.usersService.findUserAndSupervisor(user.id);
-
-    const advance = await this.findOneAdvanceForm(id, {});
-
+    // @fetched from guard
+    const advance = form;
     // @checks if details and total amount are correct
     if (
       !(

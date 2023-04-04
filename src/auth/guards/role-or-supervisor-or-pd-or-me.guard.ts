@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Form, FormType, Role } from '../../types';
 import { FormsService } from '../../forms/forms.service';
@@ -21,6 +26,13 @@ export class MeORSuperiorGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
+    try {
+      const id = Number(request.params.id);
+      if (!id) throw new Error();
+    } catch (error) {
+      throw new BadRequestException(['id must be a number']);
+    }
+
     const { user } = request;
     if (!user) return false;
 
@@ -33,6 +45,7 @@ export class MeORSuperiorGuard implements CanActivate {
       );
     }
 
+    request.form = form;
     // @if admin or finance
     if (user.role === Role.Admin || Role.Finance) return true;
     // @if user owns the form
@@ -47,6 +60,7 @@ export class MeORSuperiorGuard implements CanActivate {
     if (form.user.supervisorId === user.id) return true;
 
     // @if all fails
+    request.user.form = undefined;
     return false;
   }
 }

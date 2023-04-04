@@ -27,7 +27,7 @@ import {
   AdvanceFormDto,
   RetirementFormDto,
   FilterDto,
-  RelationDto,
+  // RelationDto,
 } from './dto';
 import {
   ApiBadRequestResponse,
@@ -39,7 +39,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { GetUser, Roles, Forms } from '../decorators';
+import { GetUser, Roles, Forms, GetForm } from '../decorators';
 import { AdvanceForm, RetirementForm, User } from '../entities';
 import { Role, FormType, ApiRes } from '../types';
 import {
@@ -157,9 +157,10 @@ export class FormsController {
   @Get('advance/:id')
   findOneAdvanceForm(
     @Param('id', ParseIntPipe) id: number,
-    @Query() relationDto: RelationDto,
+    // @Query() relationDto: RelationDto,
+    @GetForm() form: AdvanceForm,
   ) {
-    return this.formsService.findOneAdvanceForm(+id, relationDto);
+    return form;
   }
 
   // $get single retirement form by id
@@ -171,9 +172,10 @@ export class FormsController {
   async findOneRetirementForm(
     // @Res({ passthrough: true }) response,
     @Param('id', ParseIntPipe) id: number,
-    @Query() relationDto: RelationDto,
+    // @Query() relationDto: RelationDto,
+    @GetForm() form: RetirementForm,
   ) {
-    return this.formsService.findOneRetirementForm(+id, relationDto);
+    return form;
     // console.log(file);
 
     // const stream = Readable.from(file);
@@ -196,8 +198,14 @@ export class FormsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateAdvanceFormDto: AdvanceFormDto,
     @GetUser() user: User,
+    @GetForm() form: AdvanceForm,
   ) {
-    await this.formsService.updateAdvanceForm(+id, updateAdvanceFormDto, user);
+    await this.formsService.updateAdvanceForm(
+      +id,
+      updateAdvanceFormDto,
+      user,
+      form,
+    );
     return {
       statusCode: HttpStatus.OK,
       message: 'Form updated successfully',
@@ -217,12 +225,14 @@ export class FormsController {
     @Body() updateRetirementFormDto: RetirementFormDto,
     @UploadedFiles() files: Express.Multer.File[],
     @GetUser() user: User,
+    @GetForm() form: RetirementForm,
   ) {
     await this.formsService.updateRetirementForm(
       +id,
       updateRetirementFormDto,
       files,
       user,
+      form,
     );
     return {
       statusCode: HttpStatus.OK,
@@ -265,12 +275,14 @@ export class FormsController {
     @Body() createRetirementFormDto: RetirementFormDto,
     @GetUser() user: User,
     @UploadedFiles() files: Express.Multer.File[],
+    @GetForm() form: AdvanceForm,
   ) {
     await this.formsService.retireAdvancedForm(
       id,
       createRetirementFormDto,
       user,
       files,
+      form,
     );
 
     return {
