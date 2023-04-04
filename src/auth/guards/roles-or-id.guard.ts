@@ -30,7 +30,8 @@ export class RolesOrIdGuard implements CanActivate {
     let userId: number;
     try {
       userId = parseInt(request.params.id);
-      if (userId != request.params.id) throw new Error();
+      if (userId % 1 !== 0) throw new Error();
+      request.params.id = userId;
     } catch (error) {
       throw new BadRequestException(
         'Validation failed (numeric string is expected)',

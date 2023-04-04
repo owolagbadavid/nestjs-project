@@ -29,7 +29,8 @@ export class MeORSuperiorGuard implements CanActivate {
     let formId: number;
     try {
       formId = parseInt(request.params.id);
-      if (formId != request.params.id) throw new Error();
+      if (formId % 1 !== 0) throw new Error();
+      request.params.id = formId;
     } catch (error) {
       throw new BadRequestException(
         'Validation failed (numeric string is expected)',
