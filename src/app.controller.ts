@@ -6,12 +6,15 @@ import {
   Redirect,
   // Req,
   // UploadedFile,
+  // Patch,
+  // StreamableFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController } from '@nestjs/swagger';
+// import { Readable } from 'stream';
 
 @ApiExcludeController()
 @Controller()
@@ -28,6 +31,17 @@ export class AppController {
 
   @Get('redirect')
   redirect() {
+    // console.log(file);
+
+    // const stream = Readable.from(file);
+    // response.set({
+    //   'Content-Disposition': 'attachment; filename="image.png"',
+    //   'Content-Type': 'image',
+    // });
+    // console.log('mike');
+
+    // return new StreamableFile(stream);
+
     return 'thh.redirected()';
   }
 

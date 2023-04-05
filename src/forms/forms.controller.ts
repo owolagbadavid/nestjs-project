@@ -3,15 +3,12 @@ import {
   Get,
   Post,
   Body,
-  // Patch,
   Param,
   Delete,
   ParseIntPipe,
   UseGuards,
   UseInterceptors,
   UploadedFiles,
-  // StreamableFile,
-  // Res,
   Put,
   HttpStatus,
   Query,
@@ -52,7 +49,6 @@ import {
 } from '../auth/guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MaxFileSizeValidator, BodyInterceptor } from '../utils';
-// import { Readable } from 'stream';
 
 @ApiCookieAuth('cookie')
 @ApiUnauthorizedResponse({ type: ApiRes })
@@ -176,16 +172,6 @@ export class FormsController {
     @GetForm() form: RetirementForm,
   ) {
     return form;
-    // console.log(file);
-
-    // const stream = Readable.from(file);
-    // response.set({
-    //   'Content-Disposition': 'attachment; filename="image.png"',
-    //   'Content-Type': 'image',
-    // });
-    // console.log('mike');
-
-    // return new StreamableFile(stream);
   }
 
   // $edit advance form (PUT)
