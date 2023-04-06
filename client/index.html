@@ -1,14 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title></title>
-   </head>
+<html>
+  <head>
+    <title>Phis3 - Homepage</title>
+    <style>
+      /* Default styles */
+body {
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
 
-   <body>
-    <h1>This might be a dashBoard</h1>
+header {
+  background-color: #2B88C5;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-   </body>
-</html>
+#logo {
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+#logo img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+#nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+#nav li {
+  margin-left: 20px;
+}
+
+#nav li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#nav li a:hover {
+  background-color: white;
+  color: #2B88C5;
+}
+
+main {
+  padding: 20px;
+}
+
+h1 {
+  font-size: 36px;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.feature {
+  display: flex;
+  margin-bottom: 50px;
+}
+
+.feature img {
+  width: 40%;
+  margin-right: 20px;
+}
+
+.feature h2 {
+  font-size: 24px;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.feature p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cta {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.cta h2 {
+  font-size: 30px;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.cta p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0;
+  margin-bottom: 30px;
+}
+
+.cta a {
+  display: inline-block;
+  background-color: #2B88C5;
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 30px;
+  border-radius: 5px;
+}
+
+.cta a:hover {
+  background-color: white;
+  color: #2B88C5;
+}
+
+/* Media queries for smaller screens */
+@media only screen and (max-width: 768px) {
+  #logo {
+    font-size: 24px;
+  }
+  
+  #nav {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #nav li {
+    margin: 10px 0;
+  }
+  
+  .feature {
+    flex-direction: column;
+  }
+  
+  .feature img {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}
+    </style>
+  </head>
+  <body>
+   <header>
+      <h1 id="logo">
+        <img src="logo.png" alt
+        ="Phis3 Logo" />
+
+
+
+  </h1>
+  <nav>
+    <ul id="nav">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h1>Welcome to Phis3</h1>
+  <p>Phis3 is a cash advance and retirement platform that provides users with a quick and easy way to get the cash they need and save for their future. Our platform offers competitive rates and flexible payment options to help you manage your finances with ease.</p>
+  
+  <div class="feature">
+    <img src="logo.png" alt="Product Feature" />
+    <div>
+      <h2>Cash Advance</h2>
+      <p>Our cash advance feature allows you to get the money you need quickly and without hassle. With competitive rates and flexible payment options, you can manage your finances with ease and avoid the stress of financial emergencies.</p>
+    </div>
+  </div>
+  
+  <div class="feature">
+    <div>
+      <h2>Retirement Platform</h2>
+      <p>Our retirement platform allows you to save for your future with ease. With a range of investment options and flexible contribution amounts, you can tailor your retirement plan to meet your needs and achieve your goals.</p>
+    </div>
+    <img src="logo.png" alt="Product Feature" />
+  </div>
+  
+  <div class="cta">
+    <h2>Ready to get started?</h2>
+    <p>To create an account and start using our platform, please contact our admin team to set up a meeting. We look forward to helping you manage your finances and plan for your future.</p>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2023 Phis3. All Rights Reserved.</p>
+</footer>
+
+  </body></html>
