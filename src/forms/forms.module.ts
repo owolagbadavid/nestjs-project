@@ -11,6 +11,7 @@ import {
   SupportingDocs,
 } from '../entities';
 import { UsersModule } from '../users/users.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   controllers: [FormsController],
@@ -25,6 +26,7 @@ import { UsersModule } from '../users/users.module';
       Approvals,
     ]),
     UsersModule,
+    MailModule,
   ],
   exports: [FormsService],
 })

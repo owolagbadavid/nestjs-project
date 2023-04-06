@@ -9,6 +9,8 @@ async function bootstrap() {
   const appConfig = configuration().app;
   const secret = appConfig.secret;
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .addCookieAuth('token')
     .setTitle('CashAdvNRtr')
@@ -22,7 +24,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('/api', app, document);
+  SwaggerModule.setup('/api/docs', app, document);
 
   await app.listen(3000);
 }

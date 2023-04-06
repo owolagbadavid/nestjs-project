@@ -39,7 +39,8 @@ import {
   compareDetailsAmount,
   compareDetailsNTotalAmount,
 } from '../utils';
-import { Role } from '../types';
+import { FormType, Role } from '../types';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class FormsService {
@@ -57,6 +58,7 @@ export class FormsService {
     @InjectRepository(Approvals) private approvalsRepo: Repository<Approvals>,
     private usersService: UsersService,
     private dataSource: DataSource,
+    private mailService: MailService,
   ) {}
 
   // $create advance form
@@ -88,11 +90,20 @@ export class FormsService {
     });
     advanceForm.supervisorToken = randomBytes(10).toString('hex');
     // TODO: send token to supervisor
+    const staffName = `${user.firstName} ${user.lastName}`;
+
     advanceForm = setDefaults(advanceForm);
     try {
       await queryRunner.manager.save(advanceForm);
 
       //TODO: Send email notification to supervisor
+
+      await this.mailService.sendSupervisorToken(
+        user.supervisor,
+        staffName,
+        advanceForm,
+        FormType.ADVANCE,
+      );
 
       await queryRunner.commitTransaction();
     } catch (error) {

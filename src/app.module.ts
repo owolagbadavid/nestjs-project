@@ -21,6 +21,8 @@ import {
   Approvals,
   SupportingDocs,
 } from './entities';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -45,6 +47,10 @@ import {
     UnitModule,
     MailModule,
     FormsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
+      exclude: ['/api/(.*)'],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
