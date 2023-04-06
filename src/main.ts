@@ -9,7 +9,7 @@ async function bootstrap() {
   const appConfig = configuration().app;
   const secret = appConfig.secret;
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
+  // app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .addCookieAuth('token')

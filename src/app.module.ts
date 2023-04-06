@@ -49,7 +49,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     FormsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client'),
-      exclude: ['/api/(.*)'],
+      serveRoot: '/',
+      // serveStaticOptions: { fallthrough: false },
     }),
   ],
   controllers: [AppController],
