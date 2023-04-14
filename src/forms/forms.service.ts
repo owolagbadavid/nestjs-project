@@ -10,8 +10,8 @@ import {
   ApprovalOrRejectionDto,
   AdvanceFormDto,
   RetirementFormDto,
-  FilterDto,
-  RelationDto,
+  FormFilterDto,
+  FormRelationDto,
 } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -192,17 +192,17 @@ export class FormsService {
     return 'Form created successfully';
   }
   // $find all advance forms
-  async findAllAdvanceForms(filterDto: FilterDto) {
+  async findAllAdvanceForms(formFilterDto: FormFilterDto) {
     const advanceForms = await this.advanceFormRepo.find({
-      where: { ...filterDto },
+      where: { ...formFilterDto },
     });
 
     return advanceForms.map((form) => new SerializedAdvanceForm(form));
   }
   // $find all retirement forms
-  async findAllRetirementForms(filterDto: FilterDto) {
+  async findAllRetirementForms(formFilterDto: FormFilterDto) {
     const retirementForms = await this.retirementFormRepo.find({
-      where: { ...filterDto },
+      where: { ...formFilterDto },
     });
 
     return retirementForms.map((form) => new SerializedRetirementForm(form));
@@ -210,7 +210,7 @@ export class FormsService {
   // $find one advance form with its details
   async findOneAdvanceForm(
     id: number,
-    relationDto: RelationDto,
+    relationDto: FormRelationDto,
     form?: AdvanceForm,
   ) {
     if (form) return new SerializedAdvanceForm(form);
@@ -240,7 +240,7 @@ export class FormsService {
   // $find one retirement form with its details and supporting documents
   async findOneRetirementForm(
     id: number,
-    relationDto: RelationDto,
+    relationDto: FormRelationDto,
     form?: RetirementForm,
   ) {
     if (form) return new SerializedRetirementForm(form);
@@ -582,18 +582,24 @@ export class FormsService {
   }
 
   // $get all directReports advance forms(can take a filter query)
-  async getMyDirectReportsAdvanceForms(user: User, filterDto: FilterDto) {
+  async getMyDirectReportsAdvanceForms(
+    user: User,
+    formFilterDto: FormFilterDto,
+  ) {
     const advanceForms = await this.advanceFormRepo.find({
-      where: { user: { supervisorId: user.id }, ...filterDto },
+      where: { user: { supervisorId: user.id }, ...formFilterDto },
     });
 
     return advanceForms.map((form) => new SerializedAdvanceForm(form));
   }
 
   // $get all directReports retirement forms(can take a filter query)
-  async getMyDirectReportsRetirementForms(user: User, filterDto: FilterDto) {
+  async getMyDirectReportsRetirementForms(
+    user: User,
+    formFilterDto: FormFilterDto,
+  ) {
     const retirementForms = await this.retirementFormRepo.find({
-      where: { user: { supervisorId: user.id }, ...filterDto },
+      where: { user: { supervisorId: user.id }, ...formFilterDto },
     });
 
     return retirementForms.map((form) => new SerializedRetirementForm(form));

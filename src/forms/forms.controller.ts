@@ -23,7 +23,7 @@ import {
   ApprovalOrRejectionDto,
   AdvanceFormDto,
   RetirementFormDto,
-  FilterDto,
+  FormFilterDto,
   // RelationDto,
 } from './dto';
 import {
@@ -112,8 +112,8 @@ export class FormsController {
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('advance')
-  findAllAdvanceForms(@Query() filterDto: FilterDto) {
-    return this.formsService.findAllAdvanceForms(filterDto);
+  findAllAdvanceForms(@Query() formFilterDto: FormFilterDto) {
+    return this.formsService.findAllAdvanceForms(formFilterDto);
   }
 
   // $get all retirement forms
@@ -121,8 +121,8 @@ export class FormsController {
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('retirement')
-  findAllRetirementForms(@Query() filterDto: FilterDto) {
-    return this.formsService.findAllRetirementForms(filterDto);
+  findAllRetirementForms(@Query() formFilterDto: FormFilterDto) {
+    return this.formsService.findAllRetirementForms(formFilterDto);
   }
 
   // $get my directReports advance form
@@ -130,9 +130,12 @@ export class FormsController {
   @Get('advance/myDirectReports')
   getMyDirectReportsAdvanceForms(
     @GetUser() user: User,
-    @Query() filterDto: FilterDto,
+    @Query() formFilterDto: FormFilterDto,
   ) {
-    return this.formsService.getMyDirectReportsAdvanceForms(user, filterDto);
+    return this.formsService.getMyDirectReportsAdvanceForms(
+      user,
+      formFilterDto,
+    );
   }
 
   // $get my directReports retirement form
@@ -140,9 +143,12 @@ export class FormsController {
   @Get('retirement/myDirectReports')
   getMyDirectReportsRetirementForms(
     @GetUser() user: User,
-    @Query() filterDto: FilterDto,
+    @Query() formFilterDto: FormFilterDto,
   ) {
-    return this.formsService.getMyDirectReportsRetirementForms(user, filterDto);
+    return this.formsService.getMyDirectReportsRetirementForms(
+      user,
+      formFilterDto,
+    );
   }
 
   // $get single advance form by id

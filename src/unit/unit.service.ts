@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUnitDto, UpdateUnitDto } from './dto';
+import { CreateUnitDto, UnitFilterDto, UpdateUnitDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Unit } from '../entities';
 import { Repository } from 'typeorm';
@@ -35,8 +35,8 @@ export class UnitService {
     return this.unitRepo.save(unit);
   }
 
-  findAll(): Promise<Unit[]> {
-    return this.unitRepo.find();
+  findAll(filterDto: UnitFilterDto): Promise<Unit[]> {
+    return this.unitRepo.find({ where: { ...filterDto } });
   }
 
   async findOne(id: number) {

@@ -228,4 +228,27 @@
     "departmentId": 1,
     "password": "secret",
     "role": 0
-  }]
+  },
+{
+    "email": "owolagbadavid@gmail.com",
+    "firstName": "Mike",
+    "lastName": "Don",
+    "isVerified": "true",
+    "unitId": 1,
+    "verified": "11/21/2022",
+    "departmentId": 1,
+    "password": "secret",
+    "role": 2
+}
+,
+{
+    "email": "staff3@staff.com",
+    "firstName": "Mike3333",
+    "lastName": "Don3333",
+    "isVerified": "true",
+    "unitId": 1,
+    "verified": "11/21/2022",
+    "departmentId": 1,
+    "password": "secret",
+    "role": 0
+}]

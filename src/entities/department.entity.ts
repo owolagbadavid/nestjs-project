@@ -6,10 +6,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User, Unit } from './';
+import type { Unit } from './unit.entity';
+import type { User } from './user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
+@Entity('departments')
 export class Department {
   @ApiProperty()
   @PrimaryGeneratedColumn()
@@ -23,13 +24,13 @@ export class Department {
   @Column({ nullable: true })
   headId: number;
 
-  @OneToOne(() => User)
+  @OneToOne('User')
   @JoinColumn()
   head: User;
 
-  @OneToMany(() => Unit, (unit) => unit.department)
+  @OneToMany('Unit', 'department')
   units: Unit[];
 
-  @OneToMany(() => User, (user) => user.department)
+  @OneToMany('User', 'department')
   members: User[];
 }

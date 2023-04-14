@@ -3,8 +3,8 @@ import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional } from 'class-validator';
 import { ApiSchema } from '../../decorators';
 
-@ApiSchema({ name: 'Relation' })
-export class RelationDto {
+@ApiSchema({ name: 'Form_Relation' })
+export class FormRelationDto {
   @ApiPropertyOptional()
   @IsOptional()
   @Type(() => Boolean)

@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 
 import { Type } from 'class-transformer';
-import { ExpenseDetailsDto } from '.';
+import { ExpenseDetailsDto } from './expense-details.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiSchema } from '../../decorators';
 
@@ -73,7 +73,7 @@ export class RetirementFormDto {
   @Min(0)
   balanceToOrganization: number;
 
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: 'string' })
   @IsArray()
   @ArrayNotEmpty()
   @IsString({ each: true })

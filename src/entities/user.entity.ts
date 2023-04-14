@@ -1,4 +1,9 @@
-import { Department, AdvanceForm, Unit, RetirementForm, Approvals } from './';
+import type { Department } from './department.entity';
+import type { AdvanceForm } from './advance-form.entity';
+import type { Unit } from './unit.entity';
+import type { RetirementForm } from './retirement-form.entity';
+import type { Approvals } from './approval.entity';
+import { RoleColumn } from './role-column';
 import { Role } from '../types';
 import {
   BeforeInsert,
@@ -12,7 +17,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
-@Entity()
+@Entity('users')
 export class User {
   @BeforeInsert()
   hasPassword?() {
@@ -52,10 +57,10 @@ export class User {
   @Column({ nullable: true })
   verified: Date;
 
-  @ManyToOne(() => Department, (department) => department.members)
+  @ManyToOne('Department', 'members')
   department: Department;
 
-  @ManyToOne(() => Unit, (unit) => unit.members)
+  @ManyToOne('Unit', 'members')
   unit: Unit;
 
   @ManyToOne(() => User, (user) => user.directReports, {
@@ -79,18 +84,18 @@ export class User {
   directReports: User[];
 
   @ApiProperty()
-  @Column({
-    type: 'enum',
-    enum: Role,
-    enumName: 'Role',
-    default: Role.Staff,
-  })
-  role: number;
+  @Column(
+    RoleColumn({
+      enum: Role,
+      default: Role.Staff,
+    }),
+  )
+  role: Role;
 
-  @OneToMany(() => AdvanceForm, (advanceForm) => advanceForm.user)
+  @OneToMany('AdvanceForm', 'user')
   advanceForms: AdvanceForm[];
 
-  @OneToMany(() => RetirementForm, (retirementForm) => retirementForm.user)
+  @OneToMany('RetirementForm', 'user')
   retirementForms: RetirementForm[];
 
   @Column({ nullable: true })
@@ -99,7 +104,7 @@ export class User {
   @Column({ nullable: true })
   passwordTokenExpiration: Date;
 
-  @OneToMany(() => Approvals, (approval) => approval.approvedBy)
+  @OneToMany('Approvals', 'approvedBy')
   approvals: Approvals[];
 }
 

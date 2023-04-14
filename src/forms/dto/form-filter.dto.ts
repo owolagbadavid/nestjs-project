@@ -4,8 +4,8 @@ import { IsBoolean, IsOptional, IsPositive } from 'class-validator';
 import { ApiSchema } from '../../decorators';
 import { Role } from '../../types';
 
-@ApiSchema({ name: 'Filters' })
-export class FilterDto {
+@ApiSchema({ name: 'Form_Filter' })
+export class FormFilterDto {
   @ApiPropertyOptional()
   @IsOptional()
   @Type(() => Number)

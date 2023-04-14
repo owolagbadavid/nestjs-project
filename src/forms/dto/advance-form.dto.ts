@@ -8,7 +8,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { AdvanceDetailsDto } from '.';
+import { AdvanceDetailsDto } from './advance-details.dto';
 import { Type } from 'class-transformer';
 import { ApiSchema } from '../../decorators';
 import { ApiProperty } from '@nestjs/swagger';

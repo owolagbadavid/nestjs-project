@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { AdvanceForm } from './';
+import type { AdvanceForm } from './advance-form.entity';
+import { ProductColumn } from './product-column';
 import { Products } from '../types';
 @Entity()
 export class AdvanceDetails {
@@ -9,18 +10,14 @@ export class AdvanceDetails {
   @Column({ nullable: true })
   advanceFormId: number;
 
-  @ManyToOne(() => AdvanceForm, (advanceForm) => advanceForm.details, {
+  @ManyToOne('AdvanceForm', 'details', {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
   })
   advanceForm: AdvanceForm;
 
-  @Column({
-    type: 'enum',
-    enum: Products,
-    enumName: 'Product',
-  })
+  @Column(ProductColumn({ enum: Products }))
   product: Products;
 
   @Column()

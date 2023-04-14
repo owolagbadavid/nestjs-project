@@ -8,9 +8,10 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { UnitService } from './unit.service';
-import { UpdateUnitDto, CreateUnitDto } from './dto';
+import { UpdateUnitDto, CreateUnitDto, UnitFilterDto } from './dto';
 import { JwtGuard, RolesGuard } from '../auth/guards';
 import { ApiRes, Role } from '../types';
 import {
@@ -47,8 +48,8 @@ export class UnitController {
 
   @ApiOkResponse({ type: Unit, isArray: true })
   @Get()
-  findAll(): Promise<Unit[]> {
-    return this.unitService.findAll();
+  findAll(@Query() filterDto: UnitFilterDto): Promise<Unit[]> {
+    return this.unitService.findAll(filterDto);
   }
 
   @ApiOkResponse({ type: Unit })

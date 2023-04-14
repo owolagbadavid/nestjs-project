@@ -8,18 +8,22 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { RetirementForm, Approvals, User, AdvanceDetails } from './';
+import type { RetirementForm } from './retirement-form.entity';
+import type { Approvals } from './approval.entity';
+import type { AdvanceDetails } from './advance-details.entity';
+import type { User } from './user.entity';
+import { RoleColumn } from './role-column';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../types';
 
-@Entity()
+@Entity('advance_forms')
 export class AdvanceForm {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.advanceForms)
+  @ManyToOne('User', 'advanceForms')
   user: User;
 
   @ApiProperty()
@@ -55,11 +59,11 @@ export class AdvanceForm {
   financeGoAhead: boolean;
 
   @ApiProperty()
-  @Column()
+  @Column(RoleColumn({ enum: Role }))
   approvalLevel: Role;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column(RoleColumn({ enum: Role, nullable: true }))
   nextApprovalLevel: Role;
 
   @ApiProperty()
@@ -90,15 +94,11 @@ export class AdvanceForm {
   @Column({ nullable: true })
   remarkByFin: string;
 
-  @ApiProperty({ isArray: true, type: () => AdvanceDetails })
-  @OneToMany(
-    () => AdvanceDetails,
-    (advanceDetails) => advanceDetails.advanceForm,
-    { cascade: true },
-  )
+  @ApiProperty({ isArray: true, type: 'AdvanceDetails' })
+  @OneToMany('AdvanceDetails', 'advanceForm', { cascade: true })
   details: AdvanceDetails[];
 
-  @OneToMany(() => Approvals, (approvals) => approvals.advanceApproved)
+  @OneToMany('Approvals', 'advanceApproved')
   approvals: Approvals[];
 
   @ApiProperty()
@@ -109,7 +109,7 @@ export class AdvanceForm {
   @Column()
   totalAmount: number;
 
-  @OneToOne(() => RetirementForm, (retirementForm) => retirementForm.advance, {
+  @OneToOne('RetirementForm', 'advance', {
     onDelete: 'SET NULL',
   })
   @JoinColumn()

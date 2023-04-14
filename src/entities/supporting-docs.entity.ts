@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { RetirementForm } from './';
+import type { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
@@ -24,11 +24,11 @@ export class SupportingDocs {
   @Column()
   documentDescription: string;
 
-  @ManyToOne(
-    () => RetirementForm,
-    (retirementForm) => retirementForm.supportingDocs,
-    { onUpdate: 'CASCADE', onDelete: 'CASCADE', orphanedRowAction: 'delete' },
-  )
+  @ManyToOne('RetirementForm', 'supportingDocs', {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   retirementForm: RetirementForm;
 
   @ApiProperty({

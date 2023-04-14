@@ -8,29 +8,28 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import {
-  User,
-  AdvanceForm,
-  ExpenseDetails,
-  Approvals,
-  SupportingDocs,
-} from './';
+import type { SupportingDocs } from './supporting-docs.entity';
+import type { User } from './user.entity';
+import type { AdvanceForm } from './advance-form.entity';
+import type { ExpenseDetails } from './expense-details.entity';
+import type { Approvals } from './approval.entity';
 import { Role } from '../types';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { RoleColumn } from './role-column';
 
 export enum RetirementType {
   CASH = 'cash',
   ADVANCE = 'advance',
 }
 
-@Entity()
+@Entity('retirement_forms')
 export class RetirementForm {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.retirementForms)
+  @ManyToOne('User', 'retirementForms')
   user: User;
 
   @ApiProperty()
@@ -56,7 +55,7 @@ export class RetirementForm {
   })
   type: string;
 
-  @OneToOne(() => AdvanceForm, (advanceForm) => advanceForm.retirement)
+  @OneToOne('AdvanceForm', 'retirement')
   advance: AdvanceForm;
 
   @ApiProperty()
@@ -68,11 +67,11 @@ export class RetirementForm {
   financeGoAhead: boolean;
 
   @ApiProperty()
-  @Column()
-  approvalLevel: number;
+  @Column(RoleColumn({ enum: Role }))
+  approvalLevel: Role;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column(RoleColumn({ enum: Role, nullable: true }))
   nextApprovalLevel: Role;
 
   @ApiProperty()
@@ -103,27 +102,19 @@ export class RetirementForm {
   @Column({ nullable: true })
   remarkByFin: string;
 
-  @ApiProperty({ isArray: true, type: () => ExpenseDetails })
-  @OneToMany(
-    () => ExpenseDetails,
-    (expenseDetails) => expenseDetails.retirementForm,
-    { cascade: true },
-  )
+  @ApiProperty({ isArray: true, type: 'ExpenseDetails' })
+  @OneToMany('ExpenseDetails', 'retirementForm', { cascade: true })
   details: ExpenseDetails[];
 
   @ApiProperty()
   @Column()
   totalAmount: number;
 
-  @ApiProperty({ isArray: true, type: () => SupportingDocs })
-  @OneToMany(
-    () => SupportingDocs,
-    (supportingDocs) => supportingDocs.retirementForm,
-    { cascade: true },
-  )
+  @ApiProperty({ isArray: true, type: 'SupportingDocs' })
+  @OneToMany('SupportingDocs', 'retirementForm', { cascade: true })
   supportingDocs: SupportingDocs[];
 
-  @OneToMany(() => Approvals, (approvals) => approvals.retirementApproved)
+  @OneToMany('Approvals', 'retirementApproved')
   approvals: Approvals[];
 
   @ApiProperty()
