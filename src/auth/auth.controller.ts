@@ -3,11 +3,11 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  Get,
+  // Get,
   HttpCode,
   HttpStatus,
   Post,
-  Query,
+  // Query,
   Res,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,7 +15,6 @@ import { AuthService } from './auth.service';
 import {
   LoginUserDto,
   ResetPasswordDto,
-  VerifyEmailDto,
   SuperUserDto,
   ForogotPasswordDto,
 } from './dtos';
@@ -23,7 +22,7 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiQuery,
+  // ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -67,16 +66,6 @@ export class AuthController {
   @Post('superUserSignup')
   superUserSignup(@Body() superUserDto: SuperUserDto): Promise<ApiRes> {
     return this.authService.superUserSignup(superUserDto);
-  }
-
-  @ApiBadRequestResponse({ type: ApiRes })
-  @ApiUnauthorizedResponse({ type: ApiRes })
-  @ApiOkResponse({ type: ApiRes })
-  @Get('verifyEmail')
-  @ApiQuery({ name: 'email' })
-  @ApiQuery({ name: 'verificationToken' })
-  verifyEmail(@Query() verifyEmailDto: VerifyEmailDto): Promise<ApiRes> {
-    return this.authService.verifyEmail(verifyEmailDto);
   }
 
   @ApiBadRequestResponse({ type: ApiRes })

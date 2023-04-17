@@ -4,18 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  LoginUserDto,
-  ResetPasswordDto,
-  SuperUserDto,
-  VerifyEmailDto,
-} from './dtos';
+import { LoginUserDto, ResetPasswordDto, SuperUserDto } from './dtos';
 import { UsersService } from '../users/users.service';
 import { createHash, randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SerializedUser, User } from '../entities';
+import { ApiRes } from '../types';
 
 @Injectable()
 export class AuthService {
@@ -71,27 +67,7 @@ export class AuthService {
     };
   }
 
-  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
-    const { email, verificationToken } = verifyEmailDto;
-    const user = await this.usersService.findOneByEmail(email);
-    if (!user) throw new UnauthorizedException('verification failed');
-
-    if (user.isVerified === true)
-      throw new BadRequestException('User already verified');
-
-    if (verificationToken !== user.verificationToken)
-      throw new UnauthorizedException('verification failed');
-
-    await this.usersService.update(user.id, user);
-
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Redirect to reset password page',
-      verificationToken,
-    };
-  }
-
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<ApiRes> {
     const { token, email } = resetPasswordDto;
     let { password } = resetPasswordDto;
     const user = await this.usersService.findOneByEmail(email);
@@ -119,6 +95,8 @@ export class AuthService {
         user.verificationToken = '';
         user.verified = new Date();
         await this.usersService.update(user.id, user);
+      } else {
+        throw new BadRequestException('Invalid token');
       }
       // return after successful update
       return {

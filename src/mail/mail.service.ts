@@ -8,12 +8,12 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendUserConfirmation(user: User, token: string) {
-    const url = `localhost:3000/auth/verifyemail?email=${user.email}&verificationToken=${token}`;
+    const url = `localhost:3000/resetPassword?email=${user.email}&token=${token}`;
 
     await this.mailerService.sendMail({
       to: user.email,
       // from: '"Support Team" <support@example.com>', // override default from
-      subject: 'Your Account has been created! Confirm your Email',
+      subject: 'Reset your password',
       template: './confirmation', // `.hbs` extension is appended automatically
       context: {
         // ✏️ filling curly brackets with content
