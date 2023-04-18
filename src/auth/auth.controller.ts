@@ -3,12 +3,14 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
+  Get,
   // Get,
   HttpCode,
   HttpStatus,
   Post,
   // Query,
   Res,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -30,6 +32,7 @@ import { ApiRes } from '../types/api-response';
 import { User } from '../entities';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -46,7 +49,7 @@ export class AuthController {
   async login(
     @Res({ passthrough: true }) res: Response,
     @Body() loginUserDto: LoginUserDto,
-  ): Promise<User> {
+  ): Promise<ApiRes> {
     const { user, token } = await this.authService.login(loginUserDto);
     const longerExp = 1000 * 60 * 60 * 2; // 2 hours
 
@@ -58,7 +61,11 @@ export class AuthController {
       expires: new Date(Date.now() + longerExp),
     });
 
-    return user;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'login successful',
+      data: user,
+    };
   }
 
   @ApiBadRequestResponse({ type: ApiRes })
@@ -88,7 +95,26 @@ export class AuthController {
 
   @ApiOkResponse({ type: ApiRes })
   @Delete('logout')
-  logout(): Promise<ApiRes> {
+  logout(@Res({ passthrough: true }) res: Response): Promise<ApiRes> {
+    // destroy cookie
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: this.config.get('NODE_ENV') === 'production',
+      signed: true,
+      expires: new Date(),
+    });
+
+    // logout user
     return this.authService.logout();
+  }
+
+  @ApiOkResponse({ type: ApiRes })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('check')
+  async check(): Promise<ApiRes> {
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User is logged in',
+    };
   }
 }

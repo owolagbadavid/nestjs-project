@@ -11,4 +11,7 @@ export class ApiRes {
 
   @ApiPropertyOptional()
   error?: string;
+
+  @ApiPropertyOptional()
+  data?: any;
 }

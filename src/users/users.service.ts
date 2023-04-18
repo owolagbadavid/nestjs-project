@@ -77,7 +77,7 @@ export class UsersService {
     await this.userRepository.save(user);
 
     // send email to the user
-    // await this.mailService.sendUserConfirmation(user, verificationToken);
+    await this.mailService.sendUserConfirmation(user, verificationToken);
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -181,6 +181,14 @@ export class UsersService {
     //   verificationToken,
     //   ...rest
     // }) => rest)(user);
+  }
+
+  async getMe(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) throw new NotFoundException(`User ${id} not found`);
+
+    return new SerializedUser(user);
   }
 
   //Find One User by email

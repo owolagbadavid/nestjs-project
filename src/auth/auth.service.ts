@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SerializedUser, User } from '../entities';
 import { ApiRes } from '../types';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwt: JwtService,
     private config: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async superUserSignup(superUserDto: SuperUserDto) {
@@ -127,6 +129,7 @@ export class AuthService {
         .digest('hex');
       user.passwordTokenExpiration = passwordTokenExpiration;
       await this.usersService.update(user.id, user);
+      await this.mailService.sendUserConfirmation(user, passwordToken);
     }
 
     return {

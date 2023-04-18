@@ -26,7 +26,7 @@ import {
 import { User } from '../entities';
 import { ApiRes, Role } from '../types';
 import { JwtGuard, RolesGuard, RolesOrIdGuard } from '../auth/guards';
-import { Roles } from '../decorators';
+import { GetUser, Roles } from '../decorators';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Users')
@@ -53,6 +53,15 @@ export class UsersController {
   @Get()
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
+  }
+
+  //Get /me
+  @ApiBadRequestResponse({ type: ApiRes })
+  @ApiNotFoundResponse({ type: ApiRes })
+  @ApiOkResponse({ type: User })
+  @Get('me')
+  getMe(@GetUser('id', ParseIntPipe) id: number): Promise<User> {
+    return this.usersService.findOne(+id);
   }
 
   //Get /:id

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Login</title>
+    <title>login</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -43,7 +43,7 @@
                 <!-- Reset password on the right -->
                 <div class="col-md-6 px-0">
                     <div class="card">
-                      <div class="card-header">
+                      <div class="card-header bg-white">
                         <h4 class="text-center">Account Login</h4>
                       </div>
                       <div class="card-body">
@@ -55,12 +55,14 @@
                           <div class="form-group">
                             <label for="password">Password</label>
                             <input type="password" class="form-control" id="password" placeholder="Password">
+                            
+                            
                           </div>
 
                           <div class="text-end"><!-- text end to move it to the end of the container --> 
                             <a href="../forgotpassword">Forgot Password?</a>
                         </div><br>
-                          <button type="submit" class="btn btn-primary btn-block">Login</button>
+                          <button type="submit" class="btn btn-primary btn-block" id="login-btn">Login</button>
                         </form>
                       </div>
                     </div>
@@ -68,5 +70,63 @@
                 </div>
               </div>
             </body>
+            <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+            <script>
+//check if user is logged in
+
+    $.ajax({
+        url: "http://localhost:3000/auth/check",
+        type: "GET",
+        success: function(response) {
+            console.log(response);
+            if (response.statusCode == 200) {
+              window.location.href = "../dashboard";
+            }
+            else{
+              return false;
+            }
+        },
+        error: function(error) {
+            console.log(error);
+            return false
+        }
+    });
+
+
+// send login request to server in jquery
+$(document).ready(function() {
+    $("#login-btn").click(function(e) {
+      e.preventDefault();
+        var email = $("#email").val();
+        var password = $("#password").val();
+        var data = {
+            email: email,
+            password: password
+        }
+        $.ajax({
+            url: "http://localhost:3000/auth/login",
+            type: "POST",
+            data: data,
+            success: function(response) {
+                console.log(response);
+                if (response.statusCode == 201) {
+                    window.location.href = "../dashboard";
+                }   
+                alert(response.message);
+
+            },
+            error: function(error) {
+              alert(error.responseJSON.message);
+                console.log(error);
+            }
+        });
+    });
+});
+
+
+
+
+            </script>
             </html>
             

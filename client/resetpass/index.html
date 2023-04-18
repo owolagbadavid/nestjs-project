@@ -43,7 +43,7 @@
                 <!-- Reset password on the right -->
                       <div class="col-md-6 px-0">
                         <div class="card">
-                          <div class="card-header">
+                          <div class="card-header bg-white">
                             <h4>Reset Password</h4>
                           </div>
                           <div class="card-body">
@@ -56,7 +56,7 @@
                                 <label for="confirm-password">Confirm Password</label>
                                 <input type="password" class="form-control" id="confirm-password" placeholder="Confirm new password">
                               </div>
-                              <button type="submit" class="btn btn-primary">Reset Password</button>
+                              <button type="submit" class="btn btn-primary" id="reset-pass-btn">Reset Password</button>
                             </form>
                     
                 </div>
@@ -65,11 +65,80 @@
     </div>
 </section>
     <!-- Include Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </body>
 
+<script>
+    //get email and token from query string
+    var urlParams = new URLSearchParams(window.location.search);
+    var email = urlParams.get('email');
+    var token = urlParams.get('token');
+
+    //if no email or token is found, redirect to login page
+    if (!email || !token) {
+        window.location.href = "http://localhost:3000/login";
+    }
+
+    // store email and token in local storage
+    localStorage.setItem("email", email);
+    localStorage.setItem("token", token);
+    
+
+
+    // check if the password and confirm password are the same
+    function checkPasswordMatch() {
+        var password = $("#new-password").val();
+        var confirmPassword = $("#confirm-password").val();
+        jQuery('<p>', {id: 'divCheckPasswordMatch',}).appendTo('.form-group');
+
+        if (password.length < 4)
+        return $("#divCheckPasswordMatch").html("Passwords is too short").css('color', 'red')?false:false
+
+        else if (password != confirmPassword)
+        //create a div to display the error message
+        return $("#divCheckPasswordMatch").html("Passwords do not match!").css('color', 'red')?false:false
+
+        else
+        return $("#divCheckPasswordMatch").html("Passwords match.").css('color', 'green')?true:true;
+    }
+    // add and onclick event listenener to submit button
+    
+    $("#reset-pass-btn").click(function (e) {
+        e.preventDefault();
+        if(checkPasswordMatch()){
+            // send the password to the server
+            $.ajax({
+                url: 'http://localhost:3000/auth/resetpassword',
+                type: 'POST',
+                data: {
+                    password: $("#new-password").val(),
+                    email: localStorage.getItem("email"),
+                    token: localStorage.getItem("token")
+                },
+                success: function (data) {
+
+                    if (data.statusCode == 200) {
+                        alert("Password reset successful");
+                        window.location.href = "http://localhost:3000/login";
+                    } else {
+                        console.log(data.responseJSON.message.toString());
+                        alert(`Password reset failed: ${data.message}`);
+                    }
+                },
+                error: function (err) {
+                    alert(`Password reset failed: ${err.responseJSON.message}`)
+                    console.log(err);
+                }
+            });
+        }
+    });
+
+    // add an onkeyup event listener to the confirm password input
+    $("#confirm-password").keyup(checkPasswordMatch);
+
+</script>
 
 </html>

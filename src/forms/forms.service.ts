@@ -223,16 +223,16 @@ export class FormsService {
       },
     });
 
-    const agg = await this.advanceFormRepo.query(
-      `
-      SELECT date_part('month', "updatedAt") AS month, COUNT(*) AS count
-      FROM advance_form
-      GROUP BY month;
+    // const agg = await this.advanceFormRepo.query(
+    //   `
+    //   SELECT date_part('month', "updatedAt") AS month, COUNT(*) AS count
+    //   FROM advance_form
+    //   GROUP BY month;
 
-      `,
-    );
-    console.log(agg);
-    console.log('mike');
+    //   `,
+    // );
+    // console.log(agg);
+    // console.log('mike');
 
     if (!advanceForm) throw new NotFoundException('No advance form found');
     return new SerializedAdvanceForm(advanceForm);
