@@ -8,10 +8,12 @@ export function setDefaults<Form extends AdvanceForm | RetirementForm>(
     throw new ForbiddenException('User has no supervisor');
 
   form.approvalLevel = 0;
-  form.nextApprovalLevel = form.user.supervisor.role;
+  form.nextApprovalLevel = form.user.supervisor.delegated
+    ? form.user.supervisor.delegate.role
+    : form.user.supervisor.role;
   form.approvals = [];
   form.preApprovalRemarkByFinance = null;
-  form.delegatedByPD = false;
+  // form.delegatedByPD = false;
   form.pushedToFinance = false;
   form.approvedByFin = false;
   form.rejected = false;

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import { FormsController } from './forms.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -25,8 +25,8 @@ import { MailModule } from '../mail/mail.module';
       SupportingDocs,
       Approvals,
     ]),
-    UsersModule,
     MailModule,
+    forwardRef(() => UsersModule),
   ],
   exports: [FormsService],
 })

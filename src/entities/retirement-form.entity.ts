@@ -76,10 +76,6 @@ export class RetirementForm {
 
   @ApiProperty()
   @Column({ default: false })
-  delegatedByPD: boolean;
-
-  @ApiProperty()
-  @Column({ default: false })
   pushedToFinance: boolean;
 
   @ApiProperty()
@@ -125,6 +121,9 @@ export class RetirementForm {
   @Column()
   balanceToOrganization: number;
 
+  @Column({ default: false })
+  disbursed: boolean;
+
   @Column({ nullable: true })
   supervisorToken: string;
 }
@@ -154,8 +153,6 @@ export class SerializedRetirementForm {
 
   nextApprovalLevel: Role;
 
-  delegatedByPD: boolean;
-
   pushedToFinance: boolean;
 
   approvedByFin: boolean;
@@ -179,6 +176,8 @@ export class SerializedRetirementForm {
   balanceToStaff: number;
 
   balanceToOrganization: number;
+
+  disbursed: boolean;
 
   @Exclude()
   supervisorToken: string;

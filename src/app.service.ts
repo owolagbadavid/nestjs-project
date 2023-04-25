@@ -90,11 +90,27 @@ export class AppService {
     user[4].supervisor = user[5];
     user[0 + 8].supervisor = user[1 + 8];
     user[1 + 8].supervisor = user[2 + 8];
-    user[user.length - 1].supervisor = user[4];
-    user[user.length - 2].supervisor = user[user.length - 2];
+    user[user.length - 1].supervisor = user[user.length - 2];
+    user[user.length - 2].supervisor = user[4];
 
     await this.departmentRepository.save(department);
     await this.unitRepository.save(unit);
     await this.userRepository.save(user);
+
+    let lastUser = JSON.parse(`{
+      "email": "owolagbadavid@icloud.com",
+      "firstName": "Mikey",
+      "lastName": "Donnno",
+      "isVerified": "true",
+      "unitId": 1,
+      "verified": "11/21/2022",
+      "departmentId": 1,
+      "password": "secret",
+      "role": 2
+    }`);
+    lastUser = this.userRepository.create(lastUser);
+    await this.userRepository.save(lastUser);
+
+    return 'seeded';
   }
 }

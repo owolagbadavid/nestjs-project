@@ -82,7 +82,7 @@ export class MeORSuperiorGuard implements CanActivate {
     // @if pd or DPd
     if (
       user.role === Role.PD ||
-      (user.role === Role.DeputyPD && form.delegatedByPD)
+      user.role === Role.DeputyPD /*&& form.delegatedByPD*/
     )
       return true;
     // @if user is owners supervisor

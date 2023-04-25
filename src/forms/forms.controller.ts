@@ -36,7 +36,14 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { GetUser, Roles, Forms, GetForm } from '../decorators';
+import {
+  GetUser,
+  Roles,
+  Forms,
+  GetForm,
+  GetApproval,
+  GetPD,
+} from '../decorators';
 import { AdvanceForm, RetirementForm, User } from '../entities';
 import { Role, FormType, ApiRes } from '../types';
 import {
@@ -46,6 +53,7 @@ import {
   RolesGuard,
   RolesMaxGuard,
   RolesMinGuard,
+  ApprovalGuard,
 } from '../auth/guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MaxFileSizeValidator, BodyInterceptor } from '../utils';
@@ -113,7 +121,7 @@ export class FormsController {
   @UseGuards(RolesMinGuard)
   @Get('advance')
   findAllAdvanceForms(@Query() formFilterDto: FormFilterDto) {
-    return this.formsService.findAllAdvanceForms(formFilterDto);
+    return this.formsService.findAllAdvanceForms(formFilterDto, {});
   }
 
   // $get all retirement forms
@@ -122,7 +130,7 @@ export class FormsController {
   @UseGuards(RolesMinGuard)
   @Get('retirement')
   findAllRetirementForms(@Query() formFilterDto: FormFilterDto) {
-    return this.formsService.findAllRetirementForms(formFilterDto);
+    return this.formsService.findAllRetirementForms(formFilterDto, {});
   }
 
   // $get my directReports advance form
@@ -286,13 +294,17 @@ export class FormsController {
   // $approve an advance form
   @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
+  @Forms(FormType.ADVANCE)
+  @UseGuards(ApprovalGuard)
   @Post('advance/:id/approve')
   async approveAdvance(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() approvalDto: ApprovalOrRejectionDto,
+    @GetApproval() approval: string,
+    @GetPD() pd: User,
   ): Promise<ApiRes> {
-    await this.formsService.approveAdvance(id, user, approvalDto);
+    await this.formsService.approveAdvance(id, user, approvalDto, approval, pd);
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -303,13 +315,23 @@ export class FormsController {
   // $approve a retirement form
   @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
+  @Forms(FormType.RETIREMENT)
+  @UseGuards(ApprovalGuard)
   @Post('retirement/:id/approve')
   async approveRetirement(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() approvalDto: ApprovalOrRejectionDto,
+    @GetApproval() approval: string,
+    @GetPD() pd: User,
   ) {
-    await this.formsService.approveRetirement(id, user, approvalDto);
+    await this.formsService.approveRetirement(
+      id,
+      user,
+      approvalDto,
+      approval,
+      pd,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -320,13 +342,16 @@ export class FormsController {
   // $reject a advance form
   @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
+  @Forms(FormType.ADVANCE)
+  @UseGuards(ApprovalGuard)
   @Post('advance/:id/reject')
   async rejectAdvance(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() rejectionDto: ApprovalOrRejectionDto,
+    @GetApproval() approval: string,
   ) {
-    await this.formsService.rejectAdvance(id, user, rejectionDto);
+    await this.formsService.rejectAdvance(id, user, rejectionDto, approval);
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -337,13 +362,16 @@ export class FormsController {
   // $reject a retirement form
   @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
+  @Forms(FormType.RETIREMENT)
+  @UseGuards(ApprovalGuard)
   @Post('retirement/:id/reject')
   async rejectRetirement(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
     @Body() rejectionDto: ApprovalOrRejectionDto,
+    @GetApproval() approval: string,
   ) {
-    await this.formsService.rejectRetirement(id, user, rejectionDto);
+    await this.formsService.rejectRetirement(id, user, rejectionDto, approval);
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -391,33 +419,33 @@ export class FormsController {
     };
   }
 
-  // $pd delegates to Deputy
-  @ApiOkResponse({ type: ApiRes })
-  @ApiBadRequestResponse({ type: ApiRes })
-  @Roles(Role.PD)
-  @UseGuards(RolesGuard)
-  @Get('advance/:id/delegate')
-  async delegateAdvanceApproval(@Param('id') id: number) {
-    await this.formsService.delegateAdvanceApproval(id);
+  // // $pd delegates to Deputy
+  // @ApiOkResponse({ type: ApiRes })
+  // @ApiBadRequestResponse({ type: ApiRes })
+  // @Roles(Role.PD)
+  // @UseGuards(RolesGuard)
+  // @Get('advance/:id/delegate')
+  // async delegateAdvanceApproval(@Param('id') id: number) {
+  //   await this.formsService.delegateAdvanceApproval(id);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Delegated',
-    };
-  }
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     message: 'Delegated',
+  //   };
+  // }
 
-  // $pd delegates to Deputy
-  @ApiOkResponse({ type: ApiRes })
-  @ApiBadRequestResponse({ type: ApiRes })
-  @Roles(Role.PD)
-  @UseGuards(RolesGuard)
-  @Get('retirement/:id/delegate')
-  async delegateRetirementApproval(@Param('id') id: number) {
-    await this.formsService.delegateRetirementApproval(id);
+  // // $pd delegates to Deputy
+  // @ApiOkResponse({ type: ApiRes })
+  // @ApiBadRequestResponse({ type: ApiRes })
+  // @Roles(Role.PD)
+  // @UseGuards(RolesGuard)
+  // @Get('retirement/:id/delegate')
+  // async delegateRetirementApproval(@Param('id') id: number) {
+  //   await this.formsService.delegateRetirementApproval(id);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Delegated',
-    };
-  }
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     message: 'Delegated',
+  //   };
+  // }
 }

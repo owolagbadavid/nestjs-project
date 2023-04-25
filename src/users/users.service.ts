@@ -2,17 +2,20 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department, SerializedUser, Unit, User } from '../entities';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { SuperUserDto } from '../auth/dtos';
 import { ApiRes } from '../types/api-response';
 import { MailService } from '../mail/mail.service';
+import { FormsService } from '../forms/forms.service';
+import { FormType, Role } from '../types';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +25,8 @@ export class UsersService {
     private departmentRepository: Repository<Department>,
     @InjectRepository(Unit) private unitRepository: Repository<Unit>,
     private mailService: MailService,
+    private formsService: FormsService,
+    private dataSource: DataSource,
   ) {}
 
   // $Create New User
@@ -257,11 +262,87 @@ export class UsersService {
   async findUserAndSupervisor(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['supervisor'],
+      relations: {
+        supervisor: { delegate: true },
+        delegate: true,
+      },
     });
 
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
     return user;
+  }
+
+  //$ find staff
+  async findStaff(role: Role) {
+    return this.userRepository.find({
+      where: { role },
+      relations: { delegate: true },
+    });
+  }
+
+  //$ delegate all user tasks to another user
+  async delegateUser(user: User, delegateId: number) {
+    //find user
+
+    const delegate = await this.findOne(delegateId);
+    user.delegated = true;
+    user = this.userRepository.create({ ...user });
+    user.delegate = delegate;
+    //find all advance forms linked to the user
+    let advanceForms = await this.formsService.findAllAdvanceForms(
+      {
+        nextApprovalLevel: user.role,
+      },
+      { user: true },
+    );
+
+    //find all retirement forms linked to the user
+    let retirementForms = await this.formsService.findAllRetirementForms(
+      {
+        nextApprovalLevel: user.role,
+      },
+      { user: true },
+    );
+
+    if (user.role < 3) {
+      advanceForms = advanceForms.filter(
+        (form) => form.user.supervisorId === user.id,
+      );
+
+      retirementForms = retirementForms.filter(
+        (form) => form.user.supervisorId === user.id,
+      );
+    }
+    advanceForms = advanceForms.map((form) =>
+      this.formsService.createFormEntity(FormType.ADVANCE, form),
+    );
+    retirementForms = retirementForms.map((form) =>
+      this.formsService.createFormEntity(FormType.RETIREMENT, form),
+    );
+
+    advanceForms.forEach((form) => (form.nextApprovalLevel = delegate.role));
+    retirementForms.forEach((form) => (form.nextApprovalLevel = delegate.role));
+
+    // start transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      queryRunner.manager.save(advanceForms);
+      queryRunner.manager.save(retirementForms);
+      // queryRunner.manager.save(delegate);
+      queryRunner.manager.save(user);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // @since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException('Something went wrong');
+    } finally {
+      // @you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
   }
 }

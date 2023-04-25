@@ -68,10 +68,6 @@ export class AdvanceForm {
 
   @ApiProperty()
   @Column({ type: 'bool', default: false })
-  delegatedByPD: boolean;
-
-  @ApiProperty()
-  @Column({ type: 'bool', default: false })
   pushedToFinance: boolean;
 
   @ApiProperty()
@@ -117,6 +113,9 @@ export class AdvanceForm {
 
   @Column({ nullable: true })
   supervisorToken: string;
+
+  @Column({ default: false })
+  disbursed: boolean;
 }
 
 export class SerializedAdvanceForm {
@@ -144,8 +143,6 @@ export class SerializedAdvanceForm {
 
   nextApprovalLevel: Role;
 
-  delegatedByPD: boolean;
-
   pushedToFinance: boolean;
 
   approvedByFin: boolean;
@@ -167,6 +164,8 @@ export class SerializedAdvanceForm {
   totalAmount: number;
 
   retirement: RetirementForm;
+
+  disbursed: boolean;
 
   @Exclude()
   supervisorToken: string;

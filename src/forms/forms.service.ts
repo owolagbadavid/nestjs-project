@@ -28,7 +28,7 @@ import {
   SerializedRetirementForm,
 } from '../entities';
 import { DataSource, Repository } from 'typeorm';
-import { UsersService } from '../users/users.service';
+// import { UsersService } from '../users/users.service';
 import { randomBytes } from 'crypto';
 import {
   reject,
@@ -39,7 +39,7 @@ import {
   compareDetailsAmount,
   compareDetailsNTotalAmount,
 } from '../utils';
-import { FormType, Role } from '../types';
+import { FormEntity, FormType } from '../types';
 import { MailService } from '../mail/mail.service';
 
 @Injectable()
@@ -56,7 +56,6 @@ export class FormsService {
     @InjectRepository(SupportingDocs)
     private supportingDocsRepo: Repository<SupportingDocs>,
     @InjectRepository(Approvals) private approvalsRepo: Repository<Approvals>,
-    private usersService: UsersService,
     private dataSource: DataSource,
     private mailService: MailService,
   ) {}
@@ -95,6 +94,7 @@ export class FormsService {
     advanceForm = setDefaults(advanceForm);
     try {
       await queryRunner.manager.save(advanceForm);
+      console.log(user);
 
       //TODO: Send email notification to supervisor
 
@@ -105,6 +105,14 @@ export class FormsService {
         FormType.ADVANCE,
       );
 
+      if (user.supervisor.delegated) {
+        await this.mailService.sendSupervisorToken(
+          user.supervisor.delegate,
+          staffName,
+          advanceForm,
+          FormType.ADVANCE,
+        );
+      }
       await queryRunner.commitTransaction();
     } catch (error) {
       console.log(error);
@@ -192,17 +200,29 @@ export class FormsService {
     return 'Form created successfully';
   }
   // $find all advance forms
-  async findAllAdvanceForms(formFilterDto: FormFilterDto) {
+  async findAllAdvanceForms(
+    formFilterDto: FormFilterDto,
+    relationDto: FormRelationDto,
+  ) {
     const advanceForms = await this.advanceFormRepo.find({
       where: { ...formFilterDto },
+      relations: {
+        ...relationDto,
+      },
     });
 
     return advanceForms.map((form) => new SerializedAdvanceForm(form));
   }
   // $find all retirement forms
-  async findAllRetirementForms(formFilterDto: FormFilterDto) {
+  async findAllRetirementForms(
+    formFilterDto: FormFilterDto,
+    relationDto: FormRelationDto,
+  ) {
     const retirementForms = await this.retirementFormRepo.find({
       where: { ...formFilterDto },
+      relations: {
+        ...relationDto,
+      },
     });
 
     return retirementForms.map((form) => new SerializedRetirementForm(form));
@@ -480,6 +500,8 @@ export class FormsService {
     id: number,
     user: User,
     approvalDto: ApprovalOrRejectionDto,
+    approvalType: string,
+    pd: User,
   ) {
     const advance = await this.advanceFormRepo.findOne({
       where: { id },
@@ -501,7 +523,7 @@ export class FormsService {
     });
 
     // @handles all types of approval(supervisor, pd, finance)
-    await approve(advance, approval, user, queryRunner, approvalDto.token);
+    await approve(approvalType, advance, approval, user, queryRunner, pd);
 
     //! console.log
     console.log(advance);
@@ -513,6 +535,8 @@ export class FormsService {
     id: number,
     user: User,
     approvalDto: ApprovalOrRejectionDto,
+    approvalType: string,
+    pd: User,
   ) {
     const retirement = await this.retirementFormRepo.findOne({
       where: { id },
@@ -535,7 +559,7 @@ export class FormsService {
     });
 
     // @handles all types of approval(supervisor, pd, finance)
-    await approve(retirement, approval, user, queryRunner, approvalDto.token);
+    await approve(approvalType, retirement, approval, user, queryRunner, pd);
 
     // !console.log
     console.log(retirement);
@@ -547,6 +571,7 @@ export class FormsService {
     id: number,
     user: User,
     rejectionDto: ApprovalOrRejectionDto,
+    rejectionType: string,
   ) {
     let advance = await this.advanceFormRepo.findOne({
       where: { id },
@@ -556,7 +581,7 @@ export class FormsService {
     if (!advance) throw new NotFoundException('Form not found');
 
     // @handles reject for all levels
-    advance = await reject(advance, user, rejectionDto);
+    advance = await reject(rejectionType, advance, user, rejectionDto);
     await this.advanceFormRepo.save(advance);
     return;
   }
@@ -566,6 +591,7 @@ export class FormsService {
     id: number,
     user: User,
     rejectionDto: ApprovalOrRejectionDto,
+    rejectionType: string,
   ) {
     let retirement = await this.retirementFormRepo.findOne({
       where: { id },
@@ -575,7 +601,7 @@ export class FormsService {
     if (!retirement) throw new NotFoundException('Form not found');
 
     // @handles reject for all levels
-    retirement = await reject(retirement, user, rejectionDto);
+    retirement = await reject(rejectionType, retirement, user, rejectionDto);
 
     await this.retirementFormRepo.save(retirement);
     return;
@@ -630,46 +656,55 @@ export class FormsService {
 
     return;
   }
-
-  // $pd delegates to Deputy
-  async delegateAdvanceApproval(id: number) {
-    let advance = await this.findOneAdvanceForm(id, {
-      user: true,
-    });
-
-    advance =
-      advance.nextApprovalLevel === Role.PD && advance.approvalLevel !== 0
-        ? advance
-        : null;
-
-    if (!advance) throw new ForbiddenException('Cant delegate approval');
-
-    advance.delegatedByPD = true;
-    advance.nextApprovalLevel = Role.DeputyPD;
-
-    await this.advanceFormRepo.save(advance);
-
-    return;
+  //create Form enity
+  createFormEntity<Type extends AdvanceForm | RetirementForm>(
+    type: FormType,
+    form: Type,
+  ) {
+    if (type === FormType.ADVANCE)
+      return this.advanceFormRepo.create(form) as FormEntity<Type>;
+    if (type === FormType.RETIREMENT)
+      return this.retirementFormRepo.create(form) as FormEntity<Type>;
   }
+  // // $pd delegates to Deputy
+  // async delegateAdvanceApproval(id: number) {
+  //   let advance = await this.findOneAdvanceForm(id, {
+  //     user: true,
+  //   });
 
-  // $pd delegates to Deputy
-  async delegateRetirementApproval(id: number) {
-    let retirement = await this.findOneRetirementForm(id, {
-      user: true,
-    });
+  //   advance =
+  //     advance.nextApprovalLevel === Role.PD && advance.approvalLevel !== 0
+  //       ? advance
+  //       : null;
 
-    retirement =
-      retirement.nextApprovalLevel === Role.PD && retirement.approvalLevel !== 0
-        ? retirement
-        : null;
+  //   if (!advance) throw new ForbiddenException('Cant delegate approval');
 
-    if (!retirement) throw new ForbiddenException('Cant delegate approval');
+  //   advance.delegatedByPD = true;
+  //   advance.nextApprovalLevel = Role.DeputyPD;
 
-    retirement.delegatedByPD = true;
-    retirement.nextApprovalLevel = Role.DeputyPD;
+  //   await this.advanceFormRepo.save(advance);
 
-    await this.retirementFormRepo.save(retirement);
+  //   return;
+  // }
 
-    return;
-  }
+  // // $pd delegates to Deputy
+  // async delegateRetirementApproval(id: number) {
+  //   let retirement = await this.findOneRetirementForm(id, {
+  //     user: true,
+  //   });
+
+  //   retirement =
+  //     retirement.nextApprovalLevel === Role.PD && retirement.approvalLevel !== 0
+  //       ? retirement
+  //       : null;
+
+  //   if (!retirement) throw new ForbiddenException('Cant delegate approval');
+
+  //   retirement.delegatedByPD = true;
+  //   retirement.nextApprovalLevel = Role.DeputyPD;
+
+  //   await this.retirementFormRepo.save(retirement);
+
+  //   return;
+  // }
 }

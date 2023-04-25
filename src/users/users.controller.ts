@@ -10,9 +10,11 @@ import {
   ParseIntPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto, UpdateUserDto, DelegationDto } from './dto';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
@@ -95,5 +97,11 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.remove(+id);
+  }
+
+  @Post('delegate')
+  @HttpCode(HttpStatus.OK)
+  delegate(@Body() delegationDto: DelegationDto, @GetUser() user: User) {
+    return this.usersService.delegateUser(user, delegationDto.delegateId);
   }
 }

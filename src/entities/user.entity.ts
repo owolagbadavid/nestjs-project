@@ -9,8 +9,10 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
@@ -106,6 +108,16 @@ export class User {
 
   @OneToMany('Approvals', 'approvedBy')
   approvals: Approvals[];
+
+  @Column({ default: false })
+  delegated: boolean;
+
+  @OneToOne('User')
+  @JoinColumn()
+  delegate: User;
+
+  @Column({ nullable: true })
+  delegateId: number;
 }
 
 export class SerializedUser {
@@ -148,6 +160,13 @@ export class SerializedUser {
   advanceForms: AdvanceForm[];
 
   retirementForms: RetirementForm[];
+
+  @Exclude()
+  delegated: boolean;
+
+  delegate: User;
+
+  delegateId: number;
 
   @Exclude()
   passwordToken: string;
