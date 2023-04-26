@@ -16,6 +16,7 @@ import { RoleColumn } from './role-column';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../types';
+import { SupportingDocs } from './supporting-docs.entity';
 
 @Entity('advance_forms')
 export class AdvanceForm {
@@ -105,6 +106,12 @@ export class AdvanceForm {
   @Column()
   totalAmount: number;
 
+  @ApiProperty()
+  @OneToOne('SupportingDocs', 'advanceForm', {
+    cascade: true,
+  })
+  emailApproval: SupportingDocs;
+
   @OneToOne('RetirementForm', 'advance', {
     onDelete: 'SET NULL',
   })
@@ -162,6 +169,8 @@ export class SerializedAdvanceForm {
   retirementId: number;
 
   totalAmount: number;
+
+  emailApproval: SupportingDocs;
 
   retirement: RetirementForm;
 

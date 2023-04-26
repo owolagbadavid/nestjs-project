@@ -1,6 +1,14 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import type { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { AdvanceForm } from './advance-form.entity';
 
 @Entity()
 export class SupportingDocs {
@@ -30,6 +38,14 @@ export class SupportingDocs {
     orphanedRowAction: 'delete',
   })
   retirementForm: RetirementForm;
+
+  @OneToOne('AdvanceForm', 'emailApproval', {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
+  @JoinColumn()
+  advanceForm: AdvanceForm;
 
   @ApiProperty({
     type: 'string',

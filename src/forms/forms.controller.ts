@@ -16,6 +16,7 @@ import {
   ParseFilePipe,
   HttpCode,
   ParseBoolPipe,
+  UploadedFile,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -55,7 +56,7 @@ import {
   RolesMinGuard,
   ApprovalGuard,
 } from '../auth/guards';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { MaxFileSizeValidator, BodyInterceptor } from '../utils';
 
 @ApiCookieAuth('cookie')
@@ -71,14 +72,26 @@ export class FormsController {
   // $create advance form
   @ApiCreatedResponse({ type: ApiRes })
   @ApiBadRequestResponse({ type: ApiRes })
+  @ApiConsumes('multipart/form-data')
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
+  @UseInterceptors(FileInterceptor('emailApproval'), BodyInterceptor)
   @Post('advance')
   async createAdvanceForm(
     @Body() createAdvanceFormDto: AdvanceFormDto,
     @GetUser() user: User,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 1000000 })],
+      }),
+    )
+    emailApproval: Express.Multer.File,
   ): Promise<ApiRes> {
-    await this.formsService.createAdvanceForm(createAdvanceFormDto, user);
+    await this.formsService.createAdvanceForm(
+      createAdvanceFormDto,
+      user,
+      emailApproval,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,

@@ -61,7 +61,11 @@ export class FormsService {
   ) {}
 
   // $create advance form
-  async createAdvanceForm(createAdvanceFormDto: AdvanceFormDto, user: User) {
+  async createAdvanceForm(
+    createAdvanceFormDto: AdvanceFormDto,
+    user: User,
+    emailApproval: Express.Multer.File,
+  ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
     // @checks if details and total amount are correct
@@ -83,10 +87,20 @@ export class FormsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    const supportingDoc = this.supportingDocsRepo.create({
+      file: emailApproval.buffer,
+      documentDescription: 'Email Approval',
+      fileName: emailApproval.originalname,
+      encoding: emailApproval.encoding,
+      mimeType: emailApproval.mimetype,
+    });
+
     let advanceForm = this.advanceFormRepo.create({
       ...createAdvanceFormDto,
       user,
+      emailApproval: supportingDoc,
     });
+    console.log(advanceForm);
     advanceForm.supervisorToken = randomBytes(10).toString('hex');
     // TODO: send token to supervisor
     const staffName = `${user.firstName} ${user.lastName}`;
@@ -98,12 +112,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        advanceForm,
-        FormType.ADVANCE,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(

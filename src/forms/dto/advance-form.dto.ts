@@ -12,6 +12,7 @@ import { AdvanceDetailsDto } from './advance-details.dto';
 import { Type } from 'class-transformer';
 import { ApiSchema } from '../../decorators';
 import { ApiProperty } from '@nestjs/swagger';
+import { SupportingDocs } from '../../entities';
 
 @ApiSchema({ name: 'FillAdvanceForm' })
 export class AdvanceFormDto {
@@ -56,4 +57,11 @@ export class AdvanceFormDto {
   @IsNumber()
   @IsPositive()
   totalAmount: number;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: true,
+  })
+  emailApproval: SupportingDocs;
 }
