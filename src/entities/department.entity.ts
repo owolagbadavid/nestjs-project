@@ -24,7 +24,7 @@ export class Department {
   @Column({ nullable: true })
   headId: number;
 
-  @OneToOne('User')
+  @OneToOne('User', { onDelete: 'RESTRICT' })
   @JoinColumn()
   head: User;
 

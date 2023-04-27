@@ -113,7 +113,7 @@ export class AdvanceForm {
   emailApproval: SupportingDocs;
 
   @OneToOne('RetirementForm', 'advance', {
-    onDelete: 'SET NULL',
+    onDelete: 'RESTRICT',
   })
   @JoinColumn()
   retirement: RetirementForm;

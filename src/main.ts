@@ -19,7 +19,7 @@ async function bootstrap() {
     .build();
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-
+  app.setGlobalPrefix('api');
   app.use(cookieParser(secret));
 
   const document = SwaggerModule.createDocument(app, config);

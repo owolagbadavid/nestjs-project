@@ -112,7 +112,7 @@ export class User {
   @Column({ default: false })
   delegated: boolean;
 
-  @OneToOne('User')
+  @OneToOne('User', { onDelete: 'RESTRICT' })
   @JoinColumn()
   delegate: User;
 

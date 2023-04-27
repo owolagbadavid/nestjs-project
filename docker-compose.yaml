@@ -1,0 +1,14 @@
+version: '3.8' 
+services: 
+  test-db:
+    image: postgres:latest
+    ports:
+      - 5434:5432 
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - test-network
+networks:
+  test-network:
+    driver: bridge

@@ -191,6 +191,8 @@ export class FormsService {
     retirementForm.type = RetirementType.CASH;
     retirementForm.supervisorToken = randomBytes(10).toString('hex');
     // TODO: send token to supervisor
+    const staffName = `${user.firstName} ${user.lastName}`;
+
     retirementForm = setDefaults(retirementForm);
 
     await queryRunner.connect();
@@ -200,6 +202,22 @@ export class FormsService {
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
+
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.RETIREMENT,
+      // );
+
+      if (user.supervisor.delegated) {
+        await this.mailService.sendSupervisorToken(
+          user.supervisor.delegate,
+          staffName,
+          retirementForm,
+          FormType.RETIREMENT,
+        );
+      }
 
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -335,10 +353,31 @@ export class FormsService {
     advanceForm.supervisorToken = randomBytes(10).toString('hex');
     advanceForm = setDefaults(advanceForm);
     // TODO: send token to supervisor
+    const staffName = `${user.firstName} ${user.lastName}`;
 
-    return this.advanceFormRepo.save(advanceForm);
+    try {
+      await this.advanceFormRepo.save(advanceForm);
 
-    //TODO: Send email notification to supervisor
+      //TODO: Send email notification to supervisor
+
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      // );
+
+      if (user.supervisor.delegated) {
+        await this.mailService.sendSupervisorToken(
+          user.supervisor.delegate,
+          staffName,
+          advanceForm,
+          FormType.ADVANCE,
+        );
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
   // $update retirement form
   async updateRetirementForm(
@@ -411,10 +450,31 @@ export class FormsService {
     retirementForm.supervisorToken = randomBytes(10).toString('hex');
     retirementForm = setDefaults(retirementForm);
     // TODO: send token to supervisor
+    const staffName = `${user.firstName} ${user.lastName}`;
 
-    return this.retirementFormRepo.save(retirementForm);
+    try {
+      await this.retirementFormRepo.save(retirementForm);
 
-    //TODO: Send email notification to supervisor
+      //TODO: Send email notification to supervisor
+
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      // );
+
+      if (user.supervisor.delegated) {
+        await this.mailService.sendSupervisorToken(
+          user.supervisor.delegate,
+          staffName,
+          retirementForm,
+          FormType.RETIREMENT,
+        );
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
   // $delete advance from
   async removeAdvanceForm(id: number) {
@@ -479,7 +539,7 @@ export class FormsService {
         }),
       );
     }
-    const retirementForm = this.retirementFormRepo.create({
+    let retirementForm = this.retirementFormRepo.create({
       ...createRetirementFormDto,
       user,
       supportingDocs,
@@ -487,7 +547,10 @@ export class FormsService {
     retirementForm.advance = advance;
     retirementForm.type = RetirementType.ADVANCE;
     retirementForm.supervisorToken = randomBytes(10).toString('hex');
+    retirementForm = setDefaults(retirementForm);
+
     // TODO: send token to supervisor
+    const staffName = `${user.firstName} ${user.lastName}`;
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -496,6 +559,21 @@ export class FormsService {
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      // );
+
+      if (user.supervisor.delegated) {
+        await this.mailService.sendSupervisorToken(
+          user.supervisor.delegate,
+          staffName,
+          retirementForm,
+          FormType.RETIREMENT,
+        );
+      }
 
       await queryRunner.commitTransaction();
     } catch (error) {

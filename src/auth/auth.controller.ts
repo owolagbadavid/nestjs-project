@@ -51,7 +51,8 @@ export class AuthController {
     @Body() loginUserDto: LoginUserDto,
   ): Promise<ApiRes> {
     const { user, token } = await this.authService.login(loginUserDto);
-    const longerExp = 1000 * 60 * 60 * 2; // 2 hours
+    const longerExp = 1000 * 60 * 60; // 2 hours
+    //!change to '1800s'
 
     // attach cookie to response
     res.cookie('token', token, {

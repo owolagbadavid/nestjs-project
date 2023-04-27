@@ -29,10 +29,12 @@ export class Unit {
   @Column({ nullable: true })
   departmentId: number;
 
-  @ManyToOne(() => Department, (department) => department.units)
+  @ManyToOne(() => Department, (department) => department.units, {
+    onDelete: 'RESTRICT',
+  })
   department: Department;
 
-  @OneToOne('User')
+  @OneToOne('User', { onDelete: 'RESTRICT' })
   @JoinColumn()
   head: User;
 

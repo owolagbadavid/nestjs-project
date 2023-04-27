@@ -9,16 +9,18 @@ import {
   Unit,
   User,
 } from '../entities';
-
+import * as dotenv from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
+
+dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  // username: 'user1',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT),
+  database: process.env.DATABASE,
+  username: 'postgres',
   // password: '12345678',
-  database: 'cashAdvNRtr',
   entities: [
     User,
     Department,
@@ -30,7 +32,9 @@ export const dataSourceOptions: DataSourceOptions = {
     Approvals,
     SupportingDocs,
   ],
-  migrations: ['dist/db/migrations/*.js'],
+  synchronize: process.env.NODE_ENV === 'test',
+  migrations:
+    process.env.NODE_ENV === 'test' ? null : ['dist/db/migrations/*.js'],
 
   //   synchronize: true,
 };

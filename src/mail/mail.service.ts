@@ -13,7 +13,7 @@ export class MailService {
     await this.mailerService.sendMail({
       to: user.email,
       // from: '"Support Team" <support@example.com>', // override default from
-      subject: 'Reset your password',
+      subject: 'Set new password',
       template: './confirmation', // `.hbs` extension is appended automatically
       context: {
         // ✏️ filling curly brackets with content
@@ -28,7 +28,7 @@ export class MailService {
     form: Form,
     formType: FormType,
   ) {
-    const url = `localhost:3000/forms/${formType}/${form.id}`;
+    const url = `localhost:3000/forms/${formType}/?formId=${form.id}`;
 
     await this.mailerService.sendMail({
       to: user.email,
