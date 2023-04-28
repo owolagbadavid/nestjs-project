@@ -164,6 +164,7 @@ export class SerializedUser {
   @Exclude()
   delegated: boolean;
 
+  @Exclude()
   delegate: User;
 
   delegateId: number;

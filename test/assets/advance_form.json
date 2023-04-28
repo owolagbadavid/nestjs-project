@@ -1,0 +1,24 @@
+{
+    "purpose": "a purpose",
+    "depatureDate": "12/12/12",
+    "returnDate": "12/12/12",
+    "origination": "Abujda",
+    "destination": "Ilorineee",
+    "details": [
+        {
+            "product": "accommodation",
+            "amount": 200,
+            "number": 4,
+            "remark": "This was it",
+            "rate": 50
+        },
+        {
+            "product": "taxi",
+            "amount": 50,
+            "number": 10,
+            "remark": "This was it",
+            "rate": 5
+        }
+    ],
+    "totalAmount": 250
+}

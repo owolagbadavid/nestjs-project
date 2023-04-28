@@ -78,7 +78,7 @@ export class MeORSuperiorGuard implements CanActivate {
     // @if admin or finance
     if (user.role === Role.Admin || Role.Finance) return true;
     // @if user owns the form
-    if (Number(request.user.id) === form.userId) return true;
+    if (Number(user.id) === form.userId) return true;
     // @if pd or DPd
     if (
       user.role === Role.PD ||
@@ -86,7 +86,9 @@ export class MeORSuperiorGuard implements CanActivate {
     )
       return true;
     // @if user is owners supervisor
-    if (form.user.supervisorId === user.id) return true;
+    if (form.user.supervisorId === Number(user.id)) return true;
+    // @if user is supervisors delegate
+    if (form.user.supervisor.delegateId === Number(user.id)) return true;
 
     // @if all fails
     request.user.form = undefined;

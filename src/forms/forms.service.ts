@@ -704,9 +704,18 @@ export class FormsService {
     user: User,
     formFilterDto: FormFilterDto,
   ) {
-    const advanceForms = await this.advanceFormRepo.find({
+    let advanceForms = await this.advanceFormRepo.find({
       where: { user: { supervisorId: user.id }, ...formFilterDto },
     });
+    // add delegated forms
+    advanceForms = advanceForms.concat(
+      await this.advanceFormRepo.find({
+        where: {
+          user: { supervisor: { delegateId: user.id } },
+          ...formFilterDto,
+        },
+      }),
+    );
 
     return advanceForms.map((form) => new SerializedAdvanceForm(form));
   }
@@ -716,9 +725,18 @@ export class FormsService {
     user: User,
     formFilterDto: FormFilterDto,
   ) {
-    const retirementForms = await this.retirementFormRepo.find({
+    let retirementForms = await this.retirementFormRepo.find({
       where: { user: { supervisorId: user.id }, ...formFilterDto },
     });
+    // add delegated forms
+    retirementForms = retirementForms.concat(
+      await this.retirementFormRepo.find({
+        where: {
+          user: { supervisor: { delegateId: user.id } },
+          ...formFilterDto,
+        },
+      }),
+    );
 
     return retirementForms.map((form) => new SerializedRetirementForm(form));
   }

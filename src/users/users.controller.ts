@@ -62,10 +62,19 @@ export class UsersController {
   @ApiNotFoundResponse({ type: ApiRes })
   @ApiOkResponse({ type: User })
   @Get('me')
-  getMe(@GetUser('id', ParseIntPipe) id: number): Promise<User> {
-    return this.usersService.findOne(+id);
+  async getMe(@GetUser('id', ParseIntPipe) id: number): Promise<ApiRes> {
+    const user = await this.usersService.findOne(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User found',
+      data: user,
+    };
   }
 
+  @Get('department')
+  async getDepartment(@GetUser() user: User) {
+    return this.usersService.getDepartment(user.id);
+  }
   //Get /:id
   @ApiBadRequestResponse({ type: ApiRes })
   @ApiNotFoundResponse({ type: ApiRes })

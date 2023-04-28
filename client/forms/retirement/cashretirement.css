@@ -1,0 +1,131 @@
+div {
+    border:solid 0px;
+}
+
+.body{
+    height: 100vh;
+}
+
+.bluebg {
+    background-color: #eff1f3;
+}
+
+.logo {
+    background-color :#ffffff;
+    display: block;  
+  
+   
+}
+.header {
+    height: 80px;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    position: absolute;
+    left: 350px;
+
+}
+
+.inputelement {
+    width: 100%;
+    float: right;
+
+ 
+}
+
+.dropdown {
+   position:absolute;
+   top: 2%;
+   padding: 0px;
+   left: 80%;
+}
+  
+ 
+
+
+.parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 58px;
+    margin-bottom: 40px;
+    margin-left: 20px;
+}
+
+
+.content {
+    background-color: #f2f4f5;
+    height: 180vh;
+}
+
+.sidebar {
+    background-color: ;
+    height: 70vh;
+    justify-content: center;
+    align-items:center;
+    align-content:center;
+    padding: 20px;
+}
+
+
+
+.row {
+    display: flex;
+}
+
+table, td{
+    border:solid 1px #cccccc;
+    border-collapse:collapse;
+}
+
+.cas {
+    padding: 5px;
+}
+
+
+
+
+td {
+    padding: 2px;
+}
+
+td > input{
+    background:none !important;
+}
+
+td > input,
+td > input:focus {
+    border: none !important
+}
+
+h4 {
+    text-align: center;
+}
+
+h6 {
+    text-align: right;
+    font-size: x-small;
+    
+}
+
+input[type="file"]::file-selector-button {
+  border: 2px solid #6c5ce7;
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  background-color: #a29bfe;
+  transition: 1s;
+}
+
+input[type="file"]::-ms-browse:hover {
+  background-color: #81ecec;
+  border: 2px solid #00cec9;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #81ecec;
+  border: 2px solid #00cec9;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #81ecec;
+  border: 2px solid #00cec9;
+}

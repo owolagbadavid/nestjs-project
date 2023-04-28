@@ -111,7 +111,7 @@
         if(checkPasswordMatch()){
             // send the password to the server
             $.ajax({
-                url: 'http://localhost:3000/auth/resetpassword',
+                url: 'http://localhost:3000/api/auth/resetpassword',
                 type: 'POST',
                 data: {
                     password: $("#new-password").val(),

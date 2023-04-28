@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Advance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="cashadvance.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  </head>
+  <body>
+    
+    
+   <div class="container body">
+    <div class="row bluebg">
+        <div class="logo log-itself col-md-2 ">
+        <div class="image-container">
+            <img src="../../images/phis3bluelogo.png" alt="Image" class="img-fluid">
+        </div>
+    </div>
+            
+        <div class="col-md-6 header">
+            <div class="inputelement">
+                <input style="font-size: small;" class="form-control" placeholder="search...">
+            </div>
+  
+           
+        </div>  
+        <div class="col-md-2 dropdown">
+            
+                
+                <div class="dropdown-content">
+                  <a href="#" id="logout-btn">Sign Out</a>
+
+                  
+                </div>
+              </div> 
+    </div>
+
+    <div class="row">
+        <div class="col-md-2 sidebar">
+
+            <ul class="nav">
+                <li class="nav-item">
+                  <a class="nav-link active"  href="../../dashboard/">
+                  
+                    Dashboard
+                  </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                     
+                     Cash Advance
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../retirement/">
+                     
+                      Cash Retirement
+                    </a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">
+                   
+                    Requests
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">
+                   
+                    Reports
+                  </a>
+                </li>
+               
+              </ul>
+      
+
+        </div>
+        <div class="col-md-10 content px-2">
+            
+            <class="registration-form">
+
+            <br><h6 style="color: brown;">NOTE: ALL TRAVEL/CASH ADVANCES MUST BE RETIRED WITHIN 10 DAYS OF ACTIVITY/TRAVELCOMPLETION</h6><br>
+                <br><h4>Cash Advance Form</h4>
+               
+                    <div class="form-group px-3">
+                        <label for="department"></label>
+                        <input style="font-size: small;" type="text" class="form-control" id="department" placeholder="Department" ><br>
+                    </div>
+                    <div class="form-group px-3">
+                        <label for="name"></label>
+                        <input style="font-size: small;" type="text" class="form-control" id="name" placeholder="Name"><br>
+                    </div>
+                
+                    <div class="form-group px-3">
+                        <label for="Purpose"></label>
+                        <input style="font-size: small;" type="text" class="form-control" id="purpose" placeholder="Purpose"><br>
+                    </div>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-13 mx-auto ">
+                                <div class="row">
+                                    
+                                    
+                    <div class=" col-md-6">
+                        <div class="form-group">
+                            <label for="Amount"></label>
+                            <input style="font-size: small;" type="text" class="form-control" id="amount" placeholder="Amount"><br>
+                        </div>
+    
+                    </div>
+
+
+              
+                    <div class=" col-md-6 ">
+                        <div class="form-group">
+                            <label for="grant code"></label>
+                            <input style="font-size: small;" type="grant code" class="form-control" disabled id="grant-code" placeholder="Grant Code/Name"><br>
+                        </div>
+    
+                    </div>
+                  
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-13 mx-auto ">
+                                <div class="row">
+                                    
+                                    
+                    <div class=" col-md-6">
+                        <div class="form-group">
+                            <label for="Origination"></label>
+                            <input style="font-size: small;" type="text" class="form-control" id="origination"  placeholder="Origination"><br>
+                        </div>
+    
+                    </div>
+
+
+              
+                    <div class=" col-md-6 ">
+                        <div class="form-group">
+                            <label for="Destination"></label>
+                            <input style="font-size: small;" type="text" class="form-control" id="destination" placeholder="Destination"><br>
+                        </div>
+    
+                    </div>
+                  
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-13 mx-auto ">
+                                <div class="row">
+                                    
+                                    
+                    <div class=" col-md-6">
+                        <div class="form-group px-0">
+                            <label for="date"></label>
+                            <input style="font-size: small;" type="text" class="form-control" onfocus="this.type='date'" onblur="this.type='text'"   id="depature" placeholder="Depature Date"><br>
+                        </div>
+    
+                    </div>
+
+
+              
+                    <div class=" col-md-6 ">
+                        <div class="form-group px-0">
+                            <label for="date"></label>
+                            <input style="font-size: small;" type="text" class="form-control" onfocus="this.type='date'" onblur="this.type='text'"   id="return" placeholder="Return Date"><br>
+                        </div>
+    
+                    </div>
+                  
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-13 mx-auto ">
+                                <div class="row">
+                                    
+                                    
+                    <div class=" col-md-6">
+                        <div class="form-group">
+                            <label for="duration"></label>
+                            <input style="font-size: small;" type="text" class="form-control" id="duration" placeholder="Duration (Days)">
+                        </div>
+    
+                    </div>
+
+
+              
+                    <div class=" col-md-6 ">
+                        <div class="form-group">
+                            <label for="email"></label>
+                            <input style="font-size: small;" type="email" class="form-control" disabled id="check-no" placeholder="Cheque Number">
+                        </div><br><br>
+    
+                    </div>
+ 
+                    <table class="cas" border="1" id="form-table">
+                        <tr>
+                            <td style="font-family: cursive;">Detail</td>
+                            <td style="font-family: cursive;">Rate</td>
+                            <td style="font-family: cursive;">Number</td>
+                            <td style="font-family: cursive;">Amount(Naira)</td>
+                            <td style="font-family: cursive;">Remarks</td>
+                        </tr>
+
+                        <tr id="tr-1">
+                            <td>
+                                <input style="font-size: small;" type="text" placeholder="Accomodation"  size="10">
+
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="rate" type="number"  placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="number" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="amount" disabled type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="remarks" type="text" placeholder="Remarks" size="28">
+                            </td>
+                        </tr>
+                        <tr id="tr-2">
+                            <td>
+                                <input style="font-size: small;" type="text" placeholder="Accomodation" size="10">
+
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="rate" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="number" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="amount" disabled type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="remarks" type="text" placeholder="Remarks" size="28">
+                            </td>
+                        </tr>
+                        <tr id="tr-3">
+                            <td>
+                                <input style="font-size: small;" type="text" placeholder="Accomodation" size="10">
+
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="rate" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="number" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="amount" disabled type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="remarks" type="text" placeholder="Remarks" size="28">
+                            </td>
+                        </tr>
+                        <tr id="tr-4">
+                            <td>
+                                <input style="font-size: small;" type="text" placeholder="Accomodation" size="10">
+
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="rate" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="number" type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="amount" disabled type="number" placeholder="" size="5">
+                            </td>
+                            <td>
+                                <input style="font-size: small;" name="remarks" type="text" placeholder="Remarks" size="28">
+                            </td>
+                        </tr>
+                        
+
+
+                    </table><br>
+
+                    <div class="col-md-12">
+                   <br> <h5>
+                    <form><br><br>
+                        <label for="fileUpload">Upload Email Approval</label><br><br>
+                        <input style="font-size: small;" type="file" id="email-approval" />
+
+                    </form><br><br><br>
+
+                    <button type="submit" class="btn btn-success" id="submit-btn">Submit</button>
+                    </div>
+                  
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+    
+    
+    
+    
+                    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
+
+</body>
+<script>
+    //if user is not logged in, redirect to login page
+    fetch("http://localhost:3000/api/auth/check", {
+        credentials: "include"
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data.statusCode != 200) {
+            window.location.replace("/login");
+        }
+    }).catch(function(err) {
+        console.log(err);
+        alert(err.message);
+        window.location.replace("/login");
+    
+    });
+    
+    
+    // send logout request
+    document.getElementById("logout-btn").addEventListener("click", function(e) {
+        e.preventDefault();
+        fetch("http://localhost:3000/api/auth/logout", {
+            method: "DELETE",
+            credentials: "include"
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            console.log(data);
+            window.location.replace("/login");
+        }).catch(function(err) {
+            console.log(err);
+            alert(err)
+        });
+    });
+    
+
+    //select the submit button in jquery
+    let btn = $("#submit-btn");
+    //select name input in jquery
+    let name = $("#name");
+    //select destination input in jquery
+    let destination = $("#destination");
+    //select origination input
+    let origination = $("#origination");
+    //select return date input
+    let returnDate = $("#return");
+    //select departure date input
+    let departureDate = $("#departure");
+    //select purpose input
+    let purpose = $("#purpose");
+    //select email approval input
+    let emailApproval = $("#email-approval");   
+    //select amount input
+    let amount = $("#amount");
+    //select duration input
+    let duration = $("#duration");
+
+    // select all rows in table
+    
+    
+    let table = document.getElementById("form-table")
+
+let inputs = {detail: [], rate: [], number: [], amount: [], remark: []}
+var rowLength = table.rows.length;
+Object.values(table.rows).forEach( function(row, i) {
+
+
+    if(i===0)return;
+
+  Object.values(row.cells).forEach(function(cell, y) {
+cell = cell.childNodes[1]
+
+//if it is the first cell
+    if (y == 0) {
+        inputs.detail.push(cell)
+       
+      //do something with input
+    }
+
+
+    //if it is the second cell
+    if (y == 1) {
+        inputs.rate.push(cell)
+
+        cell.addEventListener('input', (e)=>{
+let rate = e.target
+let number = e.target.parentElement.nextElementSibling.querySelector("input")
+let amount = number.parentElement.nextElementSibling.querySelector("input")
+
+if(rate.value && number.value){
+    amount.value = rate.value * number.value
+    
+}
+
+})
+      //do something with input
+    }
+
+    // if it is the third cell
+    if (y == 2) {
+      inputs.number.push(cell)
+      //do something with input
+
+      cell.addEventListener('input', (e)=>{
+console.log(e.target.value)
+let number = e.target
+let rate = e.target.parentElement.previousElementSibling.querySelector("input")
+let amount = number.parentElement.nextElementSibling.querySelector("input")
+if(rate.value && number.value){
+    amount.value = rate.value * number.value
+    
+}
+
+})
+    }
+
+    // if it is the fourth cell
+    if (y == 3) {
+      inputs.amount.push(cell)
+      //do something with input
+
+      cell.addEventListener('input', (e)=>{
+console.log(e.target.value)
+})
+    }
+    // if it is the fifth cell
+    if (y == 4) {
+      inputs.remark.push(cell)
+      //do something with input
+
+      cell.addEventListener('input', (e)=>{
+console.log(e.target.value)
+
+})
+    }
+  }
+  )
+})
+
+//select grant code input
+let grantCode = $("#grant-code");
+grantCode.val("PHIS3")
+
+console.log(inputs)
+
+    //create form-data from json
+
+    //fetch user department from server
+    fetch("http://localhost:3000/api/users/department", {
+        credentials: "include"
+    }).then(function(response) {
+        console.log(response)
+    }).then(function(data) {
+        console.log(data);
+        //set department value to user department
+        $("#department").val(data.department);
+    }).catch(function(err) {
+        console.log(err);
+        alert(err.message);
+    });
+
+    </script>
+</html>

@@ -345,4 +345,16 @@ export class UsersService {
       await queryRunner.release();
     }
   }
+
+  //get depatment
+  async getDepartment(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { department: true },
+    });
+
+    if (!user) throw new NotFoundException(`User ${id} not found`);
+
+    return user.department.name;
+  }
 }
