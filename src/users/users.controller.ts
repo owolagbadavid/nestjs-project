@@ -63,7 +63,10 @@ export class UsersController {
   @ApiOkResponse({ type: User })
   @Get('me')
   async getMe(@GetUser('id', ParseIntPipe) id: number): Promise<ApiRes> {
-    const user = await this.usersService.findOne(+id);
+    const user = await this.usersService.findOne(+id, {
+      department: true,
+      unit: true,
+    });
     return {
       statusCode: HttpStatus.OK,
       message: 'User found',
@@ -71,10 +74,6 @@ export class UsersController {
     };
   }
 
-  @Get('department')
-  async getDepartment(@GetUser() user: User) {
-    return this.usersService.getDepartment(user.id);
-  }
   //Get /:id
   @ApiBadRequestResponse({ type: ApiRes })
   @ApiNotFoundResponse({ type: ApiRes })
@@ -82,7 +81,7 @@ export class UsersController {
   @UseGuards(RolesOrIdGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(+id, {});
   }
 
   //Patch /:id

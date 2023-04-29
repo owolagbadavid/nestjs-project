@@ -17,7 +17,10 @@ export class DepartmentService {
     private usersService: UsersService,
   ) {}
   async create(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
-    const head = await this.usersService.findOne(createDepartmentDto.headId);
+    const head = await this.usersService.findOne(
+      createDepartmentDto.headId,
+      {},
+    );
     // if user role is not at least an HOD
     if (head.role < 2) throw new BadRequestException('Invalid headId');
     const department = this.departmentRepo.create(createDepartmentDto);
@@ -44,7 +47,10 @@ export class DepartmentService {
     const department = await this.departmentRepo.findOne({ where: { id } });
     if (!department) throw new NotFoundException(`Department ${id} not found`);
     if (headId) {
-      const head = await this.usersService.findOne(updateDepartmentDto.headId);
+      const head = await this.usersService.findOne(
+        updateDepartmentDto.headId,
+        {},
+      );
       if (head.role < 2) throw new BadRequestException('Invalid headId');
     }
 

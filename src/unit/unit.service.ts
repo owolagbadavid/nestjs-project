@@ -20,7 +20,7 @@ export class UnitService {
   ) {}
 
   async create(createUnitDto: CreateUnitDto): Promise<Unit> {
-    const head = await this.usersService.findOne(createUnitDto.headId);
+    const head = await this.usersService.findOne(createUnitDto.headId, {});
     const department = await this.departmentService.findOne(
       createUnitDto.departmentId,
     );
@@ -51,7 +51,7 @@ export class UnitService {
     const unit = await this.unitRepo.findOne({ where: { id } });
     if (!unit) throw new NotFoundException(`unit ${id} not found`);
     if (headId) {
-      const head = await this.usersService.findOne(headId);
+      const head = await this.usersService.findOne(headId, {});
       // if user is not at least a supervisor,
       if (head.role < 2) throw new BadRequestException('Invalid headId');
     }

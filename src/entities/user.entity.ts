@@ -112,12 +112,15 @@ export class User {
   @Column({ default: false })
   delegated: boolean;
 
-  @OneToOne('User', { onDelete: 'RESTRICT' })
+  @OneToOne('User', 'delegator', { onDelete: 'RESTRICT' })
   @JoinColumn()
   delegate: User;
 
   @Column({ nullable: true })
   delegateId: number;
+
+  @OneToOne('User', 'delegate')
+  delegator: User;
 }
 
 export class SerializedUser {
@@ -160,6 +163,8 @@ export class SerializedUser {
   advanceForms: AdvanceForm[];
 
   retirementForms: RetirementForm[];
+
+  delegator: User;
 
   @Exclude()
   delegated: boolean;

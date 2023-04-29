@@ -25,7 +25,10 @@
     "migration:revert": "npm run typeorm -- migration:revert",
     "db:test:rm": "docker compose rm test-db -f -v -s",
     "db:test:up": "docker compose up test-db -d",
-    "db:test:restart": "npm run db:test:rm && sleep 1 && npm run db:test:up"
+    "db:test:restart": "npm run db:test:rm && sleep 1 && npm run db:test:up",
+    "db:dev:rm": "docker compose rm dev-db -f -v -s",
+    "db:dev:up": "docker compose up dev-db -d",
+    "db:dev:restart": "npm run db:dev:rm && sleep 1 && npm run db:dev:up"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",

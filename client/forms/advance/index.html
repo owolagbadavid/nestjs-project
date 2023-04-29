@@ -465,18 +465,24 @@ console.log(inputs)
     //create form-data from json
 
     //fetch user department from server
-    fetch("http://localhost:3000/api/users/department", {
+    fetch("http://localhost:3000/api/users/me", {
         credentials: "include"
     }).then(function(response) {
-        console.log(response)
+        return response.json();
     }).then(function(data) {
         console.log(data);
+        //set name value to user name
+        $("#name").val(data.data.firstName + " " + data.data.lastName);
+        $("#name").attr("disabled", true);
         //set department value to user department
-        $("#department").val(data.department);
+        $("#department").val(data.data.department.name);
+        $("#department").attr("disabled", true);
     }).catch(function(err) {
         console.log(err);
         alert(err.message);
     });
+
+    //
 
     </script>
 </html>

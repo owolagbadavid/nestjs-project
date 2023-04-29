@@ -27,6 +27,7 @@ export class RolesMinGuard implements CanActivate {
 
     //does the user have the required role
 
-    return user.role >= requiredMinRole;
+    if (user.role >= requiredMinRole) return true;
+    if (user.delegator.role >= requiredMinRole) return true;
   }
 }

@@ -16,6 +16,7 @@ import { ApiRes } from '../types/api-response';
 import { MailService } from '../mail/mail.service';
 import { FormsService } from '../forms/forms.service';
 import { FormType, Role } from '../types';
+import { UserRelationDto } from './dto/user-relation.dto';
 
 @Injectable()
 export class UsersService {
@@ -173,8 +174,11 @@ export class UsersService {
   }
 
   //Find One User
-  async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async findOne(id: number, relationDto: UserRelationDto): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { ...relationDto },
+    });
 
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
@@ -265,6 +269,7 @@ export class UsersService {
       relations: {
         supervisor: { delegate: true },
         delegate: true,
+        delegator: true,
       },
     });
 
@@ -275,17 +280,18 @@ export class UsersService {
 
   //$ find staff
   async findStaff(role: Role) {
-    return this.userRepository.find({
+    const users = await this.userRepository.find({
       where: { role },
       relations: { delegate: true },
     });
+    return users.map((user) => new SerializedUser(user));
   }
 
   //$ delegate all user tasks to another user
   async delegateUser(user: User, delegateId: number) {
     //find user
 
-    const delegate = await this.findOne(delegateId);
+    const delegate = await this.findOne(delegateId, {});
     user.delegated = true;
     user = this.userRepository.create({ ...user });
     user.delegate = delegate;
@@ -344,17 +350,5 @@ export class UsersService {
       // @you need to release a queryRunner which was manually instantiated
       await queryRunner.release();
     }
-  }
-
-  //get depatment
-  async getDepartment(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: { department: true },
-    });
-
-    if (!user) throw new NotFoundException(`User ${id} not found`);
-
-    return user.department.name;
   }
 }
