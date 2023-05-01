@@ -25,7 +25,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: { sub: number; email: string }) {
-    const user = await this.usersService.findUserAndSupervisor(payload.sub);
+    const user = await this.usersService.findOne(payload.sub, {
+      supervisor: { delegate: true, delegator: true },
+      delegate: true,
+      delegator: true,
+      department: true,
+      unit: true,
+    });
 
     if (!user) throw new UnauthorizedException('Invalid user');
 
@@ -40,6 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     //   verificationToken,
     //   ...rest
     // }) => rest)(user);
+    console.log(user);
 
     return user;
   }

@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsPositive } from 'class-validator';
 import { ApiSchema } from '../../decorators';
 import { Role } from '../../types';
+import { FindOperator } from 'typeorm';
 
 @ApiSchema({ name: 'Form_Filter' })
 export class FormFilterDto {
@@ -10,7 +11,7 @@ export class FormFilterDto {
   @IsOptional()
   @Type(() => Number)
   @IsPositive()
-  nextApprovalLevel?: Role;
+  nextApprovalLevel?: Role | FindOperator<Role>;
 
   @ApiPropertyOptional()
   @IsOptional()

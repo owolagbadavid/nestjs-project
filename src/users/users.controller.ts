@@ -27,7 +27,12 @@ import {
 } from '@nestjs/swagger';
 import { User } from '../entities';
 import { ApiRes, Role } from '../types';
-import { JwtGuard, RolesGuard, RolesOrIdGuard } from '../auth/guards';
+import {
+  JwtGuard,
+  RolesGuard,
+  RolesMinStrictGuard,
+  RolesOrIdGuard,
+} from '../auth/guards';
 import { GetUser, Roles } from '../decorators';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -74,6 +79,32 @@ export class UsersController {
     };
   }
 
+  //$delegate user /delegate
+  @ApiOkResponse({ type: ApiRes })
+  @UseGuards(RolesMinStrictGuard)
+  @Post('delegate')
+  @HttpCode(HttpStatus.OK)
+  async delegate(@Body() delegationDto: DelegationDto, @GetUser() user: User) {
+    await this.usersService.delegateUser(user, delegationDto.delegateId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: `All tasks delegated to User ${delegationDto.delegateId}`,
+    };
+  }
+
+  //$Undelegate user /undelegate
+  @Get('undelegate')
+  async undelegate(@GetUser() user: User): Promise<ApiRes> {
+    await this.usersService.undelegateUser(user);
+    console.log(user);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: `All tasks undelegated`,
+    };
+  }
+
   //Get /:id
   @ApiBadRequestResponse({ type: ApiRes })
   @ApiNotFoundResponse({ type: ApiRes })
@@ -105,11 +136,5 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.remove(+id);
-  }
-
-  @Post('delegate')
-  @HttpCode(HttpStatus.OK)
-  delegate(@Body() delegationDto: DelegationDto, @GetUser() user: User) {
-    return this.usersService.delegateUser(user, delegationDto.delegateId);
   }
 }

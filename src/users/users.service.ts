@@ -8,7 +8,7 @@ import {
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department, SerializedUser, Unit, User } from '../entities';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, LessThan, Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { SuperUserDto } from '../auth/dtos';
@@ -263,21 +263,6 @@ export class UsersService {
     return this.userRepository.remove(user);
   }
 
-  async findUserAndSupervisor(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: {
-        supervisor: { delegate: true },
-        delegate: true,
-        delegator: true,
-      },
-    });
-
-    if (!user) throw new NotFoundException(`User ${id} not found`);
-
-    return user;
-  }
-
   //$ find staff
   async findStaff(role: Role) {
     const users = await this.userRepository.find({
@@ -298,7 +283,7 @@ export class UsersService {
     //find all advance forms linked to the user
     let advanceForms = await this.formsService.findAllAdvanceForms(
       {
-        nextApprovalLevel: user.role,
+        nextApprovalLevel: LessThan(user.role),
       },
       { user: true },
     );
@@ -306,7 +291,7 @@ export class UsersService {
     //find all retirement forms linked to the user
     let retirementForms = await this.formsService.findAllRetirementForms(
       {
-        nextApprovalLevel: user.role,
+        nextApprovalLevel: LessThan(user.role),
       },
       { user: true },
     );
@@ -336,10 +321,76 @@ export class UsersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      queryRunner.manager.save(advanceForms);
-      queryRunner.manager.save(retirementForms);
+      await queryRunner.manager.save(advanceForms);
+      await queryRunner.manager.save(retirementForms);
       // queryRunner.manager.save(delegate);
-      queryRunner.manager.save(user);
+      await queryRunner.manager.save(user);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      // @since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException('Something went wrong');
+    } finally {
+      // @you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
+  }
+
+  //$ undelegate a user
+  async undelegateUser(user: User) {
+    //find user
+
+    user.delegated = false;
+    user.delegate.delegator = null;
+    user.delegate = null;
+    user = this.userRepository.create({ ...user });
+
+    //find all advance forms linked to the user
+    let advanceForms = await this.formsService.findAllAdvanceForms(
+      {
+        nextApprovalLevel: LessThan(user.role),
+      },
+      { user: true },
+    );
+
+    //find all retirement forms linked to the user
+    let retirementForms = await this.formsService.findAllRetirementForms(
+      {
+        nextApprovalLevel: LessThan(user.role),
+      },
+      { user: true },
+    );
+
+    if (user.role < 3) {
+      advanceForms = advanceForms.filter(
+        (form) => form.user.supervisorId === user.id,
+      );
+
+      retirementForms = retirementForms.filter(
+        (form) => form.user.supervisorId === user.id,
+      );
+    }
+    advanceForms = advanceForms.map((form) =>
+      this.formsService.createFormEntity(FormType.ADVANCE, form),
+    );
+    retirementForms = retirementForms.map((form) =>
+      this.formsService.createFormEntity(FormType.RETIREMENT, form),
+    );
+
+    advanceForms.forEach((form) => (form.nextApprovalLevel = user.role));
+    retirementForms.forEach((form) => (form.nextApprovalLevel = user.role));
+
+    // start transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.save(advanceForms);
+      await queryRunner.manager.save(retirementForms);
+      // queryRunner.manager.save(delegate);
+      await queryRunner.manager.save(user);
 
       await queryRunner.commitTransaction();
     } catch (error) {

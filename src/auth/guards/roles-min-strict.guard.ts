@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Role } from '../../types';
 
 @Injectable()
-export class RolesMinGuard implements CanActivate {
+export class RolesMinStrictGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(
@@ -28,7 +28,6 @@ export class RolesMinGuard implements CanActivate {
     //does the user have the required role
 
     if (user.role >= requiredMinRole) return true;
-    if (!user.delegator) return false;
     if (user.delegator.role >= requiredMinRole) return true;
   }
 }

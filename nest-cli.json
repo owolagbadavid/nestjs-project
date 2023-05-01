@@ -10,7 +10,12 @@
   }, {
     "include": "mock-data/**/*",
     "outDir": "dist"
-}], 
+},
+{
+  "include": "test/assets/**/*",
+  "outDir": "dist"
+}
+], 
     "watchAssets": true 
   }
 }

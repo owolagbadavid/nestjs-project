@@ -6,3 +6,4 @@ export * from './role-or-supervisor-or-pd-or-me.guard';
 export * from './roles-min.guard';
 export * from './roles-or-id.guard';
 export * from './approval.guard';
+export * from './roles-min-strict.guard';

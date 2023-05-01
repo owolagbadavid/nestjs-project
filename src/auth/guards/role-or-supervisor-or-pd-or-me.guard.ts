@@ -88,6 +88,7 @@ export class MeORSuperiorGuard implements CanActivate {
     // @if user is owners supervisor
     if (form.user.supervisorId === Number(user.id)) return true;
     // @if user is supervisors delegate
+    if (!form.user.supervisor) return false;
     if (form.user.supervisor.delegateId === Number(user.id)) return true;
 
     // @if all fails

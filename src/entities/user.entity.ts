@@ -46,41 +46,41 @@ export class User {
   lastName: string;
 
   @Column({ nullable: true })
-  password: string;
+  password: string | null;
 
   @ApiProperty()
   @Column({ default: false, type: 'boolean' })
   isVerified: boolean;
 
   @Column({ nullable: true })
-  verificationToken: string;
+  verificationToken: string | null;
 
   @ApiProperty()
   @Column({ nullable: true })
   verified: Date;
 
   @ManyToOne('Department', 'members')
-  department: Department;
+  department: Department | null;
 
   @ManyToOne('Unit', 'members')
-  unit: Unit;
+  unit: Unit | null;
 
   @ManyToOne(() => User, (user) => user.directReports, {
     onDelete: 'SET NULL',
   })
-  supervisor: User;
+  supervisor: User | null;
 
   @ApiProperty()
   @Column({ nullable: true })
-  supervisorId: number;
+  supervisorId: number | null;
 
   @ApiProperty()
   @Column({ nullable: true })
-  unitId: number;
+  unitId: number | null;
 
   @ApiProperty()
   @Column({ nullable: true })
-  departmentId: number;
+  departmentId: number | null;
 
   @OneToMany(() => User, (employee) => employee.supervisor)
   directReports: User[];
@@ -101,10 +101,10 @@ export class User {
   retirementForms: RetirementForm[];
 
   @Column({ nullable: true })
-  passwordToken: string;
+  passwordToken: string | null;
 
   @Column({ nullable: true })
-  passwordTokenExpiration: Date;
+  passwordTokenExpiration: Date | null;
 
   @OneToMany('Approvals', 'approvedBy')
   approvals: Approvals[];
@@ -114,13 +114,13 @@ export class User {
 
   @OneToOne('User', 'delegator', { onDelete: 'RESTRICT' })
   @JoinColumn()
-  delegate: User;
+  delegate: User | null;
 
   @Column({ nullable: true })
-  delegateId: number;
+  delegateId: number | null;
 
   @OneToOne('User', 'delegate')
-  delegator: User;
+  delegator: User | null;
 }
 
 export class SerializedUser {
@@ -133,26 +133,26 @@ export class SerializedUser {
   lastName: string;
 
   @Exclude()
-  password: string;
+  password: string | null;
 
   isVerified: boolean;
 
   @Exclude()
-  verificationToken: string;
+  verificationToken: string | null;
 
-  verified: Date;
+  verified: Date | null;
 
-  department: Department;
+  department: Department | null;
 
-  unit: Unit;
+  unit: Unit | null;
 
-  supervisor: User;
+  supervisor: User | null;
 
-  supervisorId: number;
+  supervisorId: number | null;
 
-  unitId: number;
+  unitId: number | null;
 
-  departmentId: number;
+  departmentId: number | null;
 
   directReports: User[];
 
@@ -164,21 +164,21 @@ export class SerializedUser {
 
   retirementForms: RetirementForm[];
 
-  delegator: User;
+  delegator: User | null;
 
   @Exclude()
   delegated: boolean;
 
   @Exclude()
-  delegate: User;
+  delegate: User | null;
 
-  delegateId: number;
+  delegateId: number | null;
 
   @Exclude()
   passwordToken: string;
 
   @Exclude()
-  passwordTokenExpiration: Date;
+  passwordTokenExpiration: Date | null;
 
   constructor(partial: Partial<SerializedUser>) {
     Object.assign(this, partial);
