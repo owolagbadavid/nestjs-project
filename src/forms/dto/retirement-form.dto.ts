@@ -26,7 +26,7 @@ export class RetirementFormDto {
   @IsNotEmpty()
   @Type(() => Date)
   @IsDate()
-  depatureDate: Date;
+  departureDate: Date;
 
   @ApiProperty()
   @IsNotEmpty()

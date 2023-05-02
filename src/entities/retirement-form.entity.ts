@@ -42,7 +42,7 @@ export class RetirementForm {
 
   @ApiProperty()
   @Column()
-  depatureDate: Date;
+  departureDate: Date;
 
   @ApiProperty()
   @Column()
@@ -137,7 +137,7 @@ export class SerializedRetirementForm {
 
   purpose: string;
 
-  depatureDate: Date;
+  departureDate: Date;
 
   returnDate: Date;
 

@@ -37,7 +37,7 @@ export class AdvanceForm {
 
   @ApiProperty()
   @Column()
-  depatureDate: Date;
+  departureDate: Date;
 
   @ApiProperty()
   @Column()
@@ -134,7 +134,7 @@ export class SerializedAdvanceForm {
 
   purpose: string;
 
-  depatureDate: Date;
+  departureDate: Date;
 
   returnDate: Date;
 

@@ -87,6 +87,8 @@ export class FormsController {
     )
     emailApproval: Express.Multer.File,
   ): Promise<ApiRes> {
+    console.log(createAdvanceFormDto);
+
     await this.formsService.createAdvanceForm(
       createAdvanceFormDto,
       user,

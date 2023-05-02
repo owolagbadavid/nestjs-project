@@ -25,7 +25,7 @@ export class AdvanceFormDto {
   @IsNotEmpty()
   @Type(() => Date)
   @IsDate()
-  depatureDate: Date;
+  departureDate: Date;
 
   @ApiProperty()
   @IsNotEmpty()
