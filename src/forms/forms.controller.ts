@@ -17,6 +17,8 @@ import {
   HttpCode,
   ParseBoolPipe,
   UploadedFile,
+  Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -58,6 +60,8 @@ import {
 } from '../auth/guards';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { MaxFileSizeValidator, BodyInterceptor } from '../utils';
+import { Response } from 'express';
+import { Readable } from 'stream';
 
 @ApiCookieAuth('cookie')
 @ApiUnauthorizedResponse({ type: ApiRes })
@@ -432,6 +436,26 @@ export class FormsController {
       statusCode: HttpStatus.OK,
       message: 'Remark made',
     };
+  }
+
+  // $get a supporting Document
+  @Get('supporting-doc/:id')
+  async getSupportingDoc(
+    @Param('id', ParseIntPipe) id: number,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const file = await this.formsService.getSupportingDoc(id);
+    console.log(file);
+    const stream = Readable.from(file.file);
+    const contentType = file.mimeType.substring(0, file.mimeType.indexOf('/'));
+    console.log(contentType);
+
+    response.set({
+      'Content-Disposition': `inline; filename="${file.fileName}"`,
+      'Content-Type': `${contentType}`,
+    });
+    console.log('mike');
+    return new StreamableFile(stream);
   }
 
   // // $pd delegates to Deputy

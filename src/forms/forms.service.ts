@@ -776,6 +776,10 @@ export class FormsService {
     if (type === FormType.RETIREMENT)
       return this.retirementFormRepo.create(form) as FormEntity<Type>;
   }
+
+  getSupportingDoc(id: number) {
+    return this.supportingDocsRepo.findOne({ where: { id } });
+  }
   // // $pd delegates to Deputy
   // async delegateAdvanceApproval(id: number) {
   //   let advance = await this.findOneAdvanceForm(id, {
