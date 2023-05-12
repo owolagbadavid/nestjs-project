@@ -19,6 +19,7 @@ import {
   UploadedFile,
   Res,
   StreamableFile,
+  NotFoundException,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -445,6 +446,7 @@ export class FormsController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const file = await this.formsService.getSupportingDoc(id);
+    if (!file) throw new NotFoundException();
     console.log(file);
     const stream = Readable.from(file.file);
     const contentType = file.mimeType.substring(0, file.mimeType.indexOf('/'));
