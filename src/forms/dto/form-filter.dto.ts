@@ -30,4 +30,10 @@ export class FormFilterDto {
   @Type(() => Boolean)
   @IsBoolean()
   financeGoAhead?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsPositive()
+  userId?: number;
 }

@@ -1,7 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import type { AdvanceForm } from './advance-form.entity';
-import { ProductColumn } from './product-column';
-import { Products } from '../types';
+
 @Entity()
 export class AdvanceDetails {
   @PrimaryGeneratedColumn()
@@ -17,8 +16,8 @@ export class AdvanceDetails {
   })
   advanceForm: AdvanceForm;
 
-  @Column(ProductColumn({ enum: Products }))
-  product: Products;
+  @Column()
+  product: string;
 
   @Column()
   rate: number;

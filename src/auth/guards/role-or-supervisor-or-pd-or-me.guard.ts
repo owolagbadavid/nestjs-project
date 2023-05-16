@@ -65,10 +65,18 @@ export class MeORSuperiorGuard implements CanActivate {
 
     if (requiredForm === FormType.ADVANCE) {
       form = await this.formsService.findOneAdvanceForm(formId, {
+        user: {
+          department: true,
+          unit: true,
+        },
         ...formRelationDto,
       });
     } else if (requiredForm === FormType.RETIREMENT) {
       form = await this.formsService.findOneRetirementForm(formId, {
+        user: {
+          department: true,
+          unit: true,
+        },
         ...formRelationDto,
       });
     }

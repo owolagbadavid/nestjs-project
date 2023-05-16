@@ -33,6 +33,8 @@ import { User } from '../entities';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../decorators';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -112,10 +114,14 @@ export class AuthController {
   @ApiOkResponse({ type: ApiRes })
   @UseGuards(AuthGuard('jwt'))
   @Get('check')
-  async check(): Promise<ApiRes> {
+  async check(@GetUser() user: User): Promise<ApiRes> {
     return {
       statusCode: HttpStatus.OK,
       message: 'User is logged in',
+      data: {
+        userId: user.id,
+        role: user.role,
+      },
     };
   }
 }

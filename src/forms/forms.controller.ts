@@ -140,8 +140,18 @@ export class FormsController {
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('advance')
-  findAllAdvanceForms(@Query() formFilterDto: FormFilterDto) {
-    return this.formsService.findAllAdvanceForms(formFilterDto, {});
+  async findAllAdvanceForms(@Query() formFilterDto: FormFilterDto) {
+    const forms = await this.formsService.findAllAdvanceForms(formFilterDto, {
+      user: {
+        department: true,
+      },
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Forms fetched successfully',
+      data: forms,
+    };
   }
 
   // $get all retirement forms
@@ -149,34 +159,87 @@ export class FormsController {
   @Roles(Role.DeputyPD)
   @UseGuards(RolesMinGuard)
   @Get('retirement')
-  findAllRetirementForms(@Query() formFilterDto: FormFilterDto) {
-    return this.formsService.findAllRetirementForms(formFilterDto, {});
+  async findAllRetirementForms(@Query() formFilterDto: FormFilterDto) {
+    const forms = await this.formsService.findAllRetirementForms(
+      formFilterDto,
+      {
+        user: {
+          department: true,
+        },
+      },
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Forms fetched successfully',
+      data: forms,
+    };
   }
 
   // $get my directReports advance form
   @ApiOkResponse({ isArray: true, type: AdvanceForm })
   @Get('advance/myDirectReports')
-  getMyDirectReportsAdvanceForms(
+  async getMyDirectReportsAdvanceForms(
     @GetUser() user: User,
     @Query() formFilterDto: FormFilterDto,
   ) {
-    return this.formsService.getMyDirectReportsAdvanceForms(
+    const forms = await this.formsService.getMyDirectReportsAdvanceForms(
       user,
       formFilterDto,
     );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Forms fetched successfully',
+      data: forms,
+    };
   }
 
   // $get my directReports retirement form
   @ApiOkResponse({ isArray: true, type: RetirementForm })
   @Get('retirement/myDirectReports')
-  getMyDirectReportsRetirementForms(
+  async getMyDirectReportsRetirementForms(
     @GetUser() user: User,
     @Query() formFilterDto: FormFilterDto,
   ) {
-    return this.formsService.getMyDirectReportsRetirementForms(
+    const forms = await this.formsService.getMyDirectReportsRetirementForms(
       user,
       formFilterDto,
     );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Forms fetched successfully',
+      data: forms,
+    };
+  }
+
+  // $get user advance forms
+  @ApiOkResponse({ isArray: true, type: AdvanceForm })
+  @Get('advance/user')
+  async getUserAdvanceForms(@GetUser() user: User): Promise<ApiRes> {
+    const forms = await this.formsService.findAllAdvanceForms(
+      { userId: user.id },
+      {},
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Forms fetched successfully',
+      data: forms,
+    };
+  }
+
+  // $get user retirement forms
+  @ApiOkResponse({ isArray: true, type: RetirementForm })
+  @Get('retirement/user')
+  async getUserRetirementForms(@GetUser() user: User): Promise<ApiRes> {
+    const forms = await this.formsService.findAllRetirementForms(
+      { userId: user.id },
+      {},
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Forms fetched successfully',
+      data: forms,
+    };
   }
 
   // $get single advance form by id
@@ -190,7 +253,11 @@ export class FormsController {
     // @Query() relationDto: RelationDto,
     @GetForm() form: AdvanceForm,
   ) {
-    return form;
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Form fetched successfully',
+      data: form,
+    };
   }
 
   // $get single retirement form by id
@@ -205,7 +272,11 @@ export class FormsController {
     // @Query() relationDto: RelationDto,
     @GetForm() form: RetirementForm,
   ) {
-    return form;
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Form fetched successfully',
+      data: form,
+    };
   }
 
   // $edit advance form (PUT)

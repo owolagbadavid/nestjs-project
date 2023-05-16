@@ -26,6 +26,7 @@ import {
   ApprovalsFor,
   SerializedAdvanceForm,
   SerializedRetirementForm,
+  // SerializedUser,
 } from '../entities';
 import { DataSource, Repository } from 'typeorm';
 // import { UsersService } from '../users/users.service';
@@ -176,7 +177,7 @@ export class FormsService {
       supportingDocs.push(
         this.supportingDocsRepo.create({
           file: files[i].buffer,
-          documentDescription: createRetirementFormDto.filesDescription[i],
+          documentDescription: 'retirement details',
           fileName: files[i].originalname,
           encoding: files[i].encoding,
           mimeType: files[i].mimetype,
@@ -241,6 +242,15 @@ export class FormsService {
       relations: {
         ...relationDto,
       },
+      select: {
+        user: {
+          firstName: true,
+          lastName: true,
+          department: {
+            name: true,
+          },
+        },
+      },
     });
 
     return advanceForms.map((form) => new SerializedAdvanceForm(form));
@@ -254,6 +264,15 @@ export class FormsService {
       where: { ...formFilterDto },
       relations: {
         ...relationDto,
+      },
+      select: {
+        user: {
+          firstName: true,
+          lastName: true,
+          department: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -271,7 +290,20 @@ export class FormsService {
       where: { id },
       relations: {
         details: true,
+        emailApproval: true,
         ...relationDto,
+      },
+      select: {
+        user: {
+          firstName: true,
+          lastName: true,
+          department: {
+            name: true,
+          },
+        },
+        emailApproval: {
+          id: true,
+        },
       },
     });
 
@@ -306,11 +338,15 @@ export class FormsService {
         ...relationDto,
       },
       select: {
+        user: {
+          firstName: true,
+          lastName: true,
+          department: {
+            name: true,
+          },
+        },
         supportingDocs: {
           id: true,
-          fileName: true,
-          documentDescription: true,
-          mimeType: true,
         },
       },
     });
@@ -433,7 +469,7 @@ export class FormsService {
       supportingDocs.push(
         this.supportingDocsRepo.create({
           file: files[i].buffer,
-          documentDescription: updateRetirementFormDto.filesDescription[i],
+          documentDescription: 'retirement details',
           fileName: files[i].originalname,
           encoding: files[i].encoding,
           mimeType: files[i].mimetype,
@@ -532,7 +568,7 @@ export class FormsService {
       supportingDocs.push(
         this.supportingDocsRepo.create({
           file: files[i].buffer,
-          documentDescription: createRetirementFormDto.filesDescription[i],
+          documentDescription: 'retirement details',
           fileName: files[i].originalname,
           encoding: files[i].encoding,
           mimeType: files[i].mimetype,

@@ -73,12 +73,6 @@ export class RetirementFormDto {
   @Min(0)
   balanceToOrganization: number;
 
-  @ApiProperty({ isArray: true, type: 'string' })
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsString({ each: true })
-  filesDescription: string[];
-
   @ApiProperty({
     type: 'string',
     format: 'binary',

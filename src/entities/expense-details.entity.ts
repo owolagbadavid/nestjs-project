@@ -1,8 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { RetirementForm } from './retirement-form.entity';
-import { ProductColumn } from './product-column';
-import { Products } from '../types';
+
 @Entity()
 export class ExpenseDetails {
   @PrimaryGeneratedColumn()
@@ -18,8 +17,8 @@ export class ExpenseDetails {
   })
   retirementForm: RetirementForm;
 
-  @Column(ProductColumn({ enum: Products }))
-  product: Products;
+  @Column()
+  product: string;
 
   @Column()
   rate: number;
