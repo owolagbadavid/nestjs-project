@@ -141,6 +141,8 @@ export class FormsController {
   @UseGuards(RolesMinGuard)
   @Get('advance')
   async findAllAdvanceForms(@Query() formFilterDto: FormFilterDto) {
+    console.log(formFilterDto, 'filter');
+
     const forms = await this.formsService.findAllAdvanceForms(formFilterDto, {
       user: {
         department: true,
@@ -394,8 +396,16 @@ export class FormsController {
     @Body() approvalDto: ApprovalOrRejectionDto,
     @GetApproval() approval: string,
     @GetPD() pd: User,
+    @GetForm() form: AdvanceForm,
   ): Promise<ApiRes> {
-    await this.formsService.approveAdvance(id, user, approvalDto, approval, pd);
+    await this.formsService.approveAdvance(
+      id,
+      user,
+      approvalDto,
+      approval,
+      pd,
+      form,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -415,6 +425,7 @@ export class FormsController {
     @Body() approvalDto: ApprovalOrRejectionDto,
     @GetApproval() approval: string,
     @GetPD() pd: User,
+    @GetForm() form: RetirementForm,
   ) {
     await this.formsService.approveRetirement(
       id,
@@ -422,6 +433,7 @@ export class FormsController {
       approvalDto,
       approval,
       pd,
+      form,
     );
 
     return {
@@ -441,8 +453,15 @@ export class FormsController {
     @GetUser() user: User,
     @Body() rejectionDto: ApprovalOrRejectionDto,
     @GetApproval() approval: string,
+    @GetForm() form: AdvanceForm,
   ) {
-    await this.formsService.rejectAdvance(id, user, rejectionDto, approval);
+    await this.formsService.rejectAdvance(
+      id,
+      user,
+      rejectionDto,
+      approval,
+      form,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -461,8 +480,15 @@ export class FormsController {
     @GetUser() user: User,
     @Body() rejectionDto: ApprovalOrRejectionDto,
     @GetApproval() approval: string,
+    @GetForm() form: RetirementForm,
   ) {
-    await this.formsService.rejectRetirement(id, user, rejectionDto, approval);
+    await this.formsService.rejectRetirement(
+      id,
+      user,
+      rejectionDto,
+      approval,
+      form,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,

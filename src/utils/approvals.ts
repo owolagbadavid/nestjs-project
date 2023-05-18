@@ -21,8 +21,9 @@ export async function approve<Form extends AdvanceForm | RetirementForm>(
 
     try {
       form.approvalLevel = user.role;
+
       form.nextApprovalLevel =
-        form.user.role >= Role.DeputyPD ? Role.Finance : Role.PD;
+        form.user.supervisor.role >= Role.PD ? Role.Finance : Role.PD;
       form.pushedToFinance = form.nextApprovalLevel === Role.Finance;
       form.supervisorToken = null;
       // check if pd is delegating

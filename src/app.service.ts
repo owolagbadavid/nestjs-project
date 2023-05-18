@@ -103,10 +103,11 @@ export class AppService {
       "lastName": "Donnno",
       "isVerified": "true",
       "unitId": 1,
+      "supervisorId": 24,
       "verified": "11/21/2022",
       "departmentId": 1,
       "password": "secret",
-      "role": 2
+      "role": 1
     }`);
     lastUser = this.userRepository.create(lastUser);
     await this.userRepository.save(lastUser);

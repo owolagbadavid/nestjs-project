@@ -103,7 +103,6 @@
     "firstName": "Margo",
     "lastName": "Loan",
     "isVerified": "true",
-    "unitId": 2,
     "verified": "06/20/2022",
     "departmentId": 2,
     "password": "secret",

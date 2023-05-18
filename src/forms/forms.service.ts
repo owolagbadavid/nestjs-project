@@ -303,6 +303,8 @@ export class FormsService {
         },
         emailApproval: {
           id: true,
+          fileName: true,
+          documentDescription: true,
         },
       },
     });
@@ -347,6 +349,8 @@ export class FormsService {
         },
         supportingDocs: {
           id: true,
+          fileName: true,
+          documentDescription: true,
         },
       },
     });
@@ -630,11 +634,9 @@ export class FormsService {
     approvalDto: ApprovalOrRejectionDto,
     approvalType: string,
     pd: User,
+    form: AdvanceForm,
   ) {
-    const advance = await this.advanceFormRepo.findOne({
-      where: { id },
-      relations: { user: true },
-    });
+    const advance = this.advanceFormRepo.create(form);
     if (!advance) throw new NotFoundException('Form not found');
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -665,11 +667,9 @@ export class FormsService {
     approvalDto: ApprovalOrRejectionDto,
     approvalType: string,
     pd: User,
+    form: RetirementForm,
   ) {
-    const retirement = await this.retirementFormRepo.findOne({
-      where: { id },
-      relations: { user: true },
-    });
+    const retirement = this.retirementFormRepo.create(form);
 
     if (!retirement) throw new NotFoundException('Form not found');
 
@@ -700,11 +700,9 @@ export class FormsService {
     user: User,
     rejectionDto: ApprovalOrRejectionDto,
     rejectionType: string,
+    form: AdvanceForm,
   ) {
-    let advance = await this.advanceFormRepo.findOne({
-      where: { id },
-      relations: { user: true },
-    });
+    let advance = this.advanceFormRepo.create(form);
 
     if (!advance) throw new NotFoundException('Form not found');
 
@@ -720,11 +718,9 @@ export class FormsService {
     user: User,
     rejectionDto: ApprovalOrRejectionDto,
     rejectionType: string,
+    form: RetirementForm,
   ) {
-    let retirement = await this.retirementFormRepo.findOne({
-      where: { id },
-      relations: { user: true },
-    });
+    let retirement = this.retirementFormRepo.create(form);
 
     if (!retirement) throw new NotFoundException('Form not found');
 

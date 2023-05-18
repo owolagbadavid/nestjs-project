@@ -10,7 +10,7 @@ import { Form, FormType } from '../../types/form.entity';
 import { FormsService } from '../../forms/forms.service';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { ApprovalOrRejectionDto, FormRelationDto } from '../../forms/dto';
+import { ApprovalOrRejectionDto } from '../../forms/dto';
 import { Role } from '../../types';
 import { UsersService } from '../../users/users.service';
 
@@ -48,35 +48,16 @@ export class ApprovalGuard implements CanActivate {
     if (!user) return false;
     const [pd] = await this.usersService.findStaff(Role.PD);
 
-    // get query params
-    const { query } = request;
-    let formRelationDto: FormRelationDto = {};
-
-    if (query) {
-      // transform query params using class-transformer with class
-      formRelationDto = plainToInstance(FormRelationDto, query);
-
-      // validate query params with class-validator
-      const errors = await validate(formRelationDto, {
-        validationError: { target: false, value: false },
-      });
-      console.log(errors);
-      if (errors.length > 0) {
-        throw new BadRequestException(
-          errors.map((e) => Object.values(e.constraints).toString()),
-        );
-      }
-    }
-
     const { body } = request;
     let approvalDto: ApprovalOrRejectionDto;
 
     if (body) {
       // transform query params using class-transformer with class
       approvalDto = plainToInstance(ApprovalOrRejectionDto, body);
+      console.log('dttoooo', approvalDto);
 
       // validate query params with class-validator
-      const errors = await validate(formRelationDto, {
+      const errors = await validate(approvalDto, {
         validationError: { target: false, value: false },
       });
       console.log(errors);
@@ -90,24 +71,25 @@ export class ApprovalGuard implements CanActivate {
     if (requiredForm === FormType.ADVANCE) {
       form = await this.formsService.findOneAdvanceForm(formId, {
         user: { supervisor: { delegate: true } },
-        ...formRelationDto,
       });
+
+      console.log('formId', form.supervisorToken, approvalDto.token);
     } else if (requiredForm === FormType.RETIREMENT) {
       form = await this.formsService.findOneRetirementForm(formId, {
         user: true,
-        ...formRelationDto,
       });
     }
-    console.log(formRelationDto, form);
+    console.log(form);
 
     if (
       form.approvalLevel === 0 &&
       form.nextApprovalLevel === user.role &&
-      (form.user.supervisorId === user.id ||
+      (form.user.supervisor.id === user.id ||
         form.user.supervisor.delegateId === user.id) &&
       form.supervisorToken === approvalDto.token
     ) {
       request.approval = 'supervisor';
+      console.log('supervisor');
     } else if (
       (user.role === Role.PD &&
         form.nextApprovalLevel === Role.PD &&
@@ -124,10 +106,12 @@ export class ApprovalGuard implements CanActivate {
     ) {
       request.approval = 'finance';
     } else {
+      console.log('end', form, pd);
       return false;
     }
     request.form = form;
     request.pd = pd;
+    console.log(form);
     return true;
   }
 }
