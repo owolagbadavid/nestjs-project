@@ -28,7 +28,7 @@ export class MailService {
     form: Form,
     formType: FormType,
   ) {
-    const url = `localhost:3000/forms/${formType}/?formId=${form.id}`;
+    const url = `localhost:3000/forms/approval/advance/?id=${form.id}&type=${formType}&approval=yes&token=${form.supervisorToken}`;
 
     await this.mailerService.sendMail({
       to: user.email,
