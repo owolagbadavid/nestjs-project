@@ -33,7 +33,7 @@ import { Roles } from '../decorators';
 @ApiForbiddenResponse({ type: ApiRes })
 @UseGuards(JwtGuard)
 @Roles(Role.Admin)
-@Controller('unit')
+@Controller('units')
 export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
@@ -48,8 +48,14 @@ export class UnitController {
 
   @ApiOkResponse({ type: Unit, isArray: true })
   @Get()
-  findAll(@Query() filterDto: UnitFilterDto): Promise<Unit[]> {
-    return this.unitService.findAll(filterDto);
+  async findAll(@Query() filterDto: UnitFilterDto): Promise<ApiRes> {
+    console.log(filterDto);
+    const units = await this.unitService.findAll(filterDto);
+    return {
+      message: 'Units successfully fetched',
+      data: units,
+      statusCode: 200,
+    };
   }
 
   @ApiOkResponse({ type: Unit })

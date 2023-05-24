@@ -12,9 +12,15 @@ import {
   ClassSerializerInterceptor,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto, DelegationDto } from './dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  DelegationDto,
+  UserFilterDto,
+} from './dto';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
@@ -58,8 +64,14 @@ export class UsersController {
   @ApiOkResponse({ type: User, isArray: true })
   @UseGuards(RolesGuard)
   @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  async findAll(@Query() filterDto: UserFilterDto): Promise<ApiRes> {
+    const users = await this.usersService.findAll(filterDto);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Users fetced succesfully',
+      data: users,
+    };
   }
 
   //Get /me

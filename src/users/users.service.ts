@@ -8,9 +8,15 @@ import {
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department, SerializedUser, Unit, User } from '../entities';
-import { DataSource, LessThan, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindManyOptions,
+  LessThan,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { randomBytes } from 'crypto';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { CreateUserDto, UpdateUserDto, UserFilterDto } from './dto';
 import { SuperUserDto } from '../auth/dtos';
 import { ApiRes } from '../types/api-response';
 import { MailService } from '../mail/mail.service';
@@ -158,8 +164,24 @@ export class UsersService {
   }
 
   //Find All Users
-  async findAll(): Promise<User[]> {
-    const users = await this.userRepository.find();
+  async findAll(filterDto: UserFilterDto): Promise<User[]> {
+    const filter: FindManyOptions<User> = { where: [{}, {}] };
+    if (filterDto.role || filterDto.role === 0) {
+      (filter.where[0] as any).role = MoreThanOrEqual(filterDto.role);
+      (filter.where[1] as any).role = MoreThanOrEqual(filterDto.role);
+    }
+    if (filterDto.dept) {
+      this.departmentRepository.findOne({ where: { id: filterDto.dept } });
+      (filter.where[1] as any).departmentId = filterDto.dept;
+    }
+    if (filterDto.unit) {
+      this.unitRepository.findOne({ where: { id: filterDto.unit } });
+      (filter.where[1] as any).unitId = filterDto.unit;
+    }
+    console.log(filter, filterDto);
+    const users = await this.userRepository.find({
+      ...filter,
+    });
 
     return users.map((user) => {
       return new SerializedUser(user);

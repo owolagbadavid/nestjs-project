@@ -33,7 +33,7 @@ import { JwtGuard, RolesGuard } from '../auth/guards';
 @ApiForbiddenResponse({ type: ApiRes })
 @UseGuards(JwtGuard)
 @Roles(Role.Admin)
-@Controller('department')
+@Controller('departments')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
@@ -50,8 +50,13 @@ export class DepartmentController {
 
   @ApiOkResponse({ type: Department, isArray: true })
   @Get()
-  findAll(): Promise<Department[]> {
-    return this.departmentService.findAll();
+  async findAll(): Promise<ApiRes> {
+    const departments = await this.departmentService.findAll();
+    return {
+      statusCode: 200,
+      message: 'Get all departments successfully',
+      data: departments,
+    };
   }
 
   @ApiOkResponse({ type: Department })
