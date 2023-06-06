@@ -44,5 +44,7 @@ export class FormFilterDto {
   @IsBoolean()
   approvedByFin?: boolean;
 
-  retirementId?: any;
+  @ApiPropertyOptional()
+  @IsOptional()
+  retirementId?: any | FindOperator<any>;
 }

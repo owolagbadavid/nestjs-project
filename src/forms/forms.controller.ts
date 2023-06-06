@@ -63,6 +63,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { MaxFileSizeValidator, BodyInterceptor } from '../utils';
 import { Response } from 'express';
 import { Readable } from 'stream';
+import { IsNull } from 'typeorm';
 
 @ApiCookieAuth('cookie')
 @ApiUnauthorizedResponse({ type: ApiRes })
@@ -141,8 +142,6 @@ export class FormsController {
   @UseGuards(RolesMinGuard)
   @Get('advance')
   async findAllAdvanceForms(@Query() formFilterDto: FormFilterDto) {
-    console.log(formFilterDto, 'filter');
-
     const forms = await this.formsService.findAllAdvanceForms(formFilterDto, {
       user: {
         department: true,
@@ -221,10 +220,11 @@ export class FormsController {
     @GetUser() user: User,
     @Query() formFilterDto: FormFilterDto,
   ): Promise<ApiRes> {
-    const filter = { userId: user.id, ...formFilterDto };
-    if (formFilterDto.approvedByFin) filter.retirementId = null;
-    const forms = await this.formsService.findAllAdvanceForms(filter, {});
+    if (formFilterDto.retirementId === 'null')
+      formFilterDto.retirementId = IsNull();
 
+    const filter = { userId: user.id, ...formFilterDto };
+    const forms = await this.formsService.findAllAdvanceForms(filter, {});
     return {
       statusCode: HttpStatus.OK,
       message: 'Forms fetched successfully',
