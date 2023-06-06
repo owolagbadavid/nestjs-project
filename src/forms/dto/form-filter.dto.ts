@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsPositive } from 'class-validator';
 import { ApiSchema } from '../../decorators';
 import { Role } from '../../types';
@@ -15,19 +15,20 @@ export class FormFilterDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Boolean)
+  // convert string to boolean
+  @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   delegatedByPd?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   pushedToFinance?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   financeGoAhead?: boolean;
 
@@ -36,4 +37,12 @@ export class FormFilterDto {
   @Type(() => Number)
   @IsPositive()
   userId?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  approvedByFin?: boolean;
+
+  retirementId?: any;
 }

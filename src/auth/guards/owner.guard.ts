@@ -72,7 +72,6 @@ export class OwnerGuard implements CanActivate {
         ...formRelationDto,
       });
     }
-    console.log(formRelationDto);
 
     if (!(Number(request.user.id) === form.userId)) return false;
 

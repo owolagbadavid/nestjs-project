@@ -217,11 +217,14 @@ export class FormsController {
   // $get user advance forms
   @ApiOkResponse({ isArray: true, type: AdvanceForm })
   @Get('advance/user')
-  async getUserAdvanceForms(@GetUser() user: User): Promise<ApiRes> {
-    const forms = await this.formsService.findAllAdvanceForms(
-      { userId: user.id },
-      {},
-    );
+  async getUserAdvanceForms(
+    @GetUser() user: User,
+    @Query() formFilterDto: FormFilterDto,
+  ): Promise<ApiRes> {
+    const filter = { userId: user.id, ...formFilterDto };
+    if (formFilterDto.approvedByFin) filter.retirementId = null;
+    const forms = await this.formsService.findAllAdvanceForms(filter, {});
+
     return {
       statusCode: HttpStatus.OK,
       message: 'Forms fetched successfully',
@@ -359,7 +362,7 @@ export class FormsController {
   @ApiConsumes('multipart/form-data')
   @Roles(Role.PD)
   @UseGuards(RolesMaxGuard)
-  @Forms(FormType.RETIREMENT)
+  @Forms(FormType.ADVANCE)
   @UseGuards(OwnerGuard)
   @UseInterceptors(FilesInterceptor('files'), BodyInterceptor)
   @Post('advance/:id/retire')

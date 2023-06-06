@@ -113,12 +113,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        advanceForm,
-        FormType.ADVANCE,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -204,12 +204,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        retirementForm,
-        FormType.RETIREMENT,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   retirementForm,
+      //   FormType.RETIREMENT,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -400,12 +400,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        advanceForm,
-        FormType.ADVANCE,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -497,12 +497,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        retirementForm,
-        FormType.RETIREMENT,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   retirementForm,
+      //   FormType.RETIREMENT,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -544,6 +544,12 @@ export class FormsService {
     // user = await this.usersService.findUserAndSupervisor(user.id);
     // @fetched from guard
     const advance = form;
+    console.log(form);
+
+    // check if form has been approved by fin or retired
+    if (!(advance.approvedByFin && !advance.retirement))
+      throw new ForbiddenException('Form cannot be retired');
+
     // @checks if details and total amount are correct
     if (
       !(
