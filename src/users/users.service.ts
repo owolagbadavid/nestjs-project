@@ -448,7 +448,7 @@ export class UsersService {
       user,
     });
 
-    // save the picture
-    await this.profilePictureRepository.save(profilePicture);
+    // update user profile picture
+    await this.userRepository.save({ ...user, profilePicture });
   }
 }

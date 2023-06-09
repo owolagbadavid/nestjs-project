@@ -130,7 +130,7 @@ export class User {
   @OneToOne('User', 'delegate')
   delegator: User | null;
 
-  @OneToOne('ProfilePicture', 'user')
+  @OneToOne('ProfilePicture', 'user', { cascade: true })
   profilePicture: ProfilePicture | null;
 }
 
