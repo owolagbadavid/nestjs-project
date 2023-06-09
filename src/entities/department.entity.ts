@@ -21,11 +21,11 @@ export class Department {
   name: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'head_id' })
   headId: number;
 
   @OneToOne('User', { onDelete: 'RESTRICT' })
-  @JoinColumn()
+  @JoinColumn({ name: 'head_id' })
   head: User;
 
   @OneToMany('Unit', 'department')

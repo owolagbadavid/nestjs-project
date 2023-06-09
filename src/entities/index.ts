@@ -9,3 +9,4 @@ export * from './approval.entity';
 export * from './supporting-docs.entity';
 export * from './product-column';
 export * from './role-column';
+export * from './profile-pictures.entity';

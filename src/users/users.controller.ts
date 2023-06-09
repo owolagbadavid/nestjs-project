@@ -13,6 +13,8 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UploadedFile,
+  ParseFilePipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
@@ -40,6 +42,7 @@ import {
   RolesOrIdGuard,
 } from '../auth/guards';
 import { GetUser, Roles } from '../decorators';
+import { MaxFileSizeValidator } from '../utils';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Users')
@@ -148,5 +151,30 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.remove(+id);
+  }
+
+  //Upload profile picture
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
+  @Patch('upload-profile-picture')
+  async uploadProfilePicture(
+    @GetUser() user: User,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 3000000 })],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<ApiRes> {
+    const profilePicture = await this.usersService.uploadProfilePicture(
+      user,
+      file,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Profile picture uploaded successfully',
+      data: profilePicture,
+    };
   }
 }

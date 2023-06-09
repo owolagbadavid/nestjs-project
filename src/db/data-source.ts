@@ -4,6 +4,7 @@ import {
   Approvals,
   Department,
   ExpenseDetails,
+  ProfilePicture,
   RetirementForm,
   SupportingDocs,
   Unit,
@@ -31,6 +32,7 @@ export const dataSourceOptions: DataSourceOptions = {
     ExpenseDetails,
     Approvals,
     SupportingDocs,
+    ProfilePicture,
   ],
   synchronize: process.env.NODE_ENV === 'test',
   migrations:

@@ -88,7 +88,7 @@ export class FormsController {
     @GetUser() user: User,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [new MaxFileSizeValidator({ maxSize: 1000000 })],
+        validators: [new MaxFileSizeValidator({ maxSize: 5000000 })],
       }),
     )
     emailApproval: Express.Multer.File,
@@ -120,7 +120,7 @@ export class FormsController {
     @GetUser() user: User,
     @UploadedFiles(
       new ParseFilePipe({
-        validators: [new MaxFileSizeValidator({ maxSize: 1000000 })],
+        validators: [new MaxFileSizeValidator({ maxSize: 5000000 })],
       }),
     )
     files: Express.Multer.File[],
@@ -295,12 +295,19 @@ export class FormsController {
     @Body() updateAdvanceFormDto: AdvanceFormDto,
     @GetUser() user: User,
     @GetForm() form: AdvanceForm,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 5000000 })],
+      }),
+    )
+    emailApproval: Express.Multer.File,
   ) {
     await this.formsService.updateAdvanceForm(
       +id,
       updateAdvanceFormDto,
       user,
       form,
+      emailApproval,
     );
     return {
       statusCode: HttpStatus.OK,
@@ -319,7 +326,12 @@ export class FormsController {
   async editRetirementForm(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRetirementFormDto: RetirementFormDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 5000000 })],
+      }),
+    )
+    files: Express.Multer.File[],
     @GetUser() user: User,
     @GetForm() form: RetirementForm,
   ) {

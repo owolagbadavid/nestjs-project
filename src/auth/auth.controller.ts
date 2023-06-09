@@ -7,6 +7,7 @@ import {
   // Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   // Query,
   Res,
@@ -19,6 +20,7 @@ import {
   ResetPasswordDto,
   SuperUserDto,
   ForogotPasswordDto,
+  ChangePasswordDto,
 } from './dtos';
 import {
   ApiBadRequestResponse,
@@ -123,5 +125,16 @@ export class AuthController {
         role: user.role,
       },
     };
+  }
+
+  @ApiOkResponse({ type: ApiRes })
+  @ApiBadRequestResponse({ type: ApiRes })
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('changePassword')
+  changePassword(
+    @GetUser() user: User,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<ApiRes> {
+    return this.authService.changePassword(changePasswordDto, user);
   }
 }

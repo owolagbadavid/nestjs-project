@@ -22,20 +22,21 @@ export class Unit {
   name: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'head_id' })
   headId: number;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'department_id' })
   departmentId: number;
 
   @ManyToOne(() => Department, (department) => department.units, {
     onDelete: 'RESTRICT',
   })
+  @JoinColumn({ name: 'department_id' })
   department: Department;
 
   @OneToOne('User', { onDelete: 'RESTRICT' })
-  @JoinColumn()
+  @JoinColumn({ name: 'head_id' })
   head: User;
 
   @OneToMany('User', 'unit')

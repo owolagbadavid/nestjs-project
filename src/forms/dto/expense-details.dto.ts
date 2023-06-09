@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 import { ApiSchema } from '../../decorators';
 
 @ApiSchema({ name: 'ExpenseDetails' })
@@ -32,7 +38,7 @@ export class ExpenseDetailsDto {
   number: number;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   remark: string;
 }

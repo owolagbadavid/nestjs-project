@@ -113,12 +113,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   advanceForm,
-      //   FormType.ADVANCE,
-      // );
+      await this.mailService.sendSupervisorToken(
+        user.supervisor,
+        staffName,
+        advanceForm,
+        FormType.ADVANCE,
+      );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -204,12 +204,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   retirementForm,
-      //   FormType.RETIREMENT,
-      // );
+      await this.mailService.sendSupervisorToken(
+        user.supervisor,
+        staffName,
+        retirementForm,
+        FormType.RETIREMENT,
+      );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -365,6 +365,7 @@ export class FormsService {
     updateAdvanceFormDto: AdvanceFormDto,
     user: User,
     form?: AdvanceForm,
+    emailApproval?: Express.Multer.File,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
@@ -385,10 +386,19 @@ export class FormsService {
     if (advanceForm.approvedByFin)
       throw new ForbiddenException('Form has already been approved');
 
+    const supportingDoc = this.supportingDocsRepo.create({
+      file: emailApproval.buffer,
+      documentDescription: 'Email Approval',
+      fileName: emailApproval.originalname,
+      encoding: emailApproval.encoding,
+      mimeType: emailApproval.mimetype,
+    });
+
     advanceForm = this.advanceFormRepo.create({
       ...advanceForm,
       ...updateAdvanceFormDto,
       user,
+      emailApproval: supportingDoc,
     });
     advanceForm.supervisorToken = randomBytes(10).toString('hex');
     advanceForm = setDefaults(advanceForm);
@@ -400,12 +410,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   advanceForm,
-      //   FormType.ADVANCE,
-      // );
+      await this.mailService.sendSupervisorToken(
+        user.supervisor,
+        staffName,
+        advanceForm,
+        FormType.ADVANCE,
+      );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -497,12 +507,12 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   retirementForm,
-      //   FormType.RETIREMENT,
-      // );
+      await this.mailService.sendSupervisorToken(
+        user.supervisor,
+        staffName,
+        retirementForm,
+        FormType.RETIREMENT,
+      );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -605,12 +615,12 @@ export class FormsService {
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   advanceForm,
-      //   FormType.ADVANCE,
-      // );
+      await this.mailService.sendSupervisorToken(
+        user.supervisor,
+        staffName,
+        advance,
+        FormType.ADVANCE,
+      );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(

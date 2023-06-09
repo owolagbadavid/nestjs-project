@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -22,6 +23,7 @@ export class Approvals {
   id: number;
 
   @ManyToOne(() => User, (user) => user.approvals)
+  @JoinColumn({ name: 'approved_by_user_id' })
   approvedBy: User;
 
   @CreateDateColumn()
@@ -38,6 +40,7 @@ export class Approvals {
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
   })
+  @JoinColumn({ name: 'advance_form_id' })
   advanceApproved: AdvanceForm;
 
   @ManyToOne('RetirementForm', 'approvals', {
@@ -45,6 +48,7 @@ export class Approvals {
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
   })
+  @JoinColumn({ name: 'retirement_form_id' })
   retirementApproved: RetirementForm;
 
   @Column(RoleColumn({ enum: Role }))

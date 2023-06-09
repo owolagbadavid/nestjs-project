@@ -13,7 +13,7 @@ import type { User } from './user.entity';
 import type { AdvanceForm } from './advance-form.entity';
 import type { ExpenseDetails } from './expense-details.entity';
 import type { Approvals } from './approval.entity';
-import { Role } from '../types';
+import { Role, CurrencyScope } from '../types';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { RoleColumn } from './role-column';
@@ -126,6 +126,14 @@ export class RetirementForm {
 
   @Column({ nullable: true })
   supervisorToken: string;
+
+  @Column({
+    type: 'enum',
+    enum: CurrencyScope,
+    default: CurrencyScope.local,
+    name: 'currency_scope',
+  })
+  currencyScope: CurrencyScope;
 }
 
 export class SerializedRetirementForm {
@@ -178,6 +186,8 @@ export class SerializedRetirementForm {
   balanceToOrganization: number;
 
   disbursed: boolean;
+
+  currencyScope: CurrencyScope;
 
   @Exclude()
   supervisorToken: string;

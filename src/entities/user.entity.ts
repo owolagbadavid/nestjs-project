@@ -5,6 +5,7 @@ import type { RetirementForm } from './retirement-form.entity';
 import type { Approvals } from './approval.entity';
 import { RoleColumn } from './role-column';
 import { Role } from '../types';
+import type { ProfilePicture } from './profile-pictures.entity';
 import {
   BeforeInsert,
   Column,
@@ -38,11 +39,15 @@ export class User {
   email: string;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    name: 'first_name',
+  })
   firstName: string;
 
   @ApiProperty()
-  @Column()
+  @Column({
+    name: 'last_name',
+  })
   lastName: string;
 
   @Column({ nullable: true })
@@ -52,7 +57,7 @@ export class User {
   @Column({ default: false, type: 'boolean' })
   isVerified: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'verification_token' })
   verificationToken: string | null;
 
   @ApiProperty()
@@ -60,26 +65,29 @@ export class User {
   verified: Date;
 
   @ManyToOne('Department', 'members')
+  @JoinColumn({ name: 'department_id' })
   department: Department | null;
 
   @ManyToOne('Unit', 'members')
+  @JoinColumn({ name: 'unit_id' })
   unit: Unit | null;
 
   @ManyToOne(() => User, (user) => user.directReports, {
     onDelete: 'SET NULL',
   })
+  @JoinColumn({ name: 'supervisor_id' })
   supervisor: User | null;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'supervisor_id' })
   supervisorId: number | null;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'unit_id' })
   unitId: number | null;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'department_id' })
   departmentId: number | null;
 
   @OneToMany(() => User, (employee) => employee.supervisor)
@@ -100,10 +108,10 @@ export class User {
   @OneToMany('RetirementForm', 'user')
   retirementForms: RetirementForm[];
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'password_token' })
   passwordToken: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'password_token_expiration' })
   passwordTokenExpiration: Date | null;
 
   @OneToMany('Approvals', 'approvedBy')
@@ -113,14 +121,17 @@ export class User {
   delegated: boolean;
 
   @OneToOne('User', 'delegator', { onDelete: 'RESTRICT' })
-  @JoinColumn()
+  @JoinColumn({ name: 'delegate_id' })
   delegate: User | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'delegate_id' })
   delegateId: number | null;
 
   @OneToOne('User', 'delegate')
   delegator: User | null;
+
+  @OneToOne('ProfilePicture', 'user')
+  profilePicture: ProfilePicture | null;
 }
 
 export class SerializedUser {
@@ -179,6 +190,9 @@ export class SerializedUser {
 
   @Exclude()
   passwordTokenExpiration: Date | null;
+
+  @Exclude()
+  profilePicture: ProfilePicture | null;
 
   constructor(partial: Partial<SerializedUser>) {
     Object.assign(this, partial);

@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { Department, Unit, User } from '../entities';
+import { Department, ProfilePicture, Unit, User } from '../entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from '../mail/mail.module';
 import { FormsModule } from '../forms/forms.module';
@@ -10,7 +10,7 @@ import { FormsModule } from '../forms/forms.module';
   controllers: [UsersController],
   providers: [UsersService],
   imports: [
-    TypeOrmModule.forFeature([User, Department, Unit]),
+    TypeOrmModule.forFeature([User, Department, Unit, ProfilePicture]),
     MailModule,
     forwardRef(() => FormsModule),
   ],

@@ -10,18 +10,18 @@ import type { RetirementForm } from './retirement-form.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { AdvanceForm } from './advance-form.entity';
 
-@Entity()
+@Entity({ name: 'supporting_docs' })
 export class SupportingDocs {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty()
-  @Column()
+  @Column({ name: 'file_name' })
   fileName: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ name: 'mime_type' })
   mimeType: string;
 
   @ApiProperty()
@@ -29,7 +29,7 @@ export class SupportingDocs {
   encoding: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ name: 'document_description' })
   documentDescription: string;
 
   @ManyToOne('RetirementForm', 'supportingDocs', {
@@ -37,6 +37,7 @@ export class SupportingDocs {
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
   })
+  @JoinColumn({ name: 'retirement_form_id' })
   retirementForm: RetirementForm;
 
   @OneToOne('AdvanceForm', 'emailApproval', {
@@ -44,7 +45,7 @@ export class SupportingDocs {
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'advance_form_id' })
   advanceForm: AdvanceForm;
 
   @ApiProperty({

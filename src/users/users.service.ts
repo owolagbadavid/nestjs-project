@@ -7,7 +7,13 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Department, SerializedUser, Unit, User } from '../entities';
+import {
+  Department,
+  ProfilePicture,
+  SerializedUser,
+  Unit,
+  User,
+} from '../entities';
 import {
   DataSource,
   FindManyOptions,
@@ -31,6 +37,8 @@ export class UsersService {
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
     @InjectRepository(Unit) private unitRepository: Repository<Unit>,
+    @InjectRepository(ProfilePicture)
+    private profilePictureRepository: Repository<ProfilePicture>,
     private mailService: MailService,
     private formsService: FormsService,
     private dataSource: DataSource,
@@ -423,5 +431,24 @@ export class UsersService {
       // @you need to release a queryRunner which was manually instantiated
       await queryRunner.release();
     }
+  }
+
+  // upload profile picture
+  async uploadProfilePicture(user: User, file: Express.Multer.File) {
+    // check if it is a valid image
+    if (!file.mimetype.startsWith('image'))
+      throw new BadRequestException('Invalid image file');
+
+    // make the picture an instance of ProfilePicture Entity
+    const profilePicture = this.profilePictureRepository.create({
+      fileName: file.filename,
+      mimeType: file.mimetype,
+      encoding: file.encoding,
+      file: file.buffer,
+      user,
+    });
+
+    // save the picture
+    await this.profilePictureRepository.save(profilePicture);
   }
 }

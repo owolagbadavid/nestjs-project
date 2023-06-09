@@ -20,6 +20,7 @@ import {
   ExpenseDetails,
   Approvals,
   SupportingDocs,
+  ProfilePicture,
 } from './entities';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -37,6 +38,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       ExpenseDetails,
       Approvals,
       SupportingDocs,
+      ProfilePicture,
     ]),
     AuthModule,
     UsersModule,

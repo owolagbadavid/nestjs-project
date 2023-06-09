@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { RetirementForm } from './retirement-form.entity';
 
@@ -7,14 +13,12 @@ export class ExpenseDetails {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  retirementFormId: number;
-
   @ManyToOne(() => RetirementForm, (retirementForm) => retirementForm.details, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
     orphanedRowAction: 'delete',
   })
+  @JoinColumn({ name: 'retirement_form_id' })
   retirementForm: RetirementForm;
 
   @Column()
@@ -29,6 +33,6 @@ export class ExpenseDetails {
   @Column()
   number: number;
 
-  @Column()
+  @Column({ nullable: true })
   remark: string;
 }

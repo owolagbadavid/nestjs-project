@@ -4,7 +4,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginUserDto, ResetPasswordDto, SuperUserDto } from './dtos';
+import {
+  ChangePasswordDto,
+  LoginUserDto,
+  ResetPasswordDto,
+  SuperUserDto,
+} from './dtos';
 import { UsersService } from '../users/users.service';
 import { createHash, randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
@@ -138,6 +143,33 @@ export class AuthService {
       statusCode: HttpStatus.OK,
       message: 'check your email for password reset link',
       passwordToken,
+    };
+  }
+
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+    user: User,
+  ): Promise<ApiRes> {
+    let { newPassword } = changePasswordDto;
+
+    // compare password
+    const pwMatches = await bcrypt.compare(
+      changePasswordDto.oldPassword,
+      user.password,
+    );
+    // if not match throw exception
+    if (!pwMatches) throw new UnauthorizedException('credentials incorrect');
+    const salt = bcrypt.genSaltSync(10);
+    newPassword = bcrypt.hashSync(newPassword, salt);
+    user.password = newPassword;
+
+    user.passwordToken = null;
+    user.passwordTokenExpiration = null;
+    await this.usersService.update(user.id, user);
+    // return after successful update
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Password successfully updated',
     };
   }
 }

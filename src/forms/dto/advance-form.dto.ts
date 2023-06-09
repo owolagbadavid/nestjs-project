@@ -2,8 +2,10 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   ValidateNested,
@@ -13,6 +15,7 @@ import { Type } from 'class-transformer';
 import { ApiSchema } from '../../decorators';
 import { ApiProperty } from '@nestjs/swagger';
 import { SupportingDocs } from '../../entities';
+import { CurrencyScope } from '../../types';
 
 @ApiSchema({ name: 'FillAdvanceForm' })
 export class AdvanceFormDto {
@@ -64,4 +67,9 @@ export class AdvanceFormDto {
     required: true,
   })
   emailApproval: SupportingDocs;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(CurrencyScope)
+  currencyScope: CurrencyScope;
 }
