@@ -20,6 +20,7 @@ import {
   Res,
   StreamableFile,
   NotFoundException,
+  Req,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
@@ -64,6 +65,7 @@ import { MaxFileSizeValidator, BodyInterceptor } from '../utils';
 import { Response } from 'express';
 import { Readable } from 'stream';
 import { IsNull } from 'typeorm';
+import { Request } from 'express';
 
 @ApiCookieAuth('cookie')
 @ApiUnauthorizedResponse({ type: ApiRes })
@@ -92,13 +94,15 @@ export class FormsController {
       }),
     )
     emailApproval: Express.Multer.File,
+    @Req() req: Request,
   ): Promise<ApiRes> {
-    console.log(createAdvanceFormDto);
-
+    // get the host/origin
+    const origin = req.headers.origin || req.headers.host;
     await this.formsService.createAdvanceForm(
       createAdvanceFormDto,
       user,
       emailApproval,
+      origin,
     );
 
     return {
@@ -124,11 +128,16 @@ export class FormsController {
       }),
     )
     files: Express.Multer.File[],
+    @Req() req: Request,
   ): Promise<ApiRes> {
+    // get the host/origin
+    const origin = req.headers.origin || req.headers.host;
+
     await this.formsService.createRetirementForm(
       createRetirementFormDto,
       user,
       files,
+      origin,
     );
     return {
       statusCode: HttpStatus.CREATED,
@@ -224,7 +233,9 @@ export class FormsController {
       formFilterDto.retirementId = IsNull();
 
     const filter = { userId: user.id, ...formFilterDto };
-    const forms = await this.formsService.findAllAdvanceForms(filter, {});
+    const forms = await this.formsService.findAllAdvanceForms(filter, {
+      user: true,
+    });
     return {
       statusCode: HttpStatus.OK,
       message: 'Forms fetched successfully',
@@ -238,7 +249,7 @@ export class FormsController {
   async getUserRetirementForms(@GetUser() user: User): Promise<ApiRes> {
     const forms = await this.formsService.findAllRetirementForms(
       { userId: user.id },
-      {},
+      { user: true },
     );
     return {
       statusCode: HttpStatus.OK,
@@ -289,6 +300,7 @@ export class FormsController {
   @ApiOkResponse({ type: ApiRes })
   @Forms(FormType.ADVANCE)
   @UseGuards(OwnerGuard)
+  @UseInterceptors(FileInterceptor('emailApproval'), BodyInterceptor)
   @Put('advance/:id')
   async editAdvanceForm(
     @Param('id', ParseIntPipe) id: number,
@@ -301,13 +313,18 @@ export class FormsController {
       }),
     )
     emailApproval: Express.Multer.File,
+    @Req() req: Request,
   ) {
+    // get origin
+    const origin = req.headers.origin || req.headers.host;
+
     await this.formsService.updateAdvanceForm(
       +id,
       updateAdvanceFormDto,
       user,
-      form,
       emailApproval,
+      origin,
+      form,
     );
     return {
       statusCode: HttpStatus.OK,
@@ -334,12 +351,17 @@ export class FormsController {
     files: Express.Multer.File[],
     @GetUser() user: User,
     @GetForm() form: RetirementForm,
+    @Req() req: Request,
   ) {
+    // get origin
+    const origin = req.headers.origin || req.headers.host;
+
     await this.formsService.updateRetirementForm(
       +id,
       updateRetirementFormDto,
       files,
       user,
+      origin,
       form,
     );
     return {
@@ -384,13 +406,18 @@ export class FormsController {
     @GetUser() user: User,
     @UploadedFiles() files: Express.Multer.File[],
     @GetForm() form: AdvanceForm,
+    @Req() req: Request,
   ) {
+    // get origin
+    const origin = req.headers.origin || req.headers.host;
+
     await this.formsService.retireAdvancedForm(
       id,
       createRetirementFormDto,
       user,
       files,
       form,
+      origin,
     );
 
     return {

@@ -191,7 +191,6 @@ export class SerializedUser {
   @Exclude()
   passwordTokenExpiration: Date | null;
 
-  @Exclude()
   profilePicture: ProfilePicture | null;
 
   constructor(partial: Partial<SerializedUser>) {

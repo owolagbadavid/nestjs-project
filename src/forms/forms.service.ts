@@ -66,6 +66,7 @@ export class FormsService {
     createAdvanceFormDto: AdvanceFormDto,
     user: User,
     emailApproval: Express.Multer.File,
+    origin: string,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
@@ -113,12 +114,13 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        advanceForm,
-        FormType.ADVANCE,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      //   origin,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -126,6 +128,7 @@ export class FormsService {
           staffName,
           advanceForm,
           FormType.ADVANCE,
+          origin,
         );
       }
       await queryRunner.commitTransaction();
@@ -146,6 +149,7 @@ export class FormsService {
     createRetirementFormDto: RetirementFormDto,
     user: User,
     files: Express.Multer.File[],
+    origin: string,
   ) {
     // @checks if details and total amount are correct
     if (
@@ -204,12 +208,13 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        retirementForm,
-        FormType.RETIREMENT,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   retirementForm,
+      //   FormType.RETIREMENT,
+      //   origin,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -217,6 +222,7 @@ export class FormsService {
           staffName,
           retirementForm,
           FormType.RETIREMENT,
+          origin,
         );
       }
 
@@ -364,8 +370,9 @@ export class FormsService {
     id: number,
     updateAdvanceFormDto: AdvanceFormDto,
     user: User,
+    emailApproval: Express.Multer.File,
+    origin: string,
     form?: AdvanceForm,
-    emailApproval?: Express.Multer.File,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
 
@@ -393,7 +400,7 @@ export class FormsService {
       encoding: emailApproval.encoding,
       mimeType: emailApproval.mimetype,
     });
-
+    this.supportingDocsRepo.delete({ id: advanceForm.emailApproval.id });
     advanceForm = this.advanceFormRepo.create({
       ...advanceForm,
       ...updateAdvanceFormDto,
@@ -410,12 +417,13 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        advanceForm,
-        FormType.ADVANCE,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advanceForm,
+      //   FormType.ADVANCE,
+      //   origin,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -423,9 +431,11 @@ export class FormsService {
           staffName,
           advanceForm,
           FormType.ADVANCE,
+          origin,
         );
       }
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Something went wrong');
     }
   }
@@ -435,6 +445,7 @@ export class FormsService {
     updateRetirementFormDto: RetirementFormDto,
     files: Express.Multer.File[],
     user: User,
+    origin: string,
     form?: RetirementForm,
   ) {
     // user = await this.usersService.findUserAndSupervisor(user.id);
@@ -507,12 +518,13 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        retirementForm,
-        FormType.RETIREMENT,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   retirementForm,
+      //   FormType.RETIREMENT,
+      //   origin,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -520,6 +532,7 @@ export class FormsService {
           staffName,
           retirementForm,
           FormType.RETIREMENT,
+          origin,
         );
       }
     } catch (error) {
@@ -549,6 +562,7 @@ export class FormsService {
     user: User,
     files: Express.Multer.File[],
     form: AdvanceForm,
+    origin: string,
   ) {
     const supportingDocs: SupportingDocs[] = [];
     // user = await this.usersService.findUserAndSupervisor(user.id);
@@ -615,12 +629,13 @@ export class FormsService {
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
-      await this.mailService.sendSupervisorToken(
-        user.supervisor,
-        staffName,
-        advance,
-        FormType.ADVANCE,
-      );
+      // await this.mailService.sendSupervisorToken(
+      //   user.supervisor,
+      //   staffName,
+      //   advance,
+      //   FormType.ADVANCE,
+      //   origin,
+      // );
 
       if (user.supervisor.delegated) {
         await this.mailService.sendSupervisorToken(
@@ -628,6 +643,7 @@ export class FormsService {
           staffName,
           retirementForm,
           FormType.RETIREMENT,
+          origin,
         );
       }
 

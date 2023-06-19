@@ -119,7 +119,7 @@ export class AuthService {
     throw new BadRequestException('Invalid token');
   }
 
-  async forgotPassword(email: string) {
+  async forgotPassword(email: string, origin: string) {
     const user = await this.usersService.findOneByEmail(email);
     let passwordToken: string;
     if (user) {
@@ -136,7 +136,7 @@ export class AuthService {
         .digest('hex');
       user.passwordTokenExpiration = passwordTokenExpiration;
       await this.usersService.update(user.id, user);
-      await this.mailService.sendUserConfirmation(user, passwordToken);
+      await this.mailService.sendUserConfirmation(user, passwordToken, origin);
     }
 
     return {

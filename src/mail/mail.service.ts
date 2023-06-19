@@ -7,8 +7,8 @@ import { Form, FormType } from 'src/types';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(user: User, token: string) {
-    const url = `localhost:3000/resetPass?email=${user.email}&token=${token}`;
+  async sendUserConfirmation(user: User, token: string, origin: string) {
+    const url = `${origin}/resetPass?email=${user.email}&token=${token}`;
 
     await this.mailerService.sendMail({
       to: user.email,
@@ -27,8 +27,9 @@ export class MailService {
     staffName: string,
     form: Form,
     formType: FormType,
+    origin: string,
   ) {
-    const url = `localhost:3000/forms/approval/advance/?id=${form.id}&type=${formType}&approval=yes&token=${form.supervisorToken}`;
+    const url = `${origin}/forms/approval/advance/?id=${form.id}&type=${formType}&approval=yes&token=${form.supervisorToken}`;
 
     await this.mailerService.sendMail({
       to: user.email,

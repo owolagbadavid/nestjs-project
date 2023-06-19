@@ -15,6 +15,7 @@ import {
   Query,
   UploadedFile,
   ParseFilePipe,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
@@ -43,6 +44,7 @@ import {
 } from '../auth/guards';
 import { GetUser, Roles } from '../decorators';
 import { MaxFileSizeValidator } from '../utils';
+import { Request } from 'express';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Users')
@@ -59,8 +61,13 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @ApiCreatedResponse({ type: ApiRes })
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<ApiRes> {
-    return this.usersService.create(createUserDto);
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @Req() request: Request,
+  ): Promise<ApiRes> {
+    // get request host
+    const origin = request.headers.origin || request.headers.host;
+    return this.usersService.create(createUserDto, origin);
   }
 
   //Get /

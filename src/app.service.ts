@@ -46,6 +46,13 @@ export class AppService {
   }
 
   async seed() {
+    const seeded = await this.userRepository.find();
+    const seeded2 = await this.departmentRepository.find();
+    const seeded3 = await this.unitRepository.find();
+    if (seeded.length > 0 || seeded2.length > 0 || seeded3.length > 0) {
+      return 'already seeded';
+    }
+
     let department: any = await fs.readFile(
       __dirname + '/mock-data/department.json',
       'utf-8',

@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Patch,
   Post,
+  Req,
   // Query,
   Res,
   UseGuards,
@@ -36,6 +37,7 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../decorators';
+import { Request } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -86,8 +88,11 @@ export class AuthController {
   @Post('forgotPassword')
   forgotPassword(
     @Body() forgotPasswordDto: ForogotPasswordDto,
+    @Req() request: Request,
   ): Promise<ApiRes> {
-    return this.authService.forgotPassword(forgotPasswordDto.email);
+    // get request host
+    const origin = request.headers.origin || request.headers.host;
+    return this.authService.forgotPassword(forgotPasswordDto.email, origin);
   }
 
   @ApiBadRequestResponse({ type: ApiRes })

@@ -45,7 +45,10 @@ export class UsersService {
   ) {}
 
   // $Create New User
-  async create(createUserDto: CreateUserDto) /*: Promise<ApiRes>*/ {
+  async create(
+    createUserDto: CreateUserDto,
+    origin: string,
+  ) /*: Promise<ApiRes>*/ {
     const emailAlreadyExists = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
@@ -97,7 +100,11 @@ export class UsersService {
     await this.userRepository.save(user);
 
     // send email to the user
-    await this.mailService.sendUserConfirmation(user, verificationToken);
+    await this.mailService.sendUserConfirmation(
+      user,
+      verificationToken,
+      origin,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,
@@ -223,7 +230,12 @@ export class UsersService {
   }
 
   async getMe(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        profilePicture: true,
+      },
+    });
 
     if (!user) throw new NotFoundException(`User ${id} not found`);
 
