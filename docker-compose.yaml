@@ -1,23 +1,25 @@
 version: '3.8' 
 services: 
-  test-db:
-    image: postgres:15
+  app:
+    image: mike
+    build: .
+    depends_on:
+      - dev-db
     ports:
-      - 5434:5434
-    environment:
-      POSTGRES_DB: test
-      POSTGRES_HOST_AUTH_METHOD: trust
+      - "3009:2000"
+    env_file:
+      - .env
     networks:
       - test-network
   dev-db:
     image: postgres:15
-    ports:
-      - 5432:5432
     environment:
       POSTGRES_DB: cash_adv_n_rtr
       POSTGRES_HOST_AUTH_METHOD: trust
     networks:
       - test-network
+    ports:
+      - 4000:5432
 networks:
   test-network:
-    driver: bridge
+      driver: bridge
