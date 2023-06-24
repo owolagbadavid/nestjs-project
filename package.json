@@ -28,6 +28,9 @@
     "db:test:restart": "npm run db:test:rm && sleep 1 && npm run db:test:up",
     "db:dev:rm": "docker compose rm dev-db -f -v -s",
     "db:dev:up": "docker compose up dev-db -d",
+    "db:dev:cli": "docker compose exec dev-db psql -U postgres -d postgres",
+    "app:up": "docker compose up app -d",
+    "app:build": "docker build -t app .",
     "db:dev:restart": "npm run db:dev:rm && sleep 1 && npm run db:dev:up"
   },
   "dependencies": {
