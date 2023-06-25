@@ -7,19 +7,30 @@ services:
       - dev-db
     ports:
       - "3009:2000"
+    volumes:
+      - ./src:/app/src
     env_file:
       - .env
     networks:
       - test-network
+  test-db:
+    image: postgres:15
+    ports:
+      - 4001:5432
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - test-network
   dev-db:
     image: postgres:15
+    ports:
+      - 4000:5432
     environment:
       POSTGRES_DB: cash_adv_n_rtr
       POSTGRES_HOST_AUTH_METHOD: trust
     networks:
       - test-network
-    ports:
-      - 4000:5432
 networks:
   test-network:
-      driver: bridge
+    driver: bridge
