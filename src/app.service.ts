@@ -111,11 +111,12 @@ export class AppService {
       "isVerified": "true",
       "unitId": 1,
       "supervisorId": 24,
-      "verified": "11/21/2022",
+      "verified": "02/25/2023",
       "departmentId": 1,
       "password": "secret",
       "role": 1
     }`);
+    lastUser.verified = new Date(lastUser.verified);
     lastUser = this.userRepository.create(lastUser);
     await this.userRepository.save(lastUser);
 
