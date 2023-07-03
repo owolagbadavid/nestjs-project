@@ -11,7 +11,6 @@ import { Observable } from 'rxjs';
 export class BodyInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
-    console.log(request.body);
 
     try {
       request.body.details = JSON.parse(request.body.details);

@@ -24,13 +24,13 @@ export class ExpenseDetails {
   @Column()
   product: string;
 
-  @Column()
+  @Column({ type: 'numeric' })
   rate: number;
 
-  @Column()
+  @Column({ type: 'numeric' })
   amount: number;
 
-  @Column()
+  @Column({ type: 'numeric' })
   number: number;
 
   @Column({ nullable: true })

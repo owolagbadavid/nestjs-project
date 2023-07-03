@@ -30,7 +30,7 @@ import {
 } from '../entities';
 import { DataSource, Repository } from 'typeorm';
 // import { UsersService } from '../users/users.service';
-import { randomBytes } from 'crypto';
+
 import {
   reject,
   approve,
@@ -42,6 +42,8 @@ import {
 } from '../utils';
 import { FormEntity, FormType } from '../types';
 import { MailService } from '../mail/mail.service';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 @Injectable()
 export class FormsService {
@@ -59,6 +61,7 @@ export class FormsService {
     @InjectRepository(Approvals) private approvalsRepo: Repository<Approvals>,
     private dataSource: DataSource,
     private mailService: MailService,
+    @InjectQueue('mail') private mailQueue: Queue,
   ) {}
 
   // $create advance form
@@ -102,34 +105,32 @@ export class FormsService {
       user,
       emailApproval: supportingDoc,
     });
-    console.log(advanceForm);
-    advanceForm.supervisorToken = randomBytes(10).toString('hex');
+
     // TODO: send token to supervisor
     const staffName = `${user.firstName} ${user.lastName}`;
 
     advanceForm = setDefaults(advanceForm);
     try {
       await queryRunner.manager.save(advanceForm);
-      console.log(user);
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   advanceForm,
-      //   FormType.ADVANCE,
-      //   origin,
-      // );
+      this.mailQueue.add('send-sup-mail', {
+        supervisor: user.supervisor,
+        staffName,
+        form: advanceForm,
+        formType: FormType.ADVANCE,
+        origin,
+      });
 
       if (user.supervisor.delegated) {
-        await this.mailService.sendSupervisorToken(
-          user.supervisor.delegate,
+        this.mailQueue.add('send-sup-mail', {
+          supervisor: user.supervisor.delegate,
           staffName,
-          advanceForm,
-          FormType.ADVANCE,
+          form: advanceForm,
+          formType: FormType.ADVANCE,
           origin,
-        );
+        });
       }
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -194,7 +195,7 @@ export class FormsService {
       supportingDocs,
     });
     retirementForm.type = RetirementType.CASH;
-    retirementForm.supervisorToken = randomBytes(10).toString('hex');
+
     // TODO: send token to supervisor
     const staffName = `${user.firstName} ${user.lastName}`;
 
@@ -208,22 +209,22 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   retirementForm,
-      //   FormType.RETIREMENT,
-      //   origin,
-      // );
+      this.mailQueue.add('send-sup-mail', {
+        supervisor: user.supervisor,
+        staffName,
+        form: retirementForm,
+        formType: FormType.RETIREMENT,
+        origin,
+      });
 
       if (user.supervisor.delegated) {
-        await this.mailService.sendSupervisorToken(
-          user.supervisor.delegate,
+        this.mailQueue.add('send-sup-mail', {
+          supervisor: user.supervisor.delegate,
           staffName,
-          retirementForm,
-          FormType.RETIREMENT,
+          form: retirementForm,
+          formType: FormType.RETIREMENT,
           origin,
-        );
+        });
       }
 
       await queryRunner.commitTransaction();
@@ -407,7 +408,7 @@ export class FormsService {
       user,
       emailApproval: supportingDoc,
     });
-    advanceForm.supervisorToken = randomBytes(10).toString('hex');
+
     advanceForm = setDefaults(advanceForm);
     // TODO: send token to supervisor
     const staffName = `${user.firstName} ${user.lastName}`;
@@ -417,22 +418,22 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   advanceForm,
-      //   FormType.ADVANCE,
-      //   origin,
-      // );
+      this.mailQueue.add('send-sup-mail', {
+        supervisor: user.supervisor,
+        staffName,
+        form: advanceForm,
+        formType: FormType.ADVANCE,
+        origin,
+      });
 
       if (user.supervisor.delegated) {
-        await this.mailService.sendSupervisorToken(
-          user.supervisor.delegate,
+        this.mailQueue.add('send-sup-mail', {
+          supervisor: user.supervisor.delegate,
           staffName,
-          advanceForm,
-          FormType.ADVANCE,
+          form: advanceForm,
+          formType: FormType.ADVANCE,
           origin,
-        );
+        });
       }
     } catch (error) {
       console.log(error);
@@ -508,7 +509,7 @@ export class FormsService {
       user,
       supportingDocs,
     });
-    retirementForm.supervisorToken = randomBytes(10).toString('hex');
+
     retirementForm = setDefaults(retirementForm);
     // TODO: send token to supervisor
     const staffName = `${user.firstName} ${user.lastName}`;
@@ -518,22 +519,22 @@ export class FormsService {
 
       //TODO: Send email notification to supervisor
 
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   retirementForm,
-      //   FormType.RETIREMENT,
-      //   origin,
-      // );
+      this.mailQueue.add('send-sup-mail', {
+        supervisor: user.supervisor,
+        staffName,
+        form: retirementForm,
+        formType: FormType.RETIREMENT,
+        origin,
+      });
 
       if (user.supervisor.delegated) {
-        await this.mailService.sendSupervisorToken(
-          user.supervisor.delegate,
+        this.mailQueue.add('send-sup-mail', {
+          supervisor: user.supervisor.delegate,
           staffName,
-          retirementForm,
-          FormType.RETIREMENT,
+          form: retirementForm,
+          formType: FormType.RETIREMENT,
           origin,
-        );
+        });
       }
     } catch (error) {
       throw new InternalServerErrorException('Something went wrong');
@@ -616,7 +617,7 @@ export class FormsService {
     });
     retirementForm.advance = advance;
     retirementForm.type = RetirementType.ADVANCE;
-    retirementForm.supervisorToken = randomBytes(10).toString('hex');
+
     retirementForm = setDefaults(retirementForm);
 
     // TODO: send token to supervisor
@@ -629,22 +630,23 @@ export class FormsService {
       await queryRunner.manager.save(retirementForm);
 
       //TODO: Send email notification to supervisor
-      // await this.mailService.sendSupervisorToken(
-      //   user.supervisor,
-      //   staffName,
-      //   advance,
-      //   FormType.ADVANCE,
-      //   origin,
-      // );
+
+      this.mailQueue.add('send-sup-mail', {
+        supervisor: user.supervisor,
+        staffName,
+        form: retirementForm,
+        formType: FormType.RETIREMENT,
+        origin,
+      });
 
       if (user.supervisor.delegated) {
-        await this.mailService.sendSupervisorToken(
-          user.supervisor.delegate,
+        this.mailQueue.add('send-sup-mail', {
+          supervisor: user.supervisor.delegate,
           staffName,
-          retirementForm,
-          FormType.RETIREMENT,
+          form: retirementForm,
+          formType: FormType.RETIREMENT,
           origin,
-        );
+        });
       }
 
       await queryRunner.commitTransaction();

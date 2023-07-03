@@ -11,11 +11,13 @@ import {
   SupportingDocs,
 } from '../entities';
 import { UsersModule } from '../users/users.module';
-import { MailModule } from '../mail/mail.module';
+import { BullModule } from '@nestjs/bull';
+import { MailProcessor } from '../mail/mail.processor';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   controllers: [FormsController],
-  providers: [FormsService],
+  providers: [FormsService, MailProcessor, MailService],
   imports: [
     TypeOrmModule.forFeature([
       AdvanceDetails,
@@ -25,8 +27,10 @@ import { MailModule } from '../mail/mail.module';
       SupportingDocs,
       Approvals,
     ]),
-    MailModule,
     forwardRef(() => UsersModule),
+    BullModule.registerQueue({
+      name: 'mail',
+    }),
   ],
   exports: [FormsService],
 })

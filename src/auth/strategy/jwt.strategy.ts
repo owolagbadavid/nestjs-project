@@ -46,7 +46,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     //   verificationToken,
     //   ...rest
     // }) => rest)(user);
-    console.log(user);
 
     return user;
   }

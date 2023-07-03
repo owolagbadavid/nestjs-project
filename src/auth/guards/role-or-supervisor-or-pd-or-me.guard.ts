@@ -80,7 +80,6 @@ export class MeORSuperiorGuard implements CanActivate {
         ...formRelationDto,
       });
     }
-    console.log(formRelationDto);
 
     request.form = form;
     // @if admin or finance

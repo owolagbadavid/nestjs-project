@@ -72,8 +72,6 @@ export class ApprovalGuard implements CanActivate {
       form = await this.formsService.findOneAdvanceForm(formId, {
         user: { supervisor: { delegate: true } },
       });
-
-      console.log('formId', form.supervisorToken, approvalDto.token);
     } else if (requiredForm === FormType.RETIREMENT) {
       form = await this.formsService.findOneRetirementForm(formId, {
         user: true,
@@ -85,8 +83,7 @@ export class ApprovalGuard implements CanActivate {
       form.approvalLevel === 0 &&
       form.nextApprovalLevel === user.role &&
       (form.user.supervisor.id === user.id ||
-        form.user.supervisor.delegateId === user.id) &&
-      form.supervisorToken === approvalDto.token
+        form.user.supervisor.delegateId === user.id)
     ) {
       request.approval = 'supervisor';
       console.log('supervisor');

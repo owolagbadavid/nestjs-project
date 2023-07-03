@@ -37,7 +37,14 @@ export const dataSourceOptions: DataSourceOptions = {
   synchronize: process.env.NODE_ENV === 'test',
   migrations:
     process.env.NODE_ENV === 'test' ? null : ['dist/db/migrations/*.js'],
-
+  cache: {
+    type: 'ioredis',
+    options: {
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT),
+    },
+    ignoreErrors: true,
+  },
   //   synchronize: true,
 };
 

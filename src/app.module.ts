@@ -24,6 +24,7 @@ import {
 } from './entities';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -53,6 +54,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       rootPath: join(__dirname, '..', 'client'),
       serveRoot: '/',
       // serveStaticOptions: { fallthrough: false },
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+      },
     }),
   ],
   controllers: [AppController],

@@ -19,6 +19,7 @@ export function setDefaults<Form extends AdvanceForm | RetirementForm>(
   form.rejected = false;
   form.remarkByFin = null;
   form.rejectionReason = null;
+  form.createdAt = new Date();
 
   return form;
 }

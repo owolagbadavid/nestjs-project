@@ -5,10 +5,12 @@ services:
     build: .
     depends_on:
       - dev-db
+      - my-redis
     ports:
       - "3009:2000"
     volumes:
       - ./src:/app/src
+      - ./client:/app/client
     env_file:
       - .env
     networks:
@@ -22,6 +24,12 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     networks:
       - test-network
+  my-redis:
+    image: redis:alpine
+    ports:
+      - 4002:6379
+    networks:
+      - test-network
   dev-db:
     image: postgres:15
     ports:
@@ -31,6 +39,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     networks:
       - test-network
+
 networks:
   test-network:
     driver: bridge

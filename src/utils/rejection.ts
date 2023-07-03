@@ -9,8 +9,6 @@ export async function reject<Form extends AdvanceForm | RetirementForm>(
   user: User,
   rejectionDto: ApprovalOrRejectionDto,
 ): Promise<Form> {
-  console.log(form.supervisorToken, rejectionDto.token);
-
   if (rejectionType) {
     form.rejected = true;
     form.rejectionReason = rejectionDto.remark;
@@ -18,10 +16,6 @@ export async function reject<Form extends AdvanceForm | RetirementForm>(
     //@if its finance
     if (user.role === Role.Finance) {
       form.remarkByFin = rejectionDto.remark;
-    }
-    //@if its supervisor
-    else if (form.user.supervisorId === user.id) {
-      form.supervisorToken = null;
     }
 
     return form;

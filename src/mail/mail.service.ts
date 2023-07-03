@@ -29,7 +29,7 @@ export class MailService {
     formType: FormType,
     origin: string,
   ) {
-    const url = `${origin}/forms/approval/advance/?id=${form.id}&type=${formType}&approval=yes&token=${form.supervisorToken}`;
+    const url = `${origin}/forms/approval/advance/?id=${form.id}&type=${formType}&approval=yes`;
 
     await this.mailerService.sendMail({
       to: user.email,
@@ -41,7 +41,6 @@ export class MailService {
         name: user.firstName,
         url,
         staffName,
-        token: form.supervisorToken,
       },
     });
   }

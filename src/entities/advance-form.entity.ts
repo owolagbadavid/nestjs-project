@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -13,7 +14,6 @@ import type { Approvals } from './approval.entity';
 import type { AdvanceDetails } from './advance-details.entity';
 import type { User } from './user.entity';
 import { RoleColumn } from './role-column';
-import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CurrencyScope, Role } from '../types';
 import { SupportingDocs } from './supporting-docs.entity';
@@ -25,10 +25,11 @@ export class AdvanceForm {
   id: number;
 
   @ManyToOne('User', 'advanceForms')
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'user_id' })
   userId: number;
 
   @ApiProperty()
@@ -36,11 +37,11 @@ export class AdvanceForm {
   purpose: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ name: 'departure_date' })
   departureDate: Date;
 
   @ApiProperty()
-  @Column()
+  @Column({ name: 'return_date' })
   returnDate: Date;
 
   @ApiProperty()
@@ -52,27 +53,29 @@ export class AdvanceForm {
   destination: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'pre_approval_remark_by_fin' })
   preApprovalRemarkByFinance: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'finance_go_ahead' })
   financeGoAhead: boolean;
 
   @ApiProperty()
-  @Column(RoleColumn({ enum: Role }))
+  @Column(RoleColumn({ enum: Role, name: 'approval_level' }))
   approvalLevel: Role;
 
   @ApiProperty()
-  @Column(RoleColumn({ enum: Role, nullable: true }))
+  @Column(
+    RoleColumn({ enum: Role, nullable: true, name: 'next_approval_level' }),
+  )
   nextApprovalLevel: Role;
 
   @ApiProperty()
-  @Column({ type: 'bool', default: false })
+  @Column({ type: 'bool', default: false, name: 'pushed_to_finance' })
   pushedToFinance: boolean;
 
   @ApiProperty()
-  @Column({ default: false })
+  @Column({ default: false, name: 'approved_by_fin' })
   approvedByFin: boolean;
 
   @ApiProperty()
@@ -80,15 +83,19 @@ export class AdvanceForm {
   rejected: boolean;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'rejection_reason' })
   rejectionReason: string;
 
   @ApiProperty()
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @ApiProperty()
+  @Column({ nullable: true, name: 'remark_by_fin' })
   remarkByFin: string;
 
   @ApiProperty({ isArray: true, type: 'AdvanceDetails' })
@@ -99,11 +106,11 @@ export class AdvanceForm {
   approvals: Approvals[];
 
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column({ nullable: true, name: 'retirement_id' })
   retirementId: number;
 
   @ApiProperty()
-  @Column()
+  @Column({ type: 'numeric', name: 'total_amount' })
   totalAmount: number;
 
   @ApiProperty()
@@ -115,11 +122,8 @@ export class AdvanceForm {
   @OneToOne('RetirementForm', 'advance', {
     onDelete: 'RESTRICT',
   })
-  @JoinColumn()
+  @JoinColumn({ name: 'retirement_id' })
   retirement: RetirementForm;
-
-  @Column({ nullable: true })
-  supervisorToken: string;
 
   @Column({ default: false })
   disbursed: boolean;
@@ -168,6 +172,8 @@ export class SerializedAdvanceForm {
 
   updatedAt: Date;
 
+  createdAt: Date;
+
   remarkByFin: string;
 
   details: AdvanceDetails[];
@@ -185,9 +191,6 @@ export class SerializedAdvanceForm {
   disbursed: boolean;
 
   currencyScope: CurrencyScope;
-
-  @Exclude()
-  supervisorToken: string;
 
   constructor(partial: Partial<SerializedAdvanceForm>) {
     Object.assign(this, partial);
