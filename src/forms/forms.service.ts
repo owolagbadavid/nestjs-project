@@ -41,7 +41,6 @@ import {
   compareDetailsNTotalAmount,
 } from '../utils';
 import { FormEntity, FormType } from '../types';
-import { MailService } from '../mail/mail.service';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 
@@ -60,7 +59,6 @@ export class FormsService {
     private supportingDocsRepo: Repository<SupportingDocs>,
     @InjectRepository(Approvals) private approvalsRepo: Repository<Approvals>,
     private dataSource: DataSource,
-    private mailService: MailService,
     @InjectQueue('mail') private mailQueue: Queue,
   ) {}
 
