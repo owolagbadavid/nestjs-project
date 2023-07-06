@@ -13,10 +13,11 @@ import {
 import { UsersModule } from '../users/users.module';
 import { BullModule } from '@nestjs/bull';
 import { MailProcessor } from '../mail/mail.processor';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   controllers: [FormsController],
-  providers: [FormsService, MailProcessor],
+  providers: [FormsService, MailProcessor, MailService],
   imports: [
     TypeOrmModule.forFeature([
       AdvanceDetails,
